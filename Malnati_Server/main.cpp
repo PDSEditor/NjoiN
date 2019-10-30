@@ -1,19 +1,28 @@
 #include <QCoreApplication>
 
 #include "server.h"
-#include "socketManager.h"
-#include "databaseManager.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    Server* server = new Server();
-    SocketManager* socketMan = new SocketManager();
-    DatabaseManager* dbMan = new DatabaseManager();
+        /*QCommandLineParser parser;
+        parser.setApplicationDescription("QtWebSockets example: echoserver");
+        parser.addHelpOption();
 
-    QObject::connect(socketMan, &SocketManager::newMessage, server, &Server::dispatchMessage);
-    QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
+        QCommandLineOption dbgOption(QStringList() << "d" << "debug",
+                QCoreApplication::translate("main", "Debug output [default: off]."));
+        parser.addOption(dbgOption);
+        QCommandLineOption portOption(QStringList() << "p" << "port",
+                QCoreApplication::translate("main", "Port for echoserver [default: 1234]."),
+                QCoreApplication::translate("main", "port"), QLatin1Literal("1234"));
+        parser.addOption(portOption);
+        parser.process(a);
+        bool debug = parser.isSet(dbgOption);
+        int port = parser.value(portOption).toInt();
+        */
+        Server* server = new Server();
+        QObject::connect(server, &Server::closed, &a, &QCoreApplication::quit);
 
 
     return a.exec();
