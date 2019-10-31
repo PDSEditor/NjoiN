@@ -2,10 +2,16 @@
 #define SOCKETMANAGER_H
 
 #include <QObject>
-#include "QtWebSockets/qwebsocketserver.h"
+#include <QtCore/QObject>
+#include <QtCore/QList>
+#include <QtCore/QByteArray>
 #include "QtWebSockets/qwebsocket.h"
 
+
 #include "message.h"
+
+QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
+
 
 class Message;
 

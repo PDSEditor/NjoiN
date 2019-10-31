@@ -1,4 +1,6 @@
 #include "socketManager.h"
+#include "QtWebSockets/qwebsocketserver.h"
+
 
 SocketManager::SocketManager(QObject *parent) : QObject(parent),
     qWebSocketServer(new QWebSocketServer(QStringLiteral("Server Shared Editor"),
