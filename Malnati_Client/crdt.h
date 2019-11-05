@@ -14,11 +14,11 @@ private:
 
 public:
     Crdt();
-    void localInsert(char value, int index);
-    void localErase();
+    void localInsert(char value, std::vector<int> preceding, std::vector<int> following);
+    void localErase(Symbol symbolToErase);
     int getSiteId();
     int getCounter();
-    //int getCounterAndIncrement();
+    int getCounterAndIncrement();
 
     std::vector<Symbol> getSymbols();
 };

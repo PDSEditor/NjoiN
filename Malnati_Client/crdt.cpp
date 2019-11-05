@@ -4,13 +4,41 @@
 
 std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following);
 bool exists(int index, std::vector<int> vector);
+void resetVal();
+int i=0;
+std::vector<int> tmp{0};
 
-Crdt::Crdt()
+/*Crdt::Crdt()
 {
 
+}*/
+
+void Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> following){
+    //mi da la dimensione del mio vettore di simboli
+    //int symbolsSize = this.symbols.size();
+    std::vector<Symbols>::size_type symbolsSize = this->symbols.size();
+
+    //prendo il simbolo nuovo
+    Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement());
+
+    std::vector<int> fractionalPos={0};
+    if(preceding.size()==0 && following.size()==0){ //è il primo
+        fractionalPos = std::vector<int>{MAXNUM/2};
+        symbolToInsert.setFractionalPosition(fractionalPos);
+        //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
+    }
+    else{   //caso generale?
+        fractionalPos = createFractional(preceding, following);
+        resetVal();
+
+        symbolToInsert.setFractional(fractionalPos);
+        //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
+
+    }
 }
 
-void Crdt::localInsert(char value, int index){
+
+/*void Crdt::localInsert(char value, int index){
     //std::out <<"car " << value <<std:endl;
     Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement()); //prendo il simbolo nuovo
     int symbolsSize = this->symbols.size(); //mi da la dimensione del mio vettore di simboli
@@ -25,6 +53,7 @@ void Crdt::localInsert(char value, int index){
             std::vector<int> followingFractional = this->symbols[0].getFractionalPosition();
             std::vector<int> appoggio{0};
             std::vector<int> newFractional = createFractional(appoggio, followingFractional);
+            resetVal();
 
             symbolToInsert.setFraction(newFractional);
             this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
@@ -37,23 +66,25 @@ void Crdt::localInsert(char value, int index){
             std::vector<int> appoggio{MAXNUM}; //fittizio
 
             std::vector<int> newFractional = createFractional(precedingFractional, appoggio);
+            resetVal();
 
             symbolToInsert.setFractional(newFractional);
             this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
         }
         else{ //caso generale?
             std::vector<int> precedingFractional = this->symbols[index-1].getFractionalPosition();
-            std::vector<int> followingFractional = this->symbols[0].getFractionalPosition();
+            std::vector<int> followingFractional = this->symbols[index].getFractionalPosition();
 
             std::vector<int> newFractional = createFractional(precedingFractional, followingFractional);
+            resetVal();
 
             symbolToInsert.setFractional(newFractional);
             this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
         }
     }
-}
+}*/
 
-std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
+/*std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
     int pSize = static_cast<int>(preceding.size());
     int fSize = static_cast<int>(following.size());
     int size = std::min(pSize, fSize);
@@ -84,7 +115,45 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
         }
     }
 
+}*/
+
+std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
+    //int pSize = static_cast<int>(preceding.size());
+    //int fSize = static_cast<int>(following.size());
+    //int size = std::min(pSize, fSize);
+    //int prec = preceding[i];
+    //int foll = following[i];
+
+    //std::vector<int>::iterator prec = preceding.begin()+i;
+
+
+    //assumo che following e preceding non siano void
+    int diff = *following.begin()+i - *preceding.begin()+i;
+    if(diff > 1 ){
+        tmp.push_back(diff/2+*preceding.begin()+i);
+        return tmp;
+    } else if(diff == 1){
+        tmp.push_back(*preceding.begin()+i);/*
+        if( preceding.begin()+i == preceding.end() ){
+            tmp.push_back(((MAXNUM-*preceding.end())/2)+*preceding.end());
+            return tmp;
+        }
+        else{
+            if( preceding.begin()+i != preceding.end()){
+                tmp.push_back((MAXNUM-*preceding.end())/2+*preceding.end());
+                return tmp;
+            }
+        }
+    }*/
+        tmp.push_back(((MAXNUM-*preceding.end())/2)+*preceding.end());
+        return tmp;
+    }
+    tmp.push_back(*preceding.begin()+i);
+    i++;
+    createFractional(preceding, following);
 }
+
+
 
     //following ancora ha elementi
     //TODO un controllo su following
@@ -92,7 +161,38 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
 
 
 bool exists(int index, std::vector<int> vector){
-    if(index < vector.size())
+    if( index < static_cast<int>(vector.size()) )
         return true;
     else return false;
+}
+
+void resetVal(){
+    i=0;
+    tmp.clear();
+}
+
+
+void Crdt::localErase(Symbol symbolToErase){
+    for( std::vector<int>::iterator i=this->symbols.begin(); i!=this->symbols.end(); ++i){
+        if(*i==symbolToErase)
+            this->symbols.erase(i);
+    }
+
+    return;
+}
+
+int Crdt::getSiteId(){
+    return this->siteId;
+}
+
+int Crdt::getCounter(){
+    return this->counter;
+}
+
+std::vector<Symbol> Crdt::getSymbols(){
+    return this->symbols;
+}
+
+int Crdt::getCounterAndIncrement(){
+    return ++this->counter;
 }
