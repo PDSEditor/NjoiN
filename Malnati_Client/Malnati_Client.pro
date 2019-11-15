@@ -3,7 +3,8 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
-
+TEMPLATE        = app
+TARGET          = textedit
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -18,15 +19,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     crdt.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    symbol.cpp \
+    textedit.cpp
 
 HEADERS += \
+<<<<<<< HEAD
     crdt.h \
     mainwindow.h
+=======
+    mainwindow.h \
+    symbol.h \
+    textedit.h
+>>>>>>> 83f9abbef4ab9ae0b4eda94ec3c03a0aa78351b6
 
 FORMS += \
     mainwindow.ui
 
+RESOURCES += textedit.qrc
+build_all:!build_pass {
+    CONFIG -= build_all
+    CONFIG += release
+}
+
+EXAMPLE_FILES = textedit.qdoc
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
