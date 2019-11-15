@@ -196,3 +196,112 @@ std::vector<Symbol> Crdt::getSymbols(){
 int Crdt::getCounterAndIncrement(){
     return ++this->counter;
 }
+
+
+//INIZIO PARTE LORENZO******************************************************//
+
+
+std::vector<Symbol> remotecrdt::remoteinsert(std::vector<Symbol> vect, Symbol s){
+    int min=0,max=vect.size()-1,middle=(max+min)/2,pos;
+    std::vector<int> index=s.getFractionalPosition();
+    std::vector<int> tmp;
+    std::vector<Symbol>::iterator it;
+    //controllo se è ultimo
+    if(vect[max].getFractionalPosition().back()<index.front()){
+        vect.push_back(s);
+        return vect;
+    }
+    //controllo se è primo
+    if(vect[0].getFractionalPosition().front()>index.back()){
+        it=vect.begin();
+        vect.insert(it,s);
+        return vect;
+    }
+    //è in mezzo
+    while(max-min>1){
+       pos=this->compare(s,vect[middle]);
+       if(pos>0){
+           min=middle;
+       }
+       else if(pos<0){
+           max=middle;
+       }
+       middle=(max+min)/2;
+    }
+    it=vect.begin();
+    pos=pos=this->compare(s,vect[min]);
+    if(pos>0){
+        //inserisco dopo il min
+        vect.insert(it+min+1,s);
+    }
+    if(pos<0){
+        //inserisco prima del min
+        vect.insert(it+min-1,s);
+    }
+return vect;
+}
+
+std::vector<Symbol> remotecrdt::remotedelete(std::vector<Symbol> vect, Symbol s){
+    int min=0,max=vect.size()-1,middle=(max+min)/2,pos;
+    std::vector<int> index=s.getFractionalPosition();
+    std::vector<int> tmp;
+    std::vector<Symbol>::iterator it;
+    it=vect.begin();
+    //controllo se è ultimo
+    if(this->compare(s,vect[max])==0){
+            vect.erase(it+max);
+            return vect;
+}
+    //controllo se è primo
+    if(this->compare(s,vect[min])==0){
+            vect.erase(it+min);
+            return vect;
+        }
+    while(max-min>1){
+       pos=this->compare(s,vect[middle]);
+       if(pos>0){
+           min=middle;
+       }
+       else if(pos<0){
+           max=middle;
+       }
+       if(pos==0){
+           vect.erase(it+middle);
+           break;
+       }
+       middle=(max+min)/2;
+    }
+    return vect;
+
+}
+
+int remotecrdt::compare(Symbol s1, Symbol s2){
+    int len1=s1.getFractionalPosition().size();
+    int len2=s2.getFractionalPosition().size();
+    int res=0;
+    for(int i=0;i<std::min(len1,len2);i++){
+
+        if(s1.getFractionalPosition()[i]>s2.getFractionalPosition()[i]){
+            res=1;
+            break;
+        }
+        if(s1.getFractionalPosition()[i]<s2.getFractionalPosition()[i]){
+            res=-1;
+            break;
+        }
+    }
+    if(res==0){
+        if(len1>len2){
+            res=1;
+        }else
+        if(len1<len2){
+            res=-1;
+        }
+
+    }
+    return res;
+
+
+
+
+}

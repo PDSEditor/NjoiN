@@ -11,6 +11,7 @@ private:
     int siteId;
     int counter;
     std::vector<Symbol> symbols;
+    int compare(Symbol s1, Symbol s2);
 
 public:
     Crdt();
@@ -19,6 +20,8 @@ public:
     int getSiteId();
     int getCounter();
     int getCounterAndIncrement();
+    std::vector<Symbol> remoteinsert(std::vector<Symbol> vect, Symbol s);
+    std::vector<Symbol> remotedelete(std::vector<Symbol> vect, Symbol s);
 
     std::vector<Symbol> getSymbols();
 };
