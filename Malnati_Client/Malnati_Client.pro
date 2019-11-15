@@ -24,14 +24,10 @@ SOURCES += \
     textedit.cpp
 
 HEADERS += \
-<<<<<<< HEAD
     crdt.h \
-    mainwindow.h
-=======
     mainwindow.h \
     symbol.h \
     textedit.h
->>>>>>> 83f9abbef4ab9ae0b4eda94ec3c03a0aa78351b6
 
 FORMS += \
     mainwindow.ui
