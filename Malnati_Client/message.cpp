@@ -1,6 +1,6 @@
 #include "message.h"
 
-message::message()
+Message::Message()
 {
 
 }

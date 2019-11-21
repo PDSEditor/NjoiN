@@ -19,6 +19,11 @@ SocketManager::SocketManager(QObject *parent) : QObject(parent),
         }
 }
 
+SocketManager::~SocketManager()
+{
+     this->qWebSocketServer->close();
+}
+
 void SocketManager::sendError(std::string)
 {
 

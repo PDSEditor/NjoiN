@@ -1,11 +1,21 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include <QtCore/QString>
+#include <QtCore/QList>
+#include "symbol.h"
 
-class message
+
+class Message
 {
+
+private:
+    QString action;
+    QList<Symbol> symbols;
+
 public:
-    message();
+    Message();
+
 };
 
 #endif // MESSAGE_H

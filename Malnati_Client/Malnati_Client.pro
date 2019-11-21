@@ -20,12 +20,16 @@ SOURCES += \
     crdt.cpp \
     main.cpp \
     mainwindow.cpp \
+    message.cpp \
+    socketmanager.cpp \
     symbol.cpp \
     textedit.cpp
 
 HEADERS += \
     crdt.h \
     mainwindow.h \
+    message.h \
+    socketmanager.h \
     symbol.h \
     textedit.h
 
