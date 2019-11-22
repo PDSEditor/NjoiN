@@ -25,14 +25,14 @@ void Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> 
     std::vector<int> fractionalPos={0};
     if(preceding.size()==0 && following.size()==0){ //è il primo
         fractionalPos = std::vector<int>{MAXNUM/2};
-        symbolToInsert.setFractionalPosition(fractionalPos);
+        symbolToInsert.setPosizione(fractionalPos);
         //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
     }
     else{   //caso generale?
         fractionalPos = createFractional(preceding, following);
         resetVal();
 
-        symbolToInsert.setFractional(fractionalPos);
+        symbolToInsert.setPosizione(fractionalPos);
         //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
 
     }
