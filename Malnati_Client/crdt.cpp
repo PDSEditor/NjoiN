@@ -20,7 +20,8 @@ void Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> 
     std::vector<Symbol>::size_type symbolsSize = this->symbols.size();
 
     //prendo il simbolo nuovo
-    Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement());
+    //Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement());
+    Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
 
     std::vector<int> fractionalPos={0};
     if(preceding.size()==0 && following.size()==0){ //è il primo
@@ -174,7 +175,7 @@ void resetVal(){
 
 
 void Crdt::localErase(Symbol symbolToErase){
-    for( std::vector<int>::iterator i=this->symbols.begin(); i!=this->symbols.end(); ++i){
+    for( std::vector<Symbol>::iterator i = this->symbols.begin(); i!=this->symbols.end(); ++i){
         if(*i==symbolToErase)
             this->symbols.erase(i);
     }
