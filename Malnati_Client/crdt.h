@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "symbol.h"
 
 
 class Crdt

@@ -1,4 +1,5 @@
 #include "crdt.h"
+#include "symbol.h"
 
 #define MAXNUM 100
 
@@ -16,22 +17,23 @@ std::vector<int> tmp{0};
 void Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> following){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
-    std::vector<Symbols>::size_type symbolsSize = this->symbols.size();
+    std::vector<Symbol>::size_type symbolsSize = this->symbols.size();
 
     //prendo il simbolo nuovo
-    Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement());
+    //Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement());
+    Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
 
     std::vector<int> fractionalPos={0};
     if(preceding.size()==0 && following.size()==0){ //è il primo
         fractionalPos = std::vector<int>{MAXNUM/2};
-        symbolToInsert.setFractionalPosition(fractionalPos);
+        symbolToInsert.setPosizione(fractionalPos);
         //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
     }
     else{   //caso generale?
         fractionalPos = createFractional(preceding, following);
         resetVal();
 
-        symbolToInsert.setFractional(fractionalPos);
+        symbolToInsert.setPosizione(fractionalPos);
         //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
 
     }
@@ -173,7 +175,7 @@ void resetVal(){
 
 
 void Crdt::localErase(Symbol symbolToErase){
-    for( std::vector<int>::iterator i=this->symbols.begin(); i!=this->symbols.end(); ++i){
+    for( std::vector<Symbol>::iterator i = this->symbols.begin(); i!=this->symbols.end(); ++i){
         if(*i==symbolToErase)
             this->symbols.erase(i);
     }
@@ -201,18 +203,18 @@ int Crdt::getCounterAndIncrement(){
 //INIZIO PARTE LORENZO******************************************************//
 
 
-std::vector<Symbol> remotecrdt::remoteinsert(std::vector<Symbol> vect, Symbol s){
+std::vector<Symbol> Crdt::remoteinsert(std::vector<Symbol> vect, Symbol s){
     int min=0,max=vect.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index=s.getFractionalPosition();
+    std::vector<int> index=s.getPosizione();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     //controllo se è ultimo
-    if(vect[max].getFractionalPosition().back()<index.front()){
+    if(vect[max].getPosizione().back()<index.front()){
         vect.push_back(s);
         return vect;
     }
     //controllo se è primo
-    if(vect[0].getFractionalPosition().front()>index.back()){
+    if(vect[0].getPosizione().front()>index.back()){
         it=vect.begin();
         vect.insert(it,s);
         return vect;
@@ -241,9 +243,9 @@ std::vector<Symbol> remotecrdt::remoteinsert(std::vector<Symbol> vect, Symbol s)
 return vect;
 }
 
-std::vector<Symbol> remotecrdt::remotedelete(std::vector<Symbol> vect, Symbol s){
+std::vector<Symbol> Crdt::remotedelete(std::vector<Symbol> vect, Symbol s){
     int min=0,max=vect.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index=s.getFractionalPosition();
+    std::vector<int> index=s.getPosizione();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     it=vect.begin();
@@ -275,17 +277,17 @@ std::vector<Symbol> remotecrdt::remotedelete(std::vector<Symbol> vect, Symbol s)
 
 }
 
-int remotecrdt::compare(Symbol s1, Symbol s2){
-    int len1=s1.getFractionalPosition().size();
-    int len2=s2.getFractionalPosition().size();
+int Crdt::compare(Symbol s1, Symbol s2){
+    int len1=s1.getPosizione().size();
+    int len2=s2.getPosizione().size();
     int res=0;
     for(int i=0;i<std::min(len1,len2);i++){
 
-        if(s1.getFractionalPosition()[i]>s2.getFractionalPosition()[i]){
+        if(s1.getPosizione()[i]>s2.getPosizione()[i]){
             res=1;
             break;
         }
-        if(s1.getFractionalPosition()[i]<s2.getFractionalPosition()[i]){
+        if(s1.getPosizione()[i]<s2.getPosizione()[i]){
             res=-1;
             break;
         }
