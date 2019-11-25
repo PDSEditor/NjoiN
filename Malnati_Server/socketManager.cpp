@@ -6,11 +6,13 @@ SocketManager::SocketManager(QObject *parent) : QObject(parent),
     qWebSocketServer(new QWebSocketServer(QStringLiteral("Server Shared Editor"),
                                           QWebSocketServer::NonSecureMode, this))
     {
+        port = 1234;
 
-        if (qWebSocketServer->listen(QHostAddress::Any, 0)) {   //ascolta su tutte le interfacce, posta scelta automaticamente
+        if (qWebSocketServer->listen(QHostAddress::Any, port)) {   //ascolta su tutte le interfacce, posta scelta automaticamente
 
-            //if (m_debug)
-            //    qDebug() << "Echoserver listening on port" << port;
+
+            qDebug() << "Server in ascolto sulla porta" << port;
+
             connect(qWebSocketServer, &QWebSocketServer::newConnection,
                     this, &SocketManager::onNewConnection);
 
@@ -36,6 +38,7 @@ void SocketManager::messageToUser( Message* m, int siteId) {
     auto it = this->clients.find(siteId);
     if (it != clients.end()) {
         QWebSocket *user = it.value();
+
         //serialize message in JSON
         user->sendTextMessage("Serialized message");
     }
@@ -50,7 +53,12 @@ void SocketManager::processTextMessage(QString message)
 {
     //deserialize JSON
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
-    Message *m = new Message();         //crea il messaggio
+
+    qDebug()<<"Testo ricevuto: "<<message;
+
+    Message *m = new Message();
+    m->setAction(message);
+
     emit newMessage(m);
 
 }
@@ -67,6 +75,8 @@ void SocketManager::setClients(const QMap<int, QWebSocket *> &value)
 
 void SocketManager::onNewConnection()
 {
+    qDebug()<< "Rilevata nuova connessione";
+
     QWebSocket *socket = qWebSocketServer->nextPendingConnection();
 
     connect(socket, &QWebSocket::textMessageReceived, this, &SocketManager::processTextMessage);
@@ -76,7 +86,9 @@ void SocketManager::onNewConnection()
       int siteId = 0;       //vedere come gestire i siteId (probabilmente uno static int che si incrementa)
       clients.insert(siteId, socket);
 
-      //successivamente comunicare al client il proprio siteId
+      qDebug() << "socketConnected:" << siteId;
+
+      //TODO: successivamente comunicare al client il proprio siteId
 
 }
 

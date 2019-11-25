@@ -1,28 +1,39 @@
 #include "message.h"
 
 
-Symbol *Message::getSimbolo() const
-{
-    return simbolo;
-}
-
-void Message::setSimbolo(Symbol *value)
-{
-    simbolo = value;
-}
-
-Message::Message()
-{
-
-}
-
-std::string Message::getAction() const
+QString Message::getAction() const
 {
     return action;
 }
 
-void Message::setAction(const std::string &value)
+void Message::setAction(const QString &value)
 {
     action = value;
+}
+
+
+Symbol *Message::getSymbol() const
+{
+    return symbol;
+}
+
+void Message::setSymbol(Symbol *value)
+{
+    symbol = value;
+}
+
+QString Message::getParam() const
+{
+    return param;
+}
+
+void Message::setParam(const QString &value)
+{
+    param = value;
+}
+
+Message::Message()
+{
+    symbol =new Symbol();
 }
 

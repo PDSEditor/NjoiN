@@ -8,6 +8,11 @@ Symbol::Symbol(std::vector<int> posizione, int siteId, int counter)
 
 }
 
+Symbol::Symbol()
+{
+
+}
+
 int Symbol::getSiteId() const
 {
     return siteId;

@@ -1,4 +1,6 @@
 #include <QCoreApplication>
+#include <QtCore/QCommandLineParser>
+#include <QDebug>
 
 #include "server.h"
 #include "iostream"
@@ -7,8 +9,8 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-        /*QCommandLineParser parser;
-        parser.setApplicationDescription("QtWebSockets example: echoserver");
+        QCommandLineParser parser;
+        parser.setApplicationDescription("QtServer textEditor");
         parser.addHelpOption();
 
         QCommandLineOption dbgOption(QStringList() << "d" << "debug",
@@ -21,7 +23,8 @@ int main(int argc, char *argv[])
         parser.process(a);
         bool debug = parser.isSet(dbgOption);
         int port = parser.value(portOption).toInt();
-        */
+
+        qDebug()<<"porta:"<<port;
         Server* server = new Server();
         QObject::connect(server, &Server::closed, &a, &QCoreApplication::quit);
 

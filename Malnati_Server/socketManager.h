@@ -5,13 +5,12 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QByteArray>
+#include <QDebug>
 #include "QtWebSockets/qwebsocket.h"
-
 
 #include "message.h"
 
 QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
-
 
 class Message;
 
@@ -41,6 +40,7 @@ public slots:
 private:
     QWebSocketServer* qWebSocketServer;
     QMap<int, QWebSocket *> clients;
+    int port;
 
 };
 

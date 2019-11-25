@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include "textedit.h"
+#include "socketmanager.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -33,6 +34,9 @@ int main(int argc, char *argv[])
         mw.fileNew();
 
     mw.show();
+
+    socketManager s(QUrl(QStringLiteral("ws://localhost:1234")));
+
     return a.exec();
 
 }

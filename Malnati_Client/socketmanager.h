@@ -4,13 +4,14 @@
 #include <QObject>
 #include "QtWebSockets/qwebsocket.h"
 #include "message.h"
+#include <QDebug>
 
 class socketManager : public QObject
 {
     Q_OBJECT    
 
 public:
-    explicit socketManager(QUrl &url, QObject *parent = nullptr);
+    explicit socketManager(const QUrl &url, QObject *parent = nullptr);
      ~socketManager() override;
 
 signals:
