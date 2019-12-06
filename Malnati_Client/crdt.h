@@ -16,7 +16,7 @@ private:
 
 public:
     Crdt();
-    void localInsert(char value, std::vector<int> preceding, std::vector<int> following);
+    Symbol localInsert(char value, std::vector<int> preceding, std::vector<int> following);
     void localErase(Symbol symbolToErase);
     int getSiteId();
     int getCounter();

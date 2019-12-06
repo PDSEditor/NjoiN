@@ -14,7 +14,7 @@ std::vector<int> tmp{0};
 
 }*/
 
-void Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> following){
+Symbol Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> following){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
     std::vector<Symbol>::size_type symbolsSize = this->symbols.size();
@@ -37,6 +37,8 @@ void Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> 
         //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
 
     }
+
+    return symbolToInsert;
 }
 
 
