@@ -85,6 +85,7 @@
 #endif
 
 #include "textedit.h"
+#include<QDebug>
 
 #ifdef Q_OS_MAC
 const QString rsrcPath = ":/images/mac";
@@ -101,10 +102,17 @@ TextEdit::TextEdit(QWidget *parent)
     setWindowTitle(QCoreApplication::applicationName());
 
     textEdit = new QTextEdit(this);
+    crdt = new Crdt();
+    symbols = new std::vector<Symbol>();
+    //QTextDocument document = textEdit->document();
+
+
     connect(textEdit, &QTextEdit::currentCharFormatChanged,
             this, &TextEdit::currentCharFormatChanged);
     connect(textEdit, &QTextEdit::cursorPositionChanged,
             this, &TextEdit::cursorPositionChanged);
+
+
     setCentralWidget(textEdit);
 
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
@@ -158,6 +166,10 @@ TextEdit::TextEdit(QWidget *parent)
     pal.setColor(QPalette::Text, QColor(Qt::black));
     textEdit->setPalette(pal);
 #endif
+}
+void TextEdit::onTextConncet(){
+    connect(textEdit->document(), &QTextDocument::contentsChange,
+            this, &TextEdit::onTextChanged);
 }
 
 void TextEdit::closeEvent(QCloseEvent *e)
@@ -684,10 +696,44 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
     colorChanged(format.foreground().color());
 }
 
+void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
+{
+    QTextCursor  cursor = textEdit->textCursor();
+    qDebug() << "position: " << position;
+    qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
+    if(charsAdded!= 0){
+            //s1= new std::vector<int>();
+            Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+            symbols->push_back(symbol);
+        }
+        else{
+            //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
+            //symbols->push_back(symbol);
+        }
+
+    //textEdit->textCursor().setPosition(symbol.getPosizione());
+
+    if(charsRemoved!=0){
+   // Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());
+   // crdt->localErase(symbol);
+    }
+    // Code that executes on text change here
+}
+
+Symbol TextEdit :: searchSymbolToErase(char c){
+    for( std::vector<Symbol>::iterator i = symbols->begin(); i!=symbols->end(); ++i){
+        if(i->getValue()== c){
+            return *i;
+         }
+    }
+    return *new Symbol();
+}
+
 void TextEdit::cursorPositionChanged()
 {
     alignmentChanged(textEdit->alignment());
     QTextList *list = textEdit->textCursor().currentList();
+
     if (list) {
         switch (list->format().style()) {
         case QTextListFormat::ListDisc:

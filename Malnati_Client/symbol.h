@@ -11,7 +11,10 @@ private:
     int counter;
 public:
     Symbol(char value, std::vector<int> posizione, int siteId, int counter);
-    std::vector<int> getPosizione() const;
+    Symbol();
+        char getValue() const;
+        void setValue(char value);
+        std::vector<int> getPosizione() const;
         void setPosizione(const std::vector<int> &value);
         int getSiteId() const;
         void setSiteId(int value);

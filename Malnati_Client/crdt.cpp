@@ -1,5 +1,6 @@
 #include "crdt.h"
 #include "symbol.h"
+#include <QtDebug>
 
 #define MAXNUM 100
 
@@ -9,12 +10,12 @@ void resetVal();
 int i=0;
 std::vector<int> tmp{0};
 
-/*Crdt::Crdt()
+Crdt::Crdt()
 {
 
-}*/
+}
 
-Symbol Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int> following){
+Symbol Crdt::localInsert(char value, int preceding, int following){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
     std::vector<Symbol>::size_type symbolsSize = this->symbols.size();
@@ -24,13 +25,17 @@ Symbol Crdt::localInsert(char value, std::vector<int> preceding, std::vector<int
     Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
 
     std::vector<int> fractionalPos={0};
-    if(preceding.size()==0 && following.size()==0){ //è il primo
+    if(preceding==-1){
+        qDebug() << "sono al primo inserimento ";
+
+
+    //if(preceding.size()==0 && following.size()==0){ //è il primo
         fractionalPos = std::vector<int>{MAXNUM/2};
         symbolToInsert.setPosizione(fractionalPos);
         //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
     }
     else{   //caso generale?
-        fractionalPos = createFractional(preceding, following);
+        //fractionalPos = createFractional(preceding, following);
         resetVal();
 
         symbolToInsert.setPosizione(fractionalPos);
