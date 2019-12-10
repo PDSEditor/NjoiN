@@ -1,5 +1,6 @@
 #include "crdt.h"
 #include "symbol.h"
+#include <iostream>
 #include <QtDebug>
 
 #define MAXNUM 100
@@ -8,14 +9,22 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
 bool exists(int index, std::vector<int> vector);
 void resetVal();
 int i=0;
-std::vector<int> tmp{0};
+std::vector<int> tmp;
+
+void print(std::vector<int> const &input)
+{
+    for (int i = 0; i < input.size(); i++) {
+        //std::cout << input.at(i) << ' ';
+        qDebug() << "pos: " << input.at(i);
+    }
+}
 
 Crdt::Crdt()
 {
 
 }
 
-Symbol Crdt::localInsert(char value, int preceding, int following){
+Symbol Crdt::localInsert(char value, int precedingC, int followingC){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
     std::vector<Symbol>::size_type symbolsSize = this->symbols.size();
@@ -25,24 +34,32 @@ Symbol Crdt::localInsert(char value, int preceding, int following){
     Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
 
     std::vector<int> fractionalPos={0};
-    if(preceding==-1){
-        qDebug() << "sono al primo inserimento ";
-
-
-    //if(preceding.size()==0 && following.size()==0){ //è il primo
+    if(precedingC==-1){
+        qDebug() << "sono all'inserimento in testa";
         fractionalPos = std::vector<int>{MAXNUM/2};
         symbolToInsert.setPosizione(fractionalPos);
-        //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
     }
-    else{   //caso generale?
-        //fractionalPos = createFractional(preceding, following);
-        resetVal();
-
-        symbolToInsert.setPosizione(fractionalPos);
-        //this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
-
+    else{ //caso generale?
+        if(followingC == (int)symbolsSize){ //è il secondo. no caso no elemtni a destra!
+                std::vector<int> preceding = this->symbols[precedingC].getPosizione();
+                std::vector<int> following{MAXNUM};
+                fractionalPos = createFractional(preceding, following);
+                symbolToInsert.setPosizione(fractionalPos);
+                resetVal();
+        }
+        else{
+            std::vector<int> preceding = this->symbols[precedingC].getPosizione();
+            std::vector<int> following = this->symbols[followingC].getPosizione();
+            fractionalPos = createFractional(preceding, following);
+            symbolToInsert.setPosizione(fractionalPos);
+            resetVal();
+        }
     }
 
+    this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
+
+    print(fractionalPos);
+    resetVal();
     return symbolToInsert;
 }
 
