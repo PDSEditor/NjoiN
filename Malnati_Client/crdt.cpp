@@ -154,6 +154,7 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
 
 
     //assumo che following e preceding non siano void
+
     int diff = *following.begin()+i - *preceding.begin()+i;
     if(diff > 1 ){
         tmp.push_back(diff/2+*preceding.begin()+i);
@@ -171,12 +172,14 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
             }
         }
     }*/
-        tmp.push_back(((MAXNUM-*preceding.end())/2)+*preceding.end());
+        //tmp.push_back(((MAXNUM-*preceding.end())%2)+*preceding.end());
+        tmp.push_back((MAXNUM-*preceding.end())%2+1);
         return tmp;
     }
     tmp.push_back(*preceding.begin()+i);
     i++;
     createFractional(preceding, following);
+    return tmp;
 }
 
 
@@ -198,13 +201,15 @@ void resetVal(){
 }
 
 
-void Crdt::localErase(Symbol symbolToErase){
-    for( std::vector<Symbol>::iterator i = this->symbols.begin(); i!=this->symbols.end(); ++i){
+void Crdt::localErase(Symbol symbolToErase, int position){
+    /*for( std::vector<Symbol>::iterator i = this->symbols.begin(); i!=this->symbols.end(); ++i){
         if(*i==symbolToErase)
             this->symbols.erase(i);
     }
+    return;*/
 
-    return;
+    std::vector<Symbol>::iterator i = this->symbols.begin()+position;
+    this->symbols.erase(i);
 }
 
 int Crdt::getSiteId(){
