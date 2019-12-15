@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
+#include <symbol.h>
+#include <crdt.h>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -24,6 +26,7 @@ public:
 
     bool load(const QString &f);
 
+    void onTextConncet();
 public slots:
     void fileNew();
 
@@ -49,6 +52,7 @@ private slots:
 
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorPositionChanged();
+    void onTextChanged(int position, int charsRemoved, int charsAdded);
 
     void clipboardDataChanged();
     void about();
@@ -65,6 +69,7 @@ private:
     void fontChanged(const QFont &f);
     void colorChanged(const QColor &c);
     void alignmentChanged(Qt::Alignment a);
+    Symbol searchSymbolToErase(char c);
 
     QAction *actionSave;
     QAction *actionTextBold;
@@ -90,6 +95,8 @@ private:
     QToolBar *tb;
     QString fileName;
     QTextEdit *textEdit;
+    Crdt *crdt;
+    std :: vector<Symbol> *symbols;
 };
 
 #endif // TEXTEDIT_H

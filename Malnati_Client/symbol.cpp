@@ -7,6 +7,16 @@ Symbol::Symbol(char value, std::vector<int> posizione, int siteId, int counter)
     this->siteId = siteId;
     this->counter = counter;
 }
+Symbol::Symbol(){
+
+}
+char Symbol::getValue() const{
+    return value;
+}
+void Symbol::setValue(char value){
+    this->value = value;
+}
+
 int Symbol::getSiteId() const
 {
     return siteId;
