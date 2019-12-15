@@ -227,7 +227,7 @@ int Crdt::getCounterAndIncrement(){
 //INIZIO PARTE LORENZO******************************************************//
 
 
-std::vector<Symbol> Crdt::remoteinsert(Symbol s){
+int Crdt::remoteinsert(Symbol s){
     int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
     std::vector<int> index=s.getPosizione();
     std::vector<int> tmp;
@@ -235,13 +235,13 @@ std::vector<Symbol> Crdt::remoteinsert(Symbol s){
     //controllo se è ultimo
     if(symbols[max].getPosizione().back()<index.front()){
         symbols.push_back(s);
-        return vect;
+        return max;
     }
     //controllo se è primo
     if(symbols[0].getPosizione().front()>index.back()){
         it=symbols.begin();
         symbols.insert(it,s);
-        return vect;
+        return min;
     }
     //è in mezzo
     while(max-min>1){
@@ -255,19 +255,21 @@ std::vector<Symbol> Crdt::remoteinsert(Symbol s){
        middle=(max+min)/2;
     }
     it=symbols.begin();
-    pos=pos=this->compare(s,symbols[min]);
+    pos=this->compare(s,symbols[min]);
     if(pos>0){
         //inserisco dopo il min
         symbols.insert(it+min+1,s);
+        return min+1;
     }
     if(pos<0){
         //inserisco prima del min
         symbols.insert(it+min-1,s);
+        return min-1;
     }
-return vect;
+
 }
 
-std::vector<Symbol> Crdt::remotedelete(Symbol s){
+int Crdt::remotedelete(Symbol s){
     int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
     std::vector<int> index=s.getPosizione();
     std::vector<int> tmp;
@@ -276,12 +278,12 @@ std::vector<Symbol> Crdt::remotedelete(Symbol s){
     //controllo se è ultimo
     if(this->compare(s,symbols[max])==0){
             symbols.erase(it+max);
-            return vect;
+            return max;
 }
     //controllo se è primo
     if(this->compare(s,symbols[min])==0){
             symbols.erase(it+min);
-            return vect;
+            return min;
         }
     while(max-min>1){
        pos=this->compare(s,symbols[middle]);
@@ -297,7 +299,7 @@ std::vector<Symbol> Crdt::remotedelete(Symbol s){
        }
        middle=(max+min)/2;
     }
-    return vect;
+    return middle;
 
 }
 

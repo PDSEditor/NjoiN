@@ -21,8 +21,8 @@ public:
     int getSiteId();
     int getCounter();
     int getCounterAndIncrement();
-    std::vector<Symbol> remoteinsert(Symbol s);
-    std::vector<Symbol> remotedelete(Symbol s);
+    int remoteinsert(Symbol s);
+    int remotedelete(Symbol s);
 
     std::vector<Symbol> getSymbols();
 };
