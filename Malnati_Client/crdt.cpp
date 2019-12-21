@@ -44,6 +44,7 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
                 std::vector<int> preceding = this->symbols[precedingC].getPosizione();
                 std::vector<int> following{MAXNUM};
                 fractionalPos = createFractional(preceding, following);
+                qDebug() << "fractionalpos: " << fractionalPos;
                 symbolToInsert.setPosizione(fractionalPos);
                 resetVal();
         }
@@ -51,6 +52,7 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
             std::vector<int> preceding = this->symbols[precedingC].getPosizione();
             std::vector<int> following = this->symbols[followingC].getPosizione();
             fractionalPos = createFractional(preceding, following);
+            qDebug() << "fractionalpos: " << fractionalPos;
             symbolToInsert.setPosizione(fractionalPos);
             resetVal();
         }
@@ -147,15 +149,23 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
     //int pSize = static_cast<int>(preceding.size());
     //int fSize = static_cast<int>(following.size());
     //int size = std::min(pSize, fSize);
-    //int prec = preceding[i];
-    //int foll = following[i];
+    int prec, foll;
 
+    //se esistonoe non sono 0
+    if(*preceding.begin()+i)
+        prec = preceding[i];
+    else prec=0;
+    if(following[i])
+        foll = following[i];
+    else foll=0;
+
+    int diff=std::abs(foll-prec);
     //std::vector<int>::iterator prec = preceding.begin()+i;
 
 
     //assumo che following e preceding non siano void
 
-    int diff = *following.begin()+i - *preceding.begin()+i;
+    //int diff = *following.begin()+i - *preceding.begin()+i;
     if(diff > 1 ){
         tmp.push_back(diff/2+*preceding.begin()+i);
         return tmp;
