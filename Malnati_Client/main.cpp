@@ -6,6 +6,7 @@
 #include <QDesktopWidget>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include "loginwindow.h"
 
 
 
@@ -24,20 +25,17 @@ int main(int argc, char *argv[])
     parser.addPositionalArgument("file", "The file to open.");
     parser.process(a);
 
-    TextEdit mw;
+    LoginWindow *lw = new LoginWindow();
+    const QRect availableGeometry = QApplication::desktop()->availableGeometry(lw);
+    lw->resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
+    lw->move((availableGeometry.width() - lw->width()) / 2,
+            (availableGeometry.height() - lw->height()) / 2);
+    lw->show();
 
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry(&mw);
-    mw.resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
-    mw.move((availableGeometry.width() - mw.width()) / 2,
-            (availableGeometry.height() - mw.height()) / 2);
 
-    //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-   // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
-
-    mw.fileNew();
-
-    mw.show();
-    mw.onTextConncet();
+    //te.show();
+    //te.onTextConncet();
     return a.exec();
 
 }
+

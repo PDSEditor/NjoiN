@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     crdt.cpp \
+    loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
     symbol.cpp \
@@ -25,11 +26,13 @@ SOURCES += \
 
 HEADERS += \
     crdt.h \
+    loginwindow.h \
     mainwindow.h \
     symbol.h \
     textedit.h
 
 FORMS += \
+    loginwindow.ui \
     mainwindow.ui
 
 RESOURCES += textedit.qrc
