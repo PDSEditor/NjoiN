@@ -5,10 +5,9 @@
 
 #define MAXNUM 100
 
-std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following);
 bool exists(int index, std::vector<int> vector);
 void resetVal();
-int i=0;
+int i=0, flag=0;
 std::vector<int> tmp;
 
 void print(std::vector<int> const &input)
@@ -19,6 +18,83 @@ void print(std::vector<int> const &input)
     }
 }
 
+
+std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
+    int prec, foll;
+    //se esistono
+    try {
+       prec=preceding.at(i);
+
+    } catch (const std::out_of_range) {
+        prec=0;
+        flag=1;
+    }
+
+    try {
+        foll = following.at(i);
+
+    } catch (const std::out_of_range) {
+        foll = 0;
+    }
+
+    /*if(foll > prec){
+        if(i==0){
+            tmp.insert(tmp.begin(), prec);
+            tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
+            return tmp;
+        }
+        if(flag){
+            tmp.push_back(rand() % foll + prec);
+            i--;
+            return tmp;
+        }
+
+        tmp.insert(tmp.begin(), prec);
+        tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
+        //tmp.push_back(rand() % foll + prec);
+        i--;
+        return tmp;
+    }*/
+
+
+    int diff=std::abs(foll-prec);
+
+    if(diff > 1 ){
+        tmp.push_back(diff/2+prec);
+        return tmp;
+    }
+    else if(diff == 1){
+            /*//e si ricorre
+            i++;
+            createFractional(preceding, following);*/
+        if(i==0){
+            tmp.insert(tmp.begin(), prec);
+            tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
+            return tmp;
+        }
+        if(flag){
+            tmp.push_back(rand() % foll + prec);
+            i--;
+            return tmp;
+        }
+
+        tmp.insert(tmp.begin(), prec);
+        tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
+        //tmp.push_back(rand() % foll + prec);
+        i--;
+        return tmp;
+        }
+        else if(diff==0){
+                i++;
+                createFractional(preceding, following);
+            }
+
+
+    tmp.insert(tmp.begin(), prec);
+    i--;
+    return tmp;
+}
+
 Crdt::Crdt()
 {
 
@@ -27,13 +103,14 @@ Crdt::Crdt()
 Symbol Crdt::localInsert(char value, int precedingC, int followingC){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
-    std::vector<Symbol>::size_type symbolsSize = this->symbols.size();
+    size_t symbolsSize = this->symbols.size();
 
     //prendo il simbolo nuovo
     //Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement());
     Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
 
     std::vector<int> fractionalPos={0};
+
     if(precedingC==-1){
         qDebug() << "sono all'inserimento in testa";
         fractionalPos = std::vector<int>{MAXNUM/2};
@@ -43,15 +120,30 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
         if(followingC == (int)symbolsSize){ //è il secondo. no caso no elemtni a destra!
                 std::vector<int> preceding = this->symbols[precedingC].getPosizione();
                 std::vector<int> following{MAXNUM};
-                fractionalPos = createFractional(preceding, following);
+                //fractionalPos = createFractional(preceding, following);
+                fractionalPos = {this->symbols.back().getPosizione()[0]+1};
                 qDebug() << "fractionalpos: " << fractionalPos;
                 symbolToInsert.setPosizione(fractionalPos);
                 resetVal();
         }
         else{
+            //mi salvo le posizioni frazionarie di quello prima e di quello dopo
             std::vector<int> preceding = this->symbols[precedingC].getPosizione();
             std::vector<int> following = this->symbols[followingC].getPosizione();
             fractionalPos = createFractional(preceding, following);
+//            fractionalPos = createFractional({0,0}, {1,0});
+//            resetVal();
+//            fractionalPos = createFractional({0,0}, {0,1});
+//            resetVal();
+//            fractionalPos = createFractional({0,1}, {1,2});
+//            resetVal();
+//            fractionalPos = createFractional({0,0}, {0,0,3});
+//            resetVal();
+//            fractionalPos = createFractional({0,5}, {2,5});
+//            resetVal();
+//            fractionalPos = createFractional({0,0}, {0,0,0,3});
+//            resetVal();
+
             qDebug() << "fractionalpos: " << fractionalPos;
             symbolToInsert.setPosizione(fractionalPos);
             resetVal();
@@ -65,140 +157,7 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
     return symbolToInsert;
 }
 
-
-/*void Crdt::localInsert(char value, int index){
-    //std::out <<"car " << value <<std:endl;
-    Symbol symbolToInsert(value, this->getSiteId(), this->getCounterAndIncrement()); //prendo il simbolo nuovo
-    int symbolsSize = this->symbols.size(); //mi da la dimensione del mio vettore di simboli
-    if(index==0){ //è il primo oppure ho solo elementi a dx
-        if(symbolsSize == 0){ //il mio vettore di simboli è vuoto, allora è il primo
-            //std::vector<int> fistElemen{MAXNUM/2};
-
-            symbolToInsert.setFractionalPosition((std::vector<int>{MAXNUM/2})); //setto la posizione maxnum/2
-            this->symbols.insert(this->symbols.begin()+index, symbolToInsert); //chiave, valore
-        }
-        else{ //index è zero ma vettore di simboli non vuoto, allora ho elementi a dx
-            std::vector<int> followingFractional = this->symbols[0].getFractionalPosition();
-            std::vector<int> appoggio{0};
-            std::vector<int> newFractional = createFractional(appoggio, followingFractional);
-            resetVal();
-
-            symbolToInsert.setFraction(newFractional);
-            this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
-        }
-    }
-    else{ //index!=0, quindi non è il primo
-        // precedentemente if(index > symbolsSize){ //allora appendo alla fine
-        if(index+1 > symbolsSize){ //allora appendo alla fine
-            std::vector<int> precedingFractional = this->symbols[index-1].getFractionalPosition();
-            std::vector<int> appoggio{MAXNUM}; //fittizio
-
-            std::vector<int> newFractional = createFractional(precedingFractional, appoggio);
-            resetVal();
-
-            symbolToInsert.setFractional(newFractional);
-            this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
-        }
-        else{ //caso generale?
-            std::vector<int> precedingFractional = this->symbols[index-1].getFractionalPosition();
-            std::vector<int> followingFractional = this->symbols[index].getFractionalPosition();
-
-            std::vector<int> newFractional = createFractional(precedingFractional, followingFractional);
-            resetVal();
-
-            symbolToInsert.setFractional(newFractional);
-            this->symbols.insert(this->symbols.begin()+index, symbolToInsert);
-        }
-    }
-}*/
-
-/*std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
-    int pSize = static_cast<int>(preceding.size());
-    int fSize = static_cast<int>(following.size());
-    int size = std::min(pSize, fSize);
-    int i;
-    int diff;
-
-    std::vector<int> tmp{0};
-
-    for(i=0; i<size; i++){
-        diff=following[i]-preceding[i];
-        if(diff > 1){
-            tmp.push_back(diff/2+preceding[i]);
-        }
-        else{
-            //se la diff non è maggiore di 1, allora è minore o uguale. In questo caso inizio con quello più piccolo per una convenzione mia
-            tmp.push_back(preceding[i]);
-            if(diff == 1){
-                //todo piccolino, da studiare cosa fare bene in questo caso
-                if(exists(i+1, preceding)){
-                    //i+1 esiste?
-                    tmp.push_back(preceding[i+1]+1); //[2,3][2,4][2,5] e voglio inserire tra gli ultimi 2 viene [2,3][2,4][2,4,5][2,5]
-                    return tmp;
-                }
-                else
-                    tmp.push_back(preceding[i]+1); //fede dice maxnum/2 e buonanotte
-                return tmp;
-            }
-        }
-    }
-
-}*/
-
-std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
-    //int pSize = static_cast<int>(preceding.size());
-    //int fSize = static_cast<int>(following.size());
-    //int size = std::min(pSize, fSize);
-    int prec, foll;
-
-    //se esistonoe non sono 0
-    if(*preceding.begin()+i)
-        prec = preceding[i];
-    else prec=0;
-    if(following[i])
-        foll = following[i];
-    else foll=0;
-
-    int diff=std::abs(foll-prec);
-    //std::vector<int>::iterator prec = preceding.begin()+i;
-
-
-    //assumo che following e preceding non siano void
-
-    //int diff = *following.begin()+i - *preceding.begin()+i;
-    if(diff > 1 ){
-        tmp.push_back(diff/2+*preceding.begin()+i);
-        return tmp;
-    } else if(diff == 1){
-        tmp.push_back(*preceding.begin()+i);/*
-        if( preceding.begin()+i == preceding.end() ){
-            tmp.push_back(((MAXNUM-*preceding.end())/2)+*preceding.end());
-            return tmp;
-        }
-        else{
-            if( preceding.begin()+i != preceding.end()){
-                tmp.push_back((MAXNUM-*preceding.end())/2+*preceding.end());
-                return tmp;
-            }
-        }
-    }*/
-        //tmp.push_back(((MAXNUM-*preceding.end())%2)+*preceding.end());
-        tmp.push_back((MAXNUM-*preceding.end())%2+1);
-        return tmp;
-    }
-    tmp.push_back(*preceding.begin()+i);
-    i++;
-    createFractional(preceding, following);
-    return tmp;
-}
-
-
-
-    //following ancora ha elementi
-    //TODO un controllo su following
-
-
-
+//MAI USATA
 bool exists(int index, std::vector<int> vector){
     if( index < static_cast<int>(vector.size()) )
         return true;
@@ -208,6 +167,7 @@ bool exists(int index, std::vector<int> vector){
 void resetVal(){
     i=0;
     tmp.clear();
+    flag=0;
 }
 
 
