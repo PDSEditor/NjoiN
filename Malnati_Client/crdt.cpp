@@ -202,25 +202,25 @@ int Crdt::getCounterAndIncrement(){
 //INIZIO PARTE LORENZO******************************************************//
 
 
-std::vector<Symbol> Crdt::remoteinsert(std::vector<Symbol> vect, Symbol s){
-    int min=0,max=vect.size()-1,middle=(max+min)/2,pos;
+int Crdt::remoteinsert(Symbol s){
+    int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
     std::vector<int> index=s.getPosizione();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     //controllo se è ultimo
-    if(vect[max].getPosizione().back()<index.front()){
-        vect.push_back(s);
-        return vect;
+    if(symbols[max].getPosizione().back()<index.front()){
+        symbols.push_back(s);
+        return max;
     }
     //controllo se è primo
-    if(vect[0].getPosizione().front()>index.back()){
-        it=vect.begin();
-        vect.insert(it,s);
-        return vect;
+    if(symbols[0].getPosizione().front()>index.back()){
+        it=symbols.begin();
+        symbols.insert(it,s);
+        return min;
     }
     //è in mezzo
     while(max-min>1){
-       pos=this->compare(s,vect[middle]);
+       pos=this->compare(s,symbols[middle]);
        if(pos>0){
            min=middle;
        }
@@ -229,37 +229,39 @@ std::vector<Symbol> Crdt::remoteinsert(std::vector<Symbol> vect, Symbol s){
        }
        middle=(max+min)/2;
     }
-    it=vect.begin();
-    pos=pos=this->compare(s,vect[min]);
+    it=symbols.begin();
+    pos=this->compare(s,symbols[min]);
     if(pos>0){
         //inserisco dopo il min
-        vect.insert(it+min+1,s);
+        symbols.insert(it+min+1,s);
+        return min+1;
     }
     if(pos<0){
         //inserisco prima del min
-        vect.insert(it+min-1,s);
+        symbols.insert(it+min-1,s);
+        return min-1;
     }
-return vect;
+
 }
 
-std::vector<Symbol> Crdt::remotedelete(std::vector<Symbol> vect, Symbol s){
-    int min=0,max=vect.size()-1,middle=(max+min)/2,pos;
+int Crdt::remotedelete(Symbol s){
+    int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
     std::vector<int> index=s.getPosizione();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
-    it=vect.begin();
+    it=symbols.begin();
     //controllo se è ultimo
-    if(this->compare(s,vect[max])==0){
-            vect.erase(it+max);
-            return vect;
+    if(this->compare(s,symbols[max])==0){
+            symbols.erase(it+max);
+            return max;
 }
     //controllo se è primo
-    if(this->compare(s,vect[min])==0){
-            vect.erase(it+min);
-            return vect;
+    if(this->compare(s,symbols[min])==0){
+            symbols.erase(it+min);
+            return min;
         }
     while(max-min>1){
-       pos=this->compare(s,vect[middle]);
+       pos=this->compare(s,symbols[middle]);
        if(pos>0){
            min=middle;
        }
@@ -267,12 +269,12 @@ std::vector<Symbol> Crdt::remotedelete(std::vector<Symbol> vect, Symbol s){
            max=middle;
        }
        if(pos==0){
-           vect.erase(it+middle);
+           symbols.erase(it+middle);
            break;
        }
        middle=(max+min)/2;
     }
-    return vect;
+    return middle;
 
 }
 
