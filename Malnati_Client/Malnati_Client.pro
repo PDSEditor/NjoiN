@@ -23,14 +23,16 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     symbol.cpp \
-    textedit.cpp
+    textedit.cpp \
+    socketmanager.cpp
 
 HEADERS += \
     crdt.h \
     loginwindow.h \
     mainwindow.h \
     symbol.h \
-    textedit.h
+    textedit.h \
+    socketmanager.h
 
 FORMS += \
     loginwindow.ui \
