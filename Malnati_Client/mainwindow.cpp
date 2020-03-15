@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -37,3 +38,20 @@ void MainWindow::on_pushButton_clicked()
     te->show();
 
 }
+=======
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+>>>>>>> 3e4cc998bb356e7d0d56f393ca13f3a6e9896e64

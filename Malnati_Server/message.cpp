@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "message.h"
 
 
@@ -37,3 +38,33 @@ Message::Message()
     symbol =new Symbol();
 }
 
+=======
+#include "message.h"
+
+
+Symbol *Message::getSimbolo() const
+{
+    return simbolo;
+}
+
+void Message::setSimbolo(Symbol *value)
+{
+    simbolo = value;
+}
+
+Message::Message()
+{
+
+}
+
+std::string Message::getAction() const
+{
+    return action;
+}
+
+void Message::setAction(const std::string &value)
+{
+    action = value;
+}
+
+>>>>>>> 3e4cc998bb356e7d0d56f393ca13f3a6e9896e64

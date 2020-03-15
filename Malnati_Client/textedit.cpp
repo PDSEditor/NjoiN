@@ -103,7 +103,7 @@ TextEdit::TextEdit(QWidget *parent)
 
     textEdit = new QTextEdit(this);
     crdt = new Crdt();
-    symbols = new std::vector<Symbol>();
+    //symbols = new std::vector<Symbol>();
     //QTextDocument document = textEdit->document();
 
 
@@ -704,7 +704,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     if(charsAdded!= 0){
             //s1= new std::vector<int>();
             Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-            symbols->push_back(symbol);
+            //symbols->push_back(symbol);
         }
         else{
             //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
@@ -720,14 +720,14 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     // Code that executes on text change here
 }
 
-Symbol TextEdit :: searchSymbolToErase(char c){
+/*Symbol TextEdit :: searchSymbolToErase(char c){
     for( std::vector<Symbol>::iterator i = symbols->begin(); i!=symbols->end(); ++i){
         if(i->getValue()== c){
             return *i;
          }
     }
     return *new Symbol();
-}
+}*/
 
 void TextEdit::cursorPositionChanged()
 {

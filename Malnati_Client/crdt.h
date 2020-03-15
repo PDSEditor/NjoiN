@@ -17,7 +17,7 @@ private:
 public:
     Crdt();
     Symbol localInsert(char value, int preceding, int following);
-    void localErase(Symbol symbolToErase);
+    void localErase(Symbol symbolToErase, int position); //da capire quale dei due serve, forse si può fare senza passare il symbol
     int getSiteId();
     int getCounter();
     int getCounterAndIncrement();
