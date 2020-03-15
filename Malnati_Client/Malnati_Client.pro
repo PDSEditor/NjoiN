@@ -1,4 +1,5 @@
 QT       += core gui
+QT += websockets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,6 +22,8 @@ SOURCES += \
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
+    message.cpp \
+    socketmanager.cpp \
     symbol.cpp \
     textedit.cpp
 
@@ -28,6 +31,8 @@ HEADERS += \
     crdt.h \
     loginwindow.h \
     mainwindow.h \
+    message.h \
+    socketmanager.h \
     symbol.h \
     textedit.h
 

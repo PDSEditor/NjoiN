@@ -1,35 +1,29 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include <string>
+#include <QtCore/QString>
 #include <QtCore/QList>
-
 #include "symbol.h"
 
-
-class Symbol;
 
 class Message
 {
 
 private:
-    Symbol *symbol;
     QString action;
+    Symbol *symbol;
     QString param;
 
-
 public:
-    Message(QString action): action(action) {}
     Message();
-
+    Message(QString action);
 
     QString getAction() const;
     void setAction(const QString &value);
-
-    Symbol *getSymbol() const;
-    void setSymbol(Symbol *value);
     QString getParam() const;
     void setParam(const QString &value);
+    Symbol *getSymbol() const;
+    void setSymbol(Symbol *value);
 };
 
 #endif // MESSAGE_H

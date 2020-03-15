@@ -20,10 +20,10 @@ Server::Server(QObject *parent) : QObject(parent)
 
 void Server::dispatchMessage(Message* mes) {
     QMap<int, QWebSocket *>::iterator it = this->socketMan->getClients().begin();
-    QMap<int, QWebSocket *>::iterator itEnd = this->socketMan->getClients().begin();
+    QMap<int, QWebSocket *>::iterator itEnd = this->socketMan->getClients().end();
     //std::map<int, Account>::iterator it = this->onlineAccounts.begin();
     //std::map<int, Account>::iterator itEnd = this->onlineAccounts.end();
-    int sender = mes->getSimbolo()->getSiteId();
+    int sender = mes->getSymbol()->getSiteId();
 
     for(; it!= itEnd; it++) {
         if(it.key()!= sender)
@@ -37,18 +37,33 @@ void Server::processMessage( Message* mes) {
      * Significato -> Lettera nel Messaggio -> int corrispondente
      * INSERT ->    I oppure i ->   73 oppure 105
      * DELETE ->    D oppure d ->   68 oppure 100
+     * FILE REQUEST -> F oppure f
      *
     */
 
-    char first = mes->getAction()[0];
+    QString action = mes->getAction();
+    char first =  action.at(0).unicode();
+
+    QString nomeFile;
+    if (first == 'F' || first == 'f'){
+        QString delimiter = "-";
+        int index = action.indexOf(delimiter);
+        nomeFile = action;
+        nomeFile.right(index);
+    }
 
 
     switch (first){
     case ('I' | 'i') :
         dbMan->insertInDB(mes);
+        this->dispatchMessage(mes);
         break;
     case ('D' | 'd' ):
         dbMan->deleteFromDB(mes);
+        this->dispatchMessage(mes);
+        break;
+    case ('F' | 'f'):
+        dbMan->retrieveFile(nomeFile);
         break;
     default:
         socketMan->sendError("01 - Azione richiesta non riconosciuta");

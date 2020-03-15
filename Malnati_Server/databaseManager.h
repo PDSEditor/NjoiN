@@ -18,8 +18,8 @@ signals:
 
 public slots:
     void updateDB(Message* m);
-    void createFile (std::string nome, int user);
-    void retrieveFile(std::string nome, int user);
+    void createFile (QString nome, int user);
+    void retrieveFile(QString nome);
 };
 
 #endif // DATABASEMANAGER_H
