@@ -22,6 +22,7 @@ SOURCES += \
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
+    message.cpp \
     symbol.cpp \
     textedit.cpp
 
@@ -29,6 +30,7 @@ HEADERS += \
     crdt.h \
     loginwindow.h \
     mainwindow.h \
+    message.h \
     symbol.h \
     textedit.h
 
