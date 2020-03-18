@@ -24,7 +24,8 @@ SOURCES += \
     mainwindow.cpp \
     message.cpp \
     symbol.cpp \
-    textedit.cpp
+    textedit.cpp \
+    socketmanager.cpp
 
 HEADERS += \
     crdt.h \
@@ -32,7 +33,8 @@ HEADERS += \
     mainwindow.h \
     message.h \
     symbol.h \
-    textedit.h
+    textedit.h \
+    socketmanager.h
 
 FORMS += \
     loginwindow.ui \
