@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
         int port = parser.value(portOption).toInt();
 
         qDebug()<<"porta:"<<port;
+
         Server* server = new Server();
         QObject::connect(server, &Server::closed, &a, &QCoreApplication::quit);
 

@@ -5,6 +5,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 #include <QtCore/QByteArray>
+#include <QTextCodec>
 #include "QtWebSockets/qwebsocket.h"
 
 
@@ -34,6 +35,7 @@ public slots:
     void fileToUser (std::vector<Symbol> file, int user);
     void onNewConnection();
     void processTextMessage(QString message);
+    void processBinaryMessage(const QByteArray &data);
     void socketDisconnected();
 
 private:

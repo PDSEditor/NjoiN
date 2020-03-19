@@ -51,6 +51,129 @@ void SocketManager::processTextMessage(QString message)
 
 }
 
+void SocketManager::processBinaryMessage(const QByteArray &data)
+{
+    QString dataStr = QString::fromStdString(data.toStdString());
+
+    //Qui devo differenziare i byte tra action param e symbol
+    /*
+     * Messaggio:
+     * il caratter 1 rappresenta l'azione
+     *  Se 1 == I (insert) o == D (delete)
+     *      allora il messaggio sarà composto nella seguente maniera "[?]-?-?"
+     *      dove i punti interrogativi sono nell'ordine posizione, siteid e counter
+     *  Se 1 == R (retrieve) o == C (create)
+     *      allora il secondo carattere è un numero che rappresenta la lunghezza del campo nome file.
+     *      A seguire ci saranno quindi altrettanti caratteri che rappresentano il nome del file.
+     *  Se 1 == L (login)
+     *      allora il secondo carattere è un numero che rappresenta la lunghezza del campo username.
+     *      A seguire ci saranno quindi altrettanti caratteri che rappresentano lo username.
+     *      Alla fine di nuovo un numero che rappresenta la lunghezza della password
+     *      A seguire ci saranno quindi altrettanti caratteri che rappresentano la password.
+     */
+
+    QChar action = dataStr[0];
+    ushort act = action.unicode();
+
+    Message *m = new Message(action);
+
+    switch(act){
+    case ('I' | 'i' | 'D' | 'd'):
+    {
+        //Prima costruisco il vettore posizione
+        std::vector<int> posizione;
+        int n;
+        int i =1;
+        if (dataStr[i].unicode() == '[') {
+            i++;
+            while(dataStr[i].unicode() != ']') {
+                if (dataStr[i].unicode() == ',') {
+                    posizione.push_back(n);
+                    n=0;
+                }
+                else {
+                    n = (n*10) + dataStr[i].unicode()-48;
+                }
+                i++;
+            }
+        }
+        else {
+            sendError ("Errore di formattazione nel messaggio");
+        }
+
+        i +=2 ; //sono passato dalla parentesi quadra all'elemento dopo il "-"
+        //prendo il siteId
+        int siteId=0;
+        while (dataStr[i].unicode() != '-') {
+            siteId = siteId*10 + dataStr[i].unicode()-48;
+            i++;
+        }
+        i++;
+        //prendo il counter
+        int counter = 0;
+        auto it = dataStr.begin() + i;
+        while (it != dataStr.end()){
+            counter = counter *10 + it->unicode()-48;
+        }
+
+        Symbol *symbol = new Symbol(posizione, siteId, counter);
+
+        m->setSymbol(symbol);
+
+        break;
+    }
+
+    case ('R' | 'r' | 'C' | 'c') :
+    {
+        QString nomeFile;
+        int lungNome = dataStr[1].unicode()-48;
+        for (int i = 2; i < lungNome+2; i++) {
+            QChar l = dataStr[i];
+            nomeFile.push_back(l);
+        }
+
+
+        QVector<QString> params;
+        params.push_back(nomeFile);
+        m->setParams(params);
+        break;
+    }
+
+    case ('L' | 'l') :
+    {
+        QString user;
+        int lungUser = dataStr[1].unicode()-48;
+        for (int i = 2; i < lungUser+2; i++) {
+            QChar l = dataStr[i];
+            user.push_back(l);
+        }
+
+        QString pw;
+        int lungPw = dataStr[lungUser+2].unicode()-48;
+        for (int i = 2; i < lungPw+2; i++) {
+            QChar l = dataStr[i];
+            pw.push_back(l);
+        }
+
+
+        QVector<QString> params;
+        params.push_back(user);
+        params.push_back(pw);
+        m->setParams(params);
+        break;
+    }
+
+    default:
+        sendError("Generic Error");
+    }
+
+
+
+    emit newMessage(m);
+
+}
+
+
 QMap<int, QWebSocket *> SocketManager::getClients() const
 {
     return clients;
@@ -65,8 +188,9 @@ void SocketManager::onNewConnection()
 {
     QWebSocket *socket = qWebSocketServer->nextPendingConnection();
 
-    connect(socket, &QWebSocket::textMessageReceived, this, &SocketManager::processTextMessage);
-      //connect(pSocket, &QWebSocket::binaryMessageReceived, this, &EchoServer::processBinaryMessage);
+    //versione text message era funzionante
+    //connect(socket, &QWebSocket::textMessageReceived, this, &SocketManager::processTextMessage);
+    connect(socket, &QWebSocket::binaryMessageReceived, this, &SocketManager::processBinaryMessage);
     connect(socket, &QWebSocket::disconnected, this, &SocketManager::socketDisconnected);
 
       int siteId = 0;       //vedere come gestire i siteId (probabilmente uno static int che si incrementa)

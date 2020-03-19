@@ -1,12 +1,12 @@
 #include "message.h"
 
 
-QString Message::getAction() const
+QChar Message::getAction() const
 {
     return action;
 }
 
-void Message::setAction(const QString &value)
+void Message::setAction(const QChar &value)
 {
     action = value;
 }
@@ -22,14 +22,14 @@ void Message::setSymbol(Symbol *value)
     symbol = value;
 }
 
-QString Message::getParam() const
+QVector<QString> Message::getParams() const
 {
-    return param;
+    return params;
 }
 
-void Message::setParam(const QString &value)
+void Message::setParams(const QVector<QString> &value)
 {
-    param = value;
+    params = value;
 }
 
 Message::Message()
