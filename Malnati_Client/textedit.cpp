@@ -86,6 +86,7 @@
 
 #include "textedit.h"
 #include<QDebug>
+#include "message.h"
 
 #ifdef Q_OS_MAC
 const QString rsrcPath = ":/images/mac";
@@ -705,6 +706,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
             //s1= new std::vector<int>();
             Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
             //symbols->push_back(symbol);
+
+
         }
         else{
             //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
