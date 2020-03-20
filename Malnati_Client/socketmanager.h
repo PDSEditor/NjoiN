@@ -19,6 +19,7 @@ signals:
 
 public slots:
     void messageToServer (Message* m);
+    void binaryMessageToServer (Message* m);
     void onConnected();
     void onTextMessageReceived(QString message);
 

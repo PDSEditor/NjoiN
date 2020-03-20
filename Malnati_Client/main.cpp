@@ -7,6 +7,7 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include "loginwindow.h"
+#include "socketmanager.h"
 
 
 
@@ -33,6 +34,8 @@ int main(int argc, char *argv[])
     lw->show();
 
 
+    socketManager s(QUrl(QStringLiteral("ws://localhost:1234")));
+    //QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
     //te.show();
     //te.onTextConncet();
     return a.exec();

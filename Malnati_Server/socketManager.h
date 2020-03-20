@@ -11,6 +11,8 @@
 
 #include "message.h"
 
+#define N_PORT 1234
+
 QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
 
 

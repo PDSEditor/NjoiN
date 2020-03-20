@@ -8,7 +8,7 @@ SocketManager::SocketManager(QObject *parent) : QObject(parent),
                                           QWebSocketServer::NonSecureMode, this))
     {
 
-        if (qWebSocketServer->listen(QHostAddress::Any, 0)) {   //ascolta su tutte le interfacce, posta scelta automaticamente
+        if (qWebSocketServer->listen(QHostAddress::Any, N_PORT)) {   //ascolta su tutte le interfacce, posta scelta automaticamente
 
             //if (m_debug)
             //    qDebug() << "Echoserver listening on port" << port;
@@ -46,6 +46,7 @@ void SocketManager::processTextMessage(QString message)
 {
     //deserialize JSON
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
+    qDebug()<<message;
     Message *m = new Message();         //crea il messaggio
     emit newMessage(m);
 
@@ -59,26 +60,31 @@ void SocketManager::processBinaryMessage(const QByteArray &data)
     /*
      * Messaggio:
      * il caratter 1 rappresenta l'azione
-     *  Se 1 == I (insert) o == D (delete)
+     *  Se 1 == I =73 (insert) o == D =68 (delete)
      *      allora il messaggio sarà composto nella seguente maniera "[?]-?-?"
      *      dove i punti interrogativi sono nell'ordine posizione, siteid e counter
-     *  Se 1 == R (retrieve) o == C (create)
+     *  Se 1 == R =82 (retrieve) o == C =67(create)
      *      allora il secondo carattere è un numero che rappresenta la lunghezza del campo nome file.
      *      A seguire ci saranno quindi altrettanti caratteri che rappresentano il nome del file.
-     *  Se 1 == L (login)
+     *  Se 1 == L =76(login)
      *      allora il secondo carattere è un numero che rappresenta la lunghezza del campo username.
      *      A seguire ci saranno quindi altrettanti caratteri che rappresentano lo username.
      *      Alla fine di nuovo un numero che rappresenta la lunghezza della password
      *      A seguire ci saranno quindi altrettanti caratteri che rappresentano la password.
+     *  Se 1 = T =84(test)
+     *      stampa semplicemente output
      */
 
+    //enum Actions { I, D, R, C, L, T};
+
     QChar action = dataStr[0];
+
     ushort act = action.unicode();
 
     Message *m = new Message(action);
 
     switch(act){
-    case ('I' | 'i' | 'D' | 'd'):
+    case (73| 68):
     {
         //Prima costruisco il vettore posizione
         std::vector<int> posizione;
@@ -123,7 +129,7 @@ void SocketManager::processBinaryMessage(const QByteArray &data)
         break;
     }
 
-    case ('R' | 'r' | 'C' | 'c') :
+    case (82|67) :
     {
         QString nomeFile;
         int lungNome = dataStr[1].unicode()-48;
@@ -139,7 +145,7 @@ void SocketManager::processBinaryMessage(const QByteArray &data)
         break;
     }
 
-    case ('L' | 'l') :
+    case (76) :
     {
         QString user;
         int lungUser = dataStr[1].unicode()-48;
@@ -160,6 +166,11 @@ void SocketManager::processBinaryMessage(const QByteArray &data)
         params.push_back(user);
         params.push_back(pw);
         m->setParams(params);
+        break;
+    }
+
+    case (84): {
+        qDebug()<<dataStr;
         break;
     }
 
@@ -188,15 +199,17 @@ void SocketManager::onNewConnection()
 {
     QWebSocket *socket = qWebSocketServer->nextPendingConnection();
 
+    qDebug()<<"Nuova connessione avvenuta.";
+
     //versione text message era funzionante
-    //connect(socket, &QWebSocket::textMessageReceived, this, &SocketManager::processTextMessage);
+    connect(socket, &QWebSocket::textMessageReceived, this, &SocketManager::processTextMessage);
     connect(socket, &QWebSocket::binaryMessageReceived, this, &SocketManager::processBinaryMessage);
     connect(socket, &QWebSocket::disconnected, this, &SocketManager::socketDisconnected);
 
-      int siteId = 0;       //vedere come gestire i siteId (probabilmente uno static int che si incrementa)
-      clients.insert(siteId, socket);
+    int siteId = 0;       //vedere come gestire i siteId (probabilmente uno static int che si incrementa)
+    clients.insert(siteId, socket);
 
-      //successivamente comunicare al client il proprio siteId
+    //successivamente comunicare al client il proprio siteId
 
 }
 

@@ -29,6 +29,5 @@ int main(int argc, char *argv[])
         Server* server = new Server();
         QObject::connect(server, &Server::closed, &a, &QCoreApplication::quit);
 
-
     return a.exec();
 }
