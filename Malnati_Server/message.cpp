@@ -1,13 +1,12 @@
-<<<<<<< HEAD
 #include "message.h"
 
 
-QString Message::getAction() const
+QChar Message::getAction() const
 {
     return action;
 }
 
-void Message::setAction(const QString &value)
+void Message::setAction(const QChar &value)
 {
     action = value;
 }
@@ -23,48 +22,17 @@ void Message::setSymbol(Symbol *value)
     symbol = value;
 }
 
-QString Message::getParam() const
+QVector<QString> Message::getParams() const
 {
-    return param;
+    return params;
 }
 
-void Message::setParam(const QString &value)
+void Message::setParams(const QVector<QString> &value)
 {
-    param = value;
+    params = value;
 }
 
 Message::Message()
 {
     symbol =new Symbol();
 }
-
-=======
-#include "message.h"
-
-
-Symbol *Message::getSimbolo() const
-{
-    return simbolo;
-}
-
-void Message::setSimbolo(Symbol *value)
-{
-    simbolo = value;
-}
-
-Message::Message()
-{
-
-}
-
-std::string Message::getAction() const
-{
-    return action;
-}
-
-void Message::setAction(const std::string &value)
-{
-    action = value;
-}
-
->>>>>>> 3e4cc998bb356e7d0d56f393ca13f3a6e9896e64
