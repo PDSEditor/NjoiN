@@ -1,4 +1,5 @@
 #include "message.h"
+#include<cstring>
 
 
 
@@ -37,4 +38,5 @@ Message::Message()
 {
     symbol =new Symbol();
 }
+
 

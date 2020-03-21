@@ -7,8 +7,11 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 #include "loginwindow.h"
+#include "message.h"
 
-
+//
+#include <iostream>
+//
 
 int main(int argc, char *argv[])
 {

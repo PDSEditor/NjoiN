@@ -16,6 +16,7 @@ private:
     Symbol *symbol;
     QString action;
     QString param;
+    QByteArray bytemex;
 
 
 public:
@@ -30,6 +31,8 @@ public:
     void setSymbol(Symbol *value);
     QString getParam() const;
     void setParam(const QString &value);
+    QByteArray sendmex(char c);
+    void recivemex();
 };
 
 #endif // MESSAGE_H
