@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->label->setStyleSheet("QLabel { background-color : green; color : black; }");
+    for(int i=0;i<10;i++){
+        addElementforUser("Documento " + QString::number(i));
+    }
 }
 
 MainWindow::~MainWindow()
@@ -34,4 +37,8 @@ void MainWindow::on_pushButton_clicked()
 
     te->show();
 
+}
+
+void MainWindow::addElementforUser(QString string){
+    ui->listWidget->addItem(string);
 }

@@ -26,7 +26,6 @@ public:
 
     bool load(const QString &f);
 
-    void onTextConncet();
 public slots:
     void fileNew();
 

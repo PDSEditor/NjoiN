@@ -20,6 +20,7 @@ public:
 
 private slots:
     void on_pushButton_clicked();
+    void addElementforUser(QString);
 
 private:
     Ui::MainWindow *ui;
