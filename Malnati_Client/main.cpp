@@ -9,9 +9,7 @@
 #include "loginwindow.h"
 #include "message.h"
 
-//
-#include <iostream>
-//
+
 
 int main(int argc, char *argv[])
 {
@@ -34,7 +32,6 @@ int main(int argc, char *argv[])
     lw->move((availableGeometry.width() - lw->width()) / 2,
             (availableGeometry.height() - lw->height()) / 2);
     lw->show();
-
 
     //te.show();
     //te.onTextConncet();
