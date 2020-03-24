@@ -5,6 +5,10 @@
 #include "QtWebSockets/qwebsocket.h"
 #include "message.h"
 #include <QDebug>
+#include <string>
+#include "string.h"
+#include <QDataStream>
+
 
 class socketManager : public QObject
 {
@@ -22,6 +26,7 @@ public slots:
     void binaryMessageToServer (Message* m);
     void onConnected();
     void onTextMessageReceived(QString message);
+    void onBinaryMessageReceived(QByteArray bytemex);
 
 private:
     QWebSocket webSocket;

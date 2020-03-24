@@ -21,8 +21,6 @@ private:
      QChar action;
      QVector<QString> params;
 
-    QByteArray bytemex;
-
 
 public:
     Message(QChar action): action(action) {}
@@ -36,10 +34,7 @@ public:
         void setSymbol(Symbol *value);
         QVector<QString> getParams() const;
         void setParams(const QVector<QString> &value);
-        QByteArray getArray() const;
-        void setArray(QByteArray array);
-        QByteArray sendmex();
-        void recivemex();
+
 };
 
 #endif // MESSAGE_H

@@ -8,6 +8,7 @@ class Symbol
 {
 
 private:
+    char value;
     std::vector<int> posizione;
     int siteId;
     int counter;
@@ -22,6 +23,8 @@ public:
     void setSiteId(int value);
     int getCounter() const;
     void setCounter(int value);
+    char getValue() const;
+    void setValue(char v);
 };
 
 #endif // SYMBOL_H
