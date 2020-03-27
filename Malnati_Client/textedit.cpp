@@ -142,12 +142,14 @@ TextEdit::TextEdit(QWidget *parent)
             actionUndo, &QAction::setEnabled);
     connect(textEdit->document(), &QTextDocument::redoAvailable,
             actionRedo, &QAction::setEnabled);
+    connect(textEdit->document(), &QTextDocument::contentsChange,
+            this, &TextEdit::onTextChanged);
 
     setWindowModified(textEdit->document()->isModified());
     actionSave->setEnabled(textEdit->document()->isModified());
     actionUndo->setEnabled(textEdit->document()->isUndoAvailable());
     actionRedo->setEnabled(textEdit->document()->isRedoAvailable());
-
+    textEdit->textChanged();
 #ifndef QT_NO_CLIPBOARD
     actionCut->setEnabled(false);
     connect(textEdit, &QTextEdit::copyAvailable, actionCut, &QAction::setEnabled);
@@ -168,10 +170,7 @@ TextEdit::TextEdit(QWidget *parent)
     textEdit->setPalette(pal);
 #endif
 }
-void TextEdit::onTextConncet(){
-    connect(textEdit->document(), &QTextDocument::contentsChange,
-            this, &TextEdit::onTextChanged);
-}
+
 
 void TextEdit::closeEvent(QCloseEvent *e)
 {

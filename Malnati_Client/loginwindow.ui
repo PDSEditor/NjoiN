@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>437</width>
+    <height>587</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>437</width>
+    <height>587</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -17,10 +23,10 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>190</y>
-      <width>225</width>
-      <height>141</height>
+      <x>70</x>
+      <y>330</y>
+      <width>271</width>
+      <height>171</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -43,7 +49,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_username"/>
+        <widget class="QLineEdit" name="lineEdit_username">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -57,7 +67,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_password"/>
+        <widget class="QLineEdit" name="lineEdit_password">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -76,7 +90,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>437</width>
      <height>26</height>
     </rect>
    </property>
