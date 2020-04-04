@@ -1,91 +1,27 @@
-#include "crdt.h"
-#include "symbol.h"
 #include <iostream>
 #include <QtDebug>
+#include "Crdt.h"
+#include "symbol.h"
 
-#define MAXNUM 100
+//#define MAXNUM 100
+int Crdt::maxnum=100;
 
 bool exists(int index, std::vector<int> vector);
-void resetVal();
-int i=0, flag=0;
-int level=1;
-std::vector<int> tmp;
 
-void print(std::vector<int> const &input)
+void print(const std::vector<int>& input)
 {
-    for (size_t i = 0; i < input.size(); i++) {
-        //std::cout << input.at(i) << ' ';
-        qDebug() << "pos: " << input.at(i);
+    for(auto i: input){
+        qDebug() << "pos: " << i;
     }
 }
 
-
-std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
+std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following, std::vector<int> &tmp, const int maxnum){
     int prec, foll;
-
-    /*try {
-       prec=preceding.at(i);
-
-    } catch (const std::out_of_range) {
-        prec=0;
-        flag=1;
-    }
-
-    try {
-        foll = following.at(i);
-
-    } catch (const std::out_of_range) {
-        foll = 0;
-    }*/
 
     prec=preceding.at(0);
     foll=following.at(0);
 
-    /*if(foll > prec){
-        if(i==0){
-            tmp.insert(tmp.begin(), prec);
-            tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-            return tmp;
-        }
-        if(flag){
-            tmp.push_back(rand() % foll + prec);
-            i--;
-            return tmp;
-        }
-
-        tmp.insert(tmp.begin(), prec);
-        tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-        //tmp.push_back(rand() % foll + prec);
-        i--;
-        return tmp;
-    }*/
-
     int diff=std::abs(foll-prec);
-
-    /*if(diff==0){ // si ricorre
-        i++;
-        //createFractional(preceding, following);
-
-    }
-
-    if(diff==1){                       //primo caso di terminazione
-        if ( i>0 ){
-            tmp.push_back(prec);                //
-            //tmp.push_back((MAXNUM-preceding.back())/2+preceding.back()); //bisogna verificare che non esista già
-            tmp.push_back((MAXNUM-preceding.back())/2+preceding.back()); //bisogna verificare che non esista già
-            level*=2;
-            return tmp;
-        }
-        else if(i==0){
-            tmp=preceding;
-            tmp.push_back(MAXNUM/2);
-            return tmp;
-        }
-    }
-    else if(diff>1){
-        tmp.push_back(prec+(foll-prec)/2); //media tra i 2, anche questo bisogna verificare che non esista already
-        return tmp;
-    }*/
 
     if(diff==1 || diff==0){
         if(preceding.size()==1){
@@ -95,13 +31,13 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
             preceding.erase(preceding.begin());
         }
         if(following.size()==1){
-            following.at(0)=MAXNUM;
+            following.at(0)=maxnum;
         }
         else{
             following.erase(following.begin());
         }
 
-        createFractional(preceding, following);
+        createFractional(preceding, following, tmp, maxnum);
     }
     else if(diff > 1){
         tmp.push_back(prec+(foll-prec)/2);
@@ -109,7 +45,6 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
     }
 
     tmp.insert(tmp.begin(), prec);          //inserimento a ritroso
-    i--; //maybe can be avoided
     return tmp;
 }
 
@@ -118,6 +53,10 @@ Crdt::Crdt()
 
 }
 
+/*********************************
+ * si può ancora EVITARE di avere i due vect temp following e preceding
+ * passando this->symbols[precedingC].getPosizione() per valore
+ * ******************************/
 Symbol Crdt::localInsert(char value, int precedingC, int followingC){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
@@ -125,79 +64,82 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
 
     std::vector<int> following;
     std::vector<int> preceding;
-    std::vector<int> fractionalPos={0};
+    std::vector<int> fractionalPos;
 
     //prendo il simbolo nuovo
-    Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
+    //Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
 
     if(precedingC==-1){
         qDebug() << "sono all'inserimento in testa";
 
         if(symbolsSize==0){ //primissimo inserimento
-            fractionalPos = std::vector<int>{MAXNUM/2};
+            fractionalPos = std::vector<int>{maxnum/2};
         }
         else{
             following = this->symbols[followingC].getPosizione();
-            fractionalPos = createFractional({0}, following);
+            //fractionalPos = createFractional({0}, following, tmp, Crdt::maxnum);
+            createFractional({0}, following, fractionalPos, Crdt::maxnum);
         }
-
-        symbolToInsert.setPosizione(fractionalPos);
     }
     else{
         if(followingC == (int)symbolsSize){         // inserimento in coda
                 preceding = this->symbols[precedingC].getPosizione();
-                following=std::vector<int>{MAXNUM};
-                /*****************Da TESTARE***************************/
-                fractionalPos = createFractional(preceding, following);
-                /*****************************************************/
+                following=std::vector<int>{maxnum};
+//                fractionalPos = createFractional(preceding, following, tmp, Crdt::maxnum);
+                createFractional(preceding, following, fractionalPos, Crdt::maxnum);
                 qDebug() << "fractionalpos: " << fractionalPos;
-                symbolToInsert.setPosizione(fractionalPos);
-                resetVal();
+                //symbolToInsert.setPosizione(fractionalPos);
+                //tmp.clear();
         }
         else{ // cioè sono in mezzo
             //mi salvo le posizioni frazionarie di quello prima e di quello dopo
             preceding = this->symbols[precedingC].getPosizione();
             following = this->symbols[followingC].getPosizione();
-            fractionalPos = createFractional(preceding, following);
-//            fractionalPos = createFractional({3,99}, {4,5});
-//            resetVal();
-//            fractionalPos = createFractional({0,1}, {0,1,1});
-//            resetVal();
-//            fractionalPos = createFractional({0,2}, {0,2,1});
-//            resetVal();
-//            fractionalPos = createFractional({0,0}, {0,0,1});
-//            resetVal();
-//            fractionalPos = createFractional({0,0}, {0,0,50});
-//            resetVal();
-//            fractionalPos = createFractional({0,3,4,5}, {0,5,3,27});
-//            resetVal();
-//            fractionalPos = createFractional({0,3,1}, {0,3,2});
-//            resetVal();
-//            fractionalPos = createFractional({0,0}, {1,0});
-//            resetVal();
-//            fractionalPos = createFractional({0}, {0,2});
-//            resetVal();
-//            fractionalPos = createFractional({0,1}, {1,2});
-//            resetVal();
-//            fractionalPos = createFractional({0,0}, {0,0,3});
-//            resetVal();
-//            fractionalPos = createFractional({0,5}, {2,5});
-//            resetVal();
-//            fractionalPos = createFractional({0,0}, {0,0,0,3});
-//            resetVal();
-//            fractionalPos = createFractional({2, 3, 4}, {3}); //{2,50}
-//            resetVal();
+//            fractionalPos = createFractional(preceding, following, tmp, Crdt::maxnum);
+            createFractional(preceding, following, fractionalPos, Crdt::maxnum);
+            /*
+            fractionalPos = createFractional({3,99}, {4,5}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,1}, {0,1,1}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,2}, {0,2,1}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,0}, {0,0,1}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,0}, {0,0,50}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,3,4,5}, {0,5,3,27}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,3,1}, {0,3,2}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,0}, {1,0}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0}, {0,2}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,1}, {1,2}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,0}, {0,0,3}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,5}, {2,5}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({0,0}, {0,0,0,3}, tmp, Crdt::maxnum);
+            tmp.clear();
+            fractionalPos = createFractional({2, 3, 4}, {3}, tmp, Crdt::maxnum); //{2,50}
+            tmp.clear();*/
 
             qDebug() << "fractionalpos: " << fractionalPos;
-            symbolToInsert.setPosizione(fractionalPos);
-            resetVal();
+            //symbolToInsert.setPosizione(fractionalPos);
+            //tmp.clear();
         }
     }
 
+    Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounter());
+
+    /* DA VEDERE*/
     this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
 
     print(fractionalPos);
-    resetVal();
+    //tmp.clear();
     return symbolToInsert;
 }
 
@@ -207,13 +149,6 @@ bool exists(int index, std::vector<int> vector){
         return true;
     else return false;
 }
-
-void resetVal(){
-    i=0;
-    tmp.clear();
-    flag=0;
-}
-
 
 void Crdt::localErase(Symbol symbolToErase, int position){
     /*for( std::vector<Symbol>::iterator i = this->symbols.begin(); i!=this->symbols.end(); ++i){

@@ -7,8 +7,9 @@
 
 
 class Crdt
-{ //come si mettono in mezzo?
+{ 
 private:
+    static int maxnum;
     int siteId;
     int counter;
     std::vector<Symbol> symbols;
