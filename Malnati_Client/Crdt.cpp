@@ -15,7 +15,7 @@ void print(const std::vector<int>& input)
     }
 }
 
-Crdt::Crdt():siteId(1)
+Crdt::Crdt():siteId(1) //da prendere dal server?
 {
 }
 
@@ -247,6 +247,13 @@ int Crdt::remotedelete(Symbol s){
     return middle;
 
 }
+
+/******************************************/
+/* bool operator==(Symbol s1, Symbol s2) */
+/* bool operator<=(Symbol s1, Symbol s2) */
+/****************************************/
+
+
 
 int Crdt::compare(Symbol s1, Symbol s2){
     int len1=s1.getPosizione().size();
