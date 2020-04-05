@@ -3,8 +3,7 @@
 Symbol::Symbol(char value, std::vector<int> posizione, int siteId, int counter): value(value), siteId(siteId), counter(counter)
 {
     //this->value = value;
-    this->posizione = std::move(posizione); /*da vedere, in realtà si chiama la std::move direttamente dal cpp e
-                                              poi in automatico viene invocato il costruttore di movimento*/
+    this->posizione = std::move(posizione);
     //this->siteId = siteId;
     //this->counter = counter;
 }

@@ -3,8 +3,8 @@
 #include "Crdt.h"
 #include "symbol.h"
 
-//#define MAXNUM 100
 int Crdt::maxnum=100;
+int Crdt::counter=0;
 
 bool exists(int index, std::vector<int> vector);
 
@@ -13,6 +13,10 @@ void print(const std::vector<int>& input)
     for(auto i: input){
         qDebug() << "pos: " << i;
     }
+}
+
+Crdt::Crdt():siteId(1)
+{
 }
 
 std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following, std::vector<int> &tmp, const int maxnum){
@@ -46,11 +50,6 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
 
     tmp.insert(tmp.begin(), prec);          //inserimento a ritroso
     return tmp;
-}
-
-Crdt::Crdt()
-{
-
 }
 
 /*********************************
@@ -133,13 +132,11 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
         }
     }
 
-    Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounter());
+    Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounterAndIncrement());
 
-    /* DA VEDERE*/
     this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
 
     print(fractionalPos);
-    //tmp.clear();
     return symbolToInsert;
 }
 
@@ -150,13 +147,7 @@ bool exists(int index, std::vector<int> vector){
     else return false;
 }
 
-void Crdt::localErase(Symbol symbolToErase, int position){
-    /*for( std::vector<Symbol>::iterator i = this->symbols.begin(); i!=this->symbols.end(); ++i){
-        if(*i==symbolToErase)
-            this->symbols.erase(i);
-    }
-    return;*/
-
+void Crdt::localErase(int position){
     std::vector<Symbol>::iterator i = this->symbols.begin()+position;
     this->symbols.erase(i);
 }
@@ -166,7 +157,7 @@ int Crdt::getSiteId(){
 }
 
 int Crdt::getCounter(){
-    return this->counter;
+    return Crdt::counter;
 }
 
 std::vector<Symbol> Crdt::getSymbols(){
@@ -174,7 +165,7 @@ std::vector<Symbol> Crdt::getSymbols(){
 }
 
 int Crdt::getCounterAndIncrement(){
-    return ++this->counter;
+    return ++Crdt::counter;
 }
 
 
@@ -282,51 +273,4 @@ int Crdt::compare(Symbol s1, Symbol s2){
 
     }
     return res;
-
-
-
-
 }
-
-//if(diff > 1 ){
-//    tmp=preceding;
-//    //tmp.push_back(diff/2+prec);
-//    tmp.at(tmp.size()-1)=(MAXNUM-preceding.back())/2+preceding.back();
-//    return tmp;
-//}
-//else if(diff == 1){
-//        /*//e si ricorre
-//        i++;
-//        createFractional(preceding, following);*/
-//    if(i==0){
-//        //tmp.insert(tmp.begin(), prec);
-//        //tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-//        tmp=preceding;
-//        tmp.at(tmp.size()-1)=(MAXNUM-preceding.back())/2+preceding.back();
-//        return tmp;
-//    }
-//    else{
-//        //tmp.push_back(MAXNUM/2);
-//    }
-//    if(flag){
-//        tmp.push_back(rand() % foll + prec);
-//        i--;
-//        return tmp;
-//    }
-
-//    tmp.insert(tmp.begin(), prec);
-//    tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-//    //tmp.push_back(rand() % foll + prec);
-//    i--;
-//    return tmp;
-//    }
-//    else if(diff==0){
-//            i++;
-//            createFractional(preceding, following);
-//        }
-
-
-//tmp.insert(tmp.begin(), prec);
-//i--;
-//return tmp;
-//}
