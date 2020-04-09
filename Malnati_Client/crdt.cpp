@@ -258,7 +258,7 @@ int Crdt::remotedelete(Symbol s){
 
 void Crdt::remoteM(Message *m)
 {
-
+ int i;
 }
 
 int Crdt::compare(Symbol s1, Symbol s2){
