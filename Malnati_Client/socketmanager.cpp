@@ -82,7 +82,7 @@ void socketManager::binaryMessageToServer(Message *m)
         bytemex.append(params.at(1));
     }
 
-    qDebug()<<'lunghezza array di byte'<<bytemex.size();
+    //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     webSocket.sendBinaryMessage( bytemex);
 }
 
