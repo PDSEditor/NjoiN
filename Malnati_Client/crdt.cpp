@@ -130,20 +130,7 @@ bool exists(int index, std::vector<int> vector){
     else return false;
 }
 
-void resetVal(){
-    i=0;
-    tmp.clear();
-    flag=0;
-}
-
-
-void Crdt::localErase(Symbol symbolToErase, int position){
-    /*for( std::vector<Symbol>::iterator i = this->symbols.begin(); i!=this->symbols.end(); ++i){
-        if(*i==symbolToErase)
-            this->symbols.erase(i);
-    }
-    return;*/
-
+void Crdt::localErase(int position){
     std::vector<Symbol>::iterator i = this->symbols.begin()+position;
     this->symbols.erase(i);
 }
@@ -153,7 +140,7 @@ int Crdt::getSiteId(){
 }
 
 int Crdt::getCounter(){
-    return this->counter;
+    return Crdt::counter;
 }
 
 std::vector<Symbol> Crdt::getSymbols(){
@@ -161,7 +148,7 @@ std::vector<Symbol> Crdt::getSymbols(){
 }
 
 int Crdt::getCounterAndIncrement(){
-    return ++this->counter;
+    return ++Crdt::counter;
 }
 
 
@@ -244,8 +231,13 @@ int Crdt::remotedelete(Symbol s){
 
 }
 
+/******************************************/
+/* bool operator==(Symbol s1, Symbol s2) */
+/* bool operator<=(Symbol s1, Symbol s2) */
+/****************************************/
 
-// modificare in operatore
+
+
 int Crdt::compare(Symbol s1, Symbol s2){
     int len1=s1.getPosizione().size();
     int len2=s2.getPosizione().size();
@@ -271,8 +263,4 @@ int Crdt::compare(Symbol s1, Symbol s2){
 
     }
     return res;
-
-
-
-
 }

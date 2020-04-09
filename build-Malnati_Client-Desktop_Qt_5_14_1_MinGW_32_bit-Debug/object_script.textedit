@@ -1,0 +1,13 @@
+crdt.o
+loginwindow.o
+main.o
+mainwindow.o
+message.o
+symbol.o
+textedit.o
+socketmanager.o
+qrc_textedit.o
+moc_loginwindow.o
+moc_mainwindow.o
+moc_textedit.o
+moc_socketmanager.o

@@ -5,7 +5,7 @@
 #include <QMap>
 #include <QPointer>
 #include <symbol.h>
-#include <crdt.h>
+#include <Crdt.h>
 
 QT_BEGIN_NAMESPACE
 class QAction;
