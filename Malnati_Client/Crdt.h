@@ -1,3 +1,5 @@
+
+
 #ifndef CRDT_H
 #define CRDT_H
 
@@ -8,16 +10,16 @@
 #include "message.h"
 
 
-class Crdt
-{ 
+class Crdt: public QObject
+{
 
     Q_OBJECT
 
 signals:
-    void localComm(Message *m);
-
+    void loc(Message *m);
 public slots:
-    void remotComm(Message *m);
+    void remoteM(Message *m);
+
 
 private:
     static int maxnum;
@@ -27,7 +29,7 @@ private:
     int compare(Symbol s1, Symbol s2); //???
 
 public:
-    Crdt();
+    explicit Crdt();
     Symbol localInsert(char value, int preceding, int following);
     void localErase(int position);
     int getSiteId();
