@@ -96,6 +96,9 @@ const QString rsrcPath = ":/images/mac";
 const QString rsrcPath = ":/images/win";
 #endif
 
+
+
+
 TextEdit::TextEdit(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -103,6 +106,10 @@ TextEdit::TextEdit(QWidget *parent)
     setUnifiedTitleAndToolBarOnMac(true);
 #endif
     setWindowTitle(QCoreApplication::applicationName());
+
+
+
+
 
     textEdit = new QTextEdit(this);
     crdt = new Crdt();
@@ -171,6 +178,8 @@ TextEdit::TextEdit(QWidget *parent)
     pal.setColor(QPalette::Text, QColor(Qt::black));
     textEdit->setPalette(pal);
 #endif
+
+
 }
 
 

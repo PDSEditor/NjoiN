@@ -11,7 +11,7 @@
  * https://doc.qt.io/archives/qt-4.8/moc.html
  * ***/
 
-#include <bsoncxx/builder/stream/document.hpp>
+/*#include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/json.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
@@ -21,10 +21,10 @@
 #include <mongocxx/exception/operation_exception.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
 
-
+*/
 /*******************************************/
 
-
+/*
 
 
 DatabaseManager::DatabaseManager(QObject *parent) : QObject(parent)
@@ -106,6 +106,6 @@ void DatabaseManager::retrieveFile(QString nome)
 {
 
 }
-
+*/
 
 

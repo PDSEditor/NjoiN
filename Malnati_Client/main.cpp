@@ -11,6 +11,7 @@
 #include <QStyle>
 
 
+
 int main(int argc, char *argv[])
 {
    // Q_INIT_RESOURCE(textedit);
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
     lw->show();
 
 
-    socketManager s(QUrl(QStringLiteral("ws://localhost:1234")));
+
     //QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);
     //te.show();
     //te.onTextConncet();

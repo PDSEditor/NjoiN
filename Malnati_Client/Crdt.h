@@ -6,14 +6,18 @@
 #include <vector>
 #include "symbol.h"
 #include "message.h"
+#include "socketmanager.h"
 
+
+class socketManager;
+class mainwindow;
 
 class Crdt: public QObject
 {
 
     Q_OBJECT
 signals:
-    void prova();
+    void localM(Message *m);
 
 public slots:
    void remoteM(Message *m);
@@ -22,9 +26,11 @@ public slots:
 private:
     static int maxnum;
     static int counter; //il numero dell'operazione effettuata dall'utente
+    socketManager *sock;
     int siteId; //chi ha inserito il carattere
     std::vector<Symbol> symbols;
     int compare(Symbol s1, Symbol s2); //???
+
 
 public:
     explicit Crdt();

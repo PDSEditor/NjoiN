@@ -22,15 +22,20 @@ signals:
     void newMessage(Message* m);
 
 public slots:
-    void messageToServer (Message* m);
-    void binaryMessageToServer (Message* m);
+
+
     void onConnected();
     void onTextMessageReceived(QString message);
     void onBinaryMessageReceived(QByteArray bytemex);
 
+public:
+     void binaryMessageToServer (Message* m);
+     void messageToServer (Message* m);
+
 private:
     QWebSocket webSocket;
     QUrl url;
+    int i=100;
 };
 
 #endif // SOCKETMANAGER_H

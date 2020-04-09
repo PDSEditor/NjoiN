@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include "textedit.h"
+#include "socketmanager.h"
 
+extern socketManager *sock;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
