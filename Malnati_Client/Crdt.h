@@ -7,17 +7,18 @@
 
 
 class Crdt
-{ //come si mettono in mezzo?
+{ 
 private:
-    int siteId;
-    int counter;
+    static int maxnum;
+    static int counter; //il numero dell'operazione effettuata dall'utente
+    int siteId; //chi ha inserito il carattere
     std::vector<Symbol> symbols;
-    int compare(Symbol s1, Symbol s2);
+    int compare(Symbol s1, Symbol s2); //???
 
 public:
     Crdt();
     Symbol localInsert(char value, int preceding, int following);
-    void localErase(Symbol symbolToErase, int position); //da capire quale dei due serve, forse si può fare senza passare il symbol
+    void localErase(int position);
     int getSiteId();
     int getCounter();
     int getCounterAndIncrement();

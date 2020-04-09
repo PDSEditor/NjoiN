@@ -4,6 +4,18 @@ QT += websockets
 CONFIG += c++11 console
 CONFIG -= app_bundle
 
+################################################################
+# to find external libraries about mongocxx driver for mongodb #
+################################################################
+QT_CONFIG -= no-pkg-config
+CONFIG += link_pkgconfig
+PKGCONFIG += libmongocxx
+
+mac {
+  PKG_CONFIG = /usr/local/bin/pkg-config
+}
+################################################################
+
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
