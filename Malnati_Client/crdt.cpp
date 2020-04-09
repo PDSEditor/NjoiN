@@ -20,79 +20,45 @@ void print(std::vector<int> const &input)
 
 
 std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following){
-    int prec, foll;
-    //se esistono
-    try {
-       prec=preceding.at(i);
-
-    } catch (const std::out_of_range) {
-        prec=0;
-        flag=1;
-    }
-
-    try {
-        foll = following.at(i);
-
-    } catch (const std::out_of_range) {
-        foll = 0;
-    }
-
-    /*if(foll > prec){
-        if(i==0){
-            tmp.insert(tmp.begin(), prec);
-            tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-            return tmp;
-        }
-        if(flag){
-            tmp.push_back(rand() % foll + prec);
-            i--;
-            return tmp;
-        }
-
-        tmp.insert(tmp.begin(), prec);
-        tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-        //tmp.push_back(rand() % foll + prec);
-        i--;
-        return tmp;
-    }*/
-
-
-    int diff=std::abs(foll-prec);
-
-    if(diff > 1 ){
-        tmp.push_back(diff/2+prec);
-        return tmp;
-    }
-    else if(diff == 1){
-            /*//e si ricorre
-            i++;
-            createFractional(preceding, following);*/
-        if(i==0){
-            tmp.insert(tmp.begin(), prec);
-            tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-            return tmp;
-        }
-        if(flag){
-            tmp.push_back(rand() % foll + prec);
-            i--;
-            return tmp;
-        }
-
-        tmp.insert(tmp.begin(), prec);
-        tmp.push_back((MAXNUM-preceding.back())/2+preceding.back());
-        //tmp.push_back(rand() % foll + prec);
-        i--;
-        return tmp;
-        }
-        else if(diff==0){
-                i++;
-                createFractional(preceding, following);
-            }
-
-
-    tmp.insert(tmp.begin(), prec);
-    i--;
-    return tmp;
+    int prec, foll,flag=0;
+    std::vector<int> tmp;
+    unsigned long long p;
+    //inizio modifiche //////////////////////////////////////////////////
+   for(p=0;p<qMin(preceding.size(),following.size());p++){
+       int diff=following.at(p)-preceding.at(p);
+       if(diff==0){
+           tmp.push_back(following.at(p));
+       }
+       else if(diff>1){
+           if(p==preceding.size()){
+               tmp.push_back((following.at(p)+preceding.at(p))/2);
+           }
+           else{
+               for(int t=p;t<preceding.size();t++){
+                   tmp.push_back(preceding.at(t));
+               }
+               tmp.push_back(MAXNUM/2);
+           }
+           flag=1;
+       }
+       else if(diff==1){
+           if(p==preceding.size()){
+               tmp.push_back(MAXNUM/2);
+           }
+           else{
+               for(int t=p;t<preceding.size();t++){
+                   tmp.push_back(preceding.at(t));
+               }
+               tmp.push_back(MAXNUM/2);
+           }
+           flag=1;
+       }
+   }
+   if(flag==0){
+       tmp.push_back(following.at(p));
+   }
+   return tmp;
+//fine modifiche ////////////////////////////////////////////////////////////////////////
 }
 
 Crdt::Crdt()
@@ -278,6 +244,8 @@ int Crdt::remotedelete(Symbol s){
 
 }
 
+
+// modificare in operatore
 int Crdt::compare(Symbol s1, Symbol s2){
     int len1=s1.getPosizione().size();
     int len2=s2.getPosizione().size();

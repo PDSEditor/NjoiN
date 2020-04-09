@@ -48,6 +48,8 @@
 **
 ****************************************************************************/
 
+#include <QColor>
+
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -448,14 +450,16 @@ void TextEdit::setCurrentFileName(const QString &fileName)
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName, QCoreApplication::applicationName()));
     setWindowModified(false);
+
 }
 
 void TextEdit::fileNew()
 {
     if (maybeSave()) {
-        textEdit->clear();
-        setCurrentFileName(QString());
+        //textEdit->clear();
+        (setCurrentFileName(QString()));
     }
+
 }
 
 void TextEdit::fileOpen()
@@ -471,6 +475,7 @@ void TextEdit::fileOpen()
         statusBar()->showMessage(tr("Opened \"%1\"").arg(QDir::toNativeSeparators(fn)));
     else
         statusBar()->showMessage(tr("Could not open \"%1\"").arg(QDir::toNativeSeparators(fn)));
+
 }
 
 bool TextEdit::fileSave()
@@ -699,12 +704,14 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
     QTextCursor  cursor = textEdit->textCursor();
+
     qDebug() << "position: " << position;
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
     if(charsAdded!= 0){
             //s1= new std::vector<int>();
             Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
             //symbols->push_back(symbol);
+
 
 
 
@@ -717,8 +724,9 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     //textEdit->textCursor().setPosition(symbol.getPosizione());
 
     if(charsRemoved!=0){
-   // Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());
+    //Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());//forse è sbagliata
    // crdt->localErase(symbol);
+
     }
     // Code that executes on text change here
 }
