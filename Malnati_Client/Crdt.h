@@ -1,13 +1,24 @@
 #ifndef CRDT_H
 #define CRDT_H
 
+#include <QObject>
 #include <string>
 #include <vector>
 #include "symbol.h"
+#include "message.h"
 
 
-class Crdt
-{ 
+class Crdt: public QObject
+{
+
+    Q_OBJECT
+signals:
+    void prova();
+
+public slots:
+   void remoteM(Message *m);
+
+
 private:
     static int maxnum;
     static int counter; //il numero dell'operazione effettuata dall'utente
@@ -16,7 +27,7 @@ private:
     int compare(Symbol s1, Symbol s2); //???
 
 public:
-    Crdt();
+    explicit Crdt();
     Symbol localInsert(char value, int preceding, int following);
     void localErase(int position);
     int getSiteId();
@@ -26,6 +37,8 @@ public:
     int remotedelete(Symbol s);
 
     std::vector<Symbol> getSymbols();
+
+
 };
 
 #endif // CRDT_H

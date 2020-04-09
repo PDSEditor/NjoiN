@@ -15,8 +15,9 @@ void print(const std::vector<int>& input)
     }
 }
 
-Crdt::Crdt():siteId(1) //da prendere dal server?
+Crdt::Crdt() //da prendere dal server?
 {
+
 }
 
 std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following, std::vector<int> &tmp, const int maxnum){
@@ -254,6 +255,11 @@ int Crdt::remotedelete(Symbol s){
 /****************************************/
 
 
+
+void Crdt::remoteM(Message *m)
+{
+
+}
 
 int Crdt::compare(Symbol s1, Symbol s2){
     int len1=s1.getPosizione().size();
