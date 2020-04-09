@@ -28,6 +28,7 @@ SOURCES += \
     socketmanager.cpp
 
 HEADERS += \
+    Crdt.h \
     loginwindow.h \
     mainwindow.h \
     message.h \
