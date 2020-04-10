@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "textedit.h"
-#include "accountgui.h"
+#include "accountinterface.h"
 #include "socketmanager.h"
 
 extern socketManager *sock;
@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    AccountGui *getProfilePtr();
+    AccountInterface *getProfilePtr();
 
 private slots:
     void on_pushButton_clicked();
@@ -34,7 +34,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     TextEdit *te;
-    AccountGui *accountGui = nullptr;
+    AccountInterface *accountGui = nullptr;
     void newFile();
 
 
