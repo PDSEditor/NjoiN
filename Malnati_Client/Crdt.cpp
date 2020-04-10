@@ -6,7 +6,7 @@
 
 int Crdt::maxnum=100;
 int Crdt::counter=0;
-
+ extern socketManager *sock;
 
 bool exists(int index, std::vector<int> vector);
 

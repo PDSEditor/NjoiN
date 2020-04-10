@@ -5,7 +5,7 @@
 #include "textedit.h"
 #include "socketmanager.h"
 
-socketManager *sock;
+extern socketManager *sock;
 
 
 QT_BEGIN_NAMESPACE

@@ -99,7 +99,7 @@ void socketManager::onConnected()
 
     QByteArray a("Test start");
     long long n = 0;
-   // n = webSocket.sendBinaryMessage(a);
+    n = webSocket.sendBinaryMessage(a);
 
     Message *m = new Message(QChar('I'));
     Symbol *symbol = new Symbol();
