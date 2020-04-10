@@ -36,3 +36,11 @@ Message::Message()
 {
     symbol =new Symbol();
 }
+
+void Message::debugPrint()
+{
+    //Aggiungere parametri
+    qDebug()<<"Message->Action: "<<this->getAction()<<" Symbol: value="<<this->getSymbol()->getValue()
+           <<" position="<<this->getSymbol()->getPosizione()<<" siteId="<<this->getSymbol()->getSiteId()
+          <<"counter="<<this->getSymbol()->getCounter();
+}

@@ -41,29 +41,29 @@ void Server::processMessage( Message* mes) {
      *
     */
 
-    QString action = mes->getAction();
-    char first =  action.at(0).unicode();
+    QChar action = mes->getAction();
+    char first =  action.toLatin1();
 
     QString nomeFile;
     if (first == 'F' || first == 'f'){
-        QString delimiter = "-";
+        /*QString delimiter = "-";
         int index = action.indexOf(delimiter);
         nomeFile = action;
-        nomeFile.right(index);
+        nomeFile.right(index);*/
     }
 
 
     switch (first){
     case ('I' | 'i') :
-        dbMan->insertInDB(mes);
+        //dbMan->insertInDB(mes);
         this->dispatchMessage(mes);
         break;
     case ('D' | 'd' ):
-        dbMan->deleteFromDB(mes);
+        //dbMan->deleteFromDB(mes);
         this->dispatchMessage(mes);
         break;
     case ('F' | 'f'):
-        dbMan->retrieveFile(nomeFile);
+        //dbMan->retrieveFile(nomeFile);
         break;
     default:
         socketMan->sendError("01 - Azione richiesta non riconosciuta");

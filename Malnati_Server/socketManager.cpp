@@ -37,6 +37,72 @@ void SocketManager::messageToUser( Message* m, int siteId) {
     }
 }
 
+void SocketManager::binaryMessageToUser(Message *m, int siteId)
+{
+    int tmp;
+    QByteArray bytemex;
+    QChar action = m->getAction();
+    Symbol *symbol = m->getSymbol();
+    QVector<QString> params = m->getParams();
+
+
+    if(action==("I")||action==("D")){
+        if(action==("I")){
+            bytemex.append('I');
+        }
+        else{
+            bytemex.append('D');
+        }
+        bytemex.append('[');
+        for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
+            tmp=(symbol->getPosizione().at(i));
+            for(int p=0;p<4;p++){
+                bytemex.append(tmp >> (p * 8));
+            }
+        }
+        bytemex.append(']');
+        bytemex.append(symbol->getSiteId());//dimensione massima
+        tmp=(symbol->getCounter());
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(symbol->getValue());
+
+    }
+    else if(action==('C')||action==('R')){
+        if(action==('C')){
+            bytemex.append('C');
+        }
+        else{
+            bytemex.append('R');
+        }
+        bytemex.append(params.at(0));
+
+    }
+    else if(action=='L'){
+        bytemex.append('L');
+        tmp=params.at(0).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(0));
+        tmp=params.at(1).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(1));
+    }
+
+    qDebug()<<'lunghezza array di byte'<<bytemex.size();
+    //webSocket.sendBinaryMessage( bytemex);
+    auto it = this->clients.find(siteId);
+    if (it != clients.end()) {
+        QWebSocket *user = it.value();
+        //serialize message in JSON
+        user->sendBinaryMessage(bytemex);
+    }
+}
+
 void SocketManager::fileToUser(std::vector<Symbol> file, int user)
 {
 
@@ -52,16 +118,15 @@ void SocketManager::processTextMessage(QString message)
 
 }
 
-void SocketManager::processBinaryMessage(const QByteArray &data)
+void SocketManager::processBinaryMessage(const QByteArray &bytemex)
 {
-    QString dataStr = QString::fromStdString(data.toStdString());
-
+    qDebug()<<bytemex;
     //Qui devo differenziare i byte tra action param e symbol
     /*
      * Messaggio:
      * il caratter 1 rappresenta l'azione
      *  Se 1 == I =73 (insert) o == D =68 (delete)
-     *      allora il messaggio sarà composto nella seguente maniera "[?]-?-?"
+     *      allora il messaggio sarà composto nella seguente maniera "[?]??"
      *      dove i punti interrogativi sono nell'ordine posizione, siteid e counter
      *  Se 1 == R =82 (retrieve) o == C =67(create)
      *      allora il secondo carattere è un numero che rappresenta la lunghezza del campo nome file.
@@ -76,6 +141,9 @@ void SocketManager::processBinaryMessage(const QByteArray &data)
      */
 
     //enum Actions { I, D, R, C, L, T};
+
+    /*
+    QString dataStr = QString::fromStdString(data.toStdString());
 
     QChar action = dataStr[0];
 
@@ -179,6 +247,61 @@ void SocketManager::processBinaryMessage(const QByteArray &data)
     }
 
 
+
+    emit newMessage(m);
+    */
+
+    QByteArray c;
+    int tmp;
+    QChar action;
+    Symbol *symbol = new Symbol();
+    QVector<QString> params;
+
+    if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
+        std::vector<int> vtmp;
+        int i=2;
+        while(bytemex.at(i)!=']'){
+            c.clear();
+            c.append(bytemex.mid(i,4));
+            memcpy(&tmp,c,4);
+            vtmp.push_back(tmp);
+            i+=4;
+        }
+        i++;
+        symbol->setPosizione(vtmp);
+        symbol->setSiteId((int)bytemex.at(i++));
+        c.clear();
+        c.append(bytemex.mid(i,4));
+        memcpy(&tmp,c,4);
+        symbol->setCounter(tmp);
+        i+=4;
+        symbol->setValue(bytemex.at(i));
+    }
+    else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
+        if(bytemex.at(0)=='C')
+            action='C';
+        else
+            action='R';
+        params.push_back(bytemex.right(bytemex.length()-1));
+    }
+    else if(bytemex.at(0)=='L'){
+        action='L';
+        c.clear();
+        c.append(bytemex.mid(1,4));
+        memcpy(&tmp,c,4);
+        params.push_back(bytemex.mid(5,tmp));
+        c.clear();
+        c.append(bytemex.mid(tmp+5,4));
+        memcpy(&tmp,c,4);
+        params.push_back(bytemex.right(tmp));
+    }
+
+    Message *m = new Message;
+    m->setAction(action);
+    m->setParams(params);
+    m->setSymbol(symbol);
+
+    m->debugPrint();
 
     emit newMessage(m);
 

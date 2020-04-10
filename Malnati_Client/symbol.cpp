@@ -1,11 +1,11 @@
 #include "symbol.h"
 
-Symbol::Symbol(char value, std::vector<int> posizione, int siteId, int counter)
+Symbol::Symbol(char value, std::vector<int> posizione, int siteId, int counter): value(value), siteId(siteId), counter(counter)
 {
-    this->value = value;
+    //this->value = value;
     this->posizione = std::move(posizione);
-    this->siteId = siteId;
-    this->counter = counter;
+    //this->siteId = siteId;
+    //this->counter = counter;
 }
 Symbol::Symbol(){
 

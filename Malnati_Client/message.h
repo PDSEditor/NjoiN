@@ -5,6 +5,10 @@
 #include <QtCore/QList>
 
 #include "symbol.h"
+#include "string.h"
+#include <QtCore/QList>
+#include <QVector>
+
 
 
 class Symbol;
@@ -14,22 +18,23 @@ class Message
 
 private:
     Symbol *symbol;
-    QString action;
-    QString param;
+     QChar action;
+     QVector<QString> params;
 
 
 public:
-    Message(QString action): action(action) {}
-    Message();
+    Message(QChar action): action(action) {}
+        Message();
 
 
-    QString getAction() const;
-    void setAction(const QString &value);
+        QChar getAction() const;
+        void setAction(const QChar &value);
 
-    Symbol *getSymbol() const;
-    void setSymbol(Symbol *value);
-    QString getParam() const;
-    void setParam(const QString &value);
+        Symbol *getSymbol() const;
+        void setSymbol(Symbol *value);
+        QVector<QString> getParams() const;
+        void setParams(const QVector<QString> &value);
+
 };
 
 #endif // MESSAGE_H

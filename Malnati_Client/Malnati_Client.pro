@@ -21,7 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     accountinterface.cpp \
     changepwd.cpp \
-    crdt.cpp \
+    Crdt.cpp \
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -33,7 +33,7 @@ SOURCES += \
 HEADERS += \
     accountinterface.h \
     changepwd.h \
-    crdt.h \
+    Crdt.h \
     loginwindow.h \
     mainwindow.h \
     message.h \

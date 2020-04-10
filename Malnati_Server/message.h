@@ -4,6 +4,7 @@
 #include <string>
 #include <QtCore/QList>
 #include <QVector>
+#include <QDebug>
 
 #include "symbol.h"
 
@@ -23,6 +24,8 @@ public:
     Message(QChar action): action(action) {}
     Message();
 
+    void debugPrint();
+
 
     QChar getAction() const;
     void setAction(const QChar &value);
@@ -31,6 +34,7 @@ public:
     void setSymbol(Symbol *value);
     QVector<QString> getParams() const;
     void setParams(const QVector<QString> &value);
+
 };
 
 #endif // MESSAGE_H

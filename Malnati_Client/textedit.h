@@ -5,7 +5,7 @@
 #include <QMap>
 #include <QPointer>
 #include <symbol.h>
-#include <crdt.h>
+#include <Crdt.h>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -16,6 +16,9 @@ class QTextCharFormat;
 class QMenu;
 class QPrinter;
 QT_END_NAMESPACE
+
+
+
 
 class TextEdit : public QMainWindow
 {

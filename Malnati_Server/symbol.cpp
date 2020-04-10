@@ -1,5 +1,7 @@
 #include "symbol.h"
 
+
+
 Symbol::Symbol(std::vector<int> posizione, int siteId, int counter)
 {
     this->posizione = std::move(posizione);
@@ -11,6 +13,15 @@ Symbol::Symbol(std::vector<int> posizione, int siteId, int counter)
 Symbol::Symbol()
 {
 
+}
+char Symbol::getValue() const
+{
+    return value;
+}
+
+void Symbol::setValue(char v)
+{
+    value = v;
 }
 
 int Symbol::getSiteId() const

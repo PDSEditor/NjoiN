@@ -6,6 +6,7 @@
 #include "loginwindow.h"
 #include "accountinterface.h"
 
+socketManager *sock;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -15,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     for(int i=0;i<10;i++){
         addElementforUser("Documento " + QString::number(i));
     }
+sock=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 }
 
 MainWindow::~MainWindow()
