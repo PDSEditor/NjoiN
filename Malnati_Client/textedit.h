@@ -17,6 +17,9 @@ class QMenu;
 class QPrinter;
 QT_END_NAMESPACE
 
+
+
+
 class TextEdit : public QMainWindow
 {
     Q_OBJECT

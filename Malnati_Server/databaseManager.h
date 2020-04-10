@@ -8,6 +8,7 @@
 class DatabaseManager : public QObject
 {
     Q_OBJECT
+    /*
 public:
     explicit DatabaseManager(QObject *parent = nullptr);
     void insertInDB (Message* mes);
@@ -20,6 +21,7 @@ public slots:
     void updateDB(Message* m);
     void createFile (QString nome, int user);
     void retrieveFile(QString nome);
+    */
 };
 
 #endif // DATABASEMANAGER_H

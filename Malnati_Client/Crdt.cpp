@@ -3,8 +3,10 @@
 #include "Crdt.h"
 #include "symbol.h"
 
+
 int Crdt::maxnum=100;
 int Crdt::counter=0;
+
 
 bool exists(int index, std::vector<int> vector);
 
@@ -17,6 +19,7 @@ void print(const std::vector<int>& input)
 
 Crdt::Crdt() //da prendere dal server?
 {
+
 
 }
 
@@ -134,9 +137,14 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
     }
 
     Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounterAndIncrement());
-
+//
     this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
+    Message *m;
+    m->setAction('I');
 
+    m->setSymbol(&symbolToInsert);
+    sock->messageToServer(m);
+    sock->binaryMessageToServer(m);
     print(fractionalPos);
     return symbolToInsert;
 }
