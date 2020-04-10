@@ -6,14 +6,14 @@
 
 int Crdt::maxnum=100;
 int Crdt::counter=0;
-
+ extern socketManager *sock;
 
 bool exists(int index, std::vector<int> vector);
 
 void print(const std::vector<int>& input)
 {
     for(auto i: input){
-        qDebug() << "pos: " << i;
+        //qDebug() << "pos: " << i;
     }
 }
 
