@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "textedit.h"
+#include "accountgui.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -16,15 +17,23 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+    AccountGui *getProfilePtr();
 
 private slots:
     void on_pushButton_clicked();
     void addElementforUser(QString);
 
+    void on_actionNew_triggered();
+
+    void on_actionAccount_triggered();
+
+    void on_actionClose_triggered();
+
 private:
     Ui::MainWindow *ui;
     TextEdit *te;
+    AccountGui *accountGui = nullptr;
+    void newFile();
 
 
 };

@@ -3,6 +3,8 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include "loginwindow.h"
+#include "accountinterface.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,10 +21,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-
-void MainWindow::on_pushButton_clicked()
-{
+void MainWindow::newFile(){
     te = new TextEdit(this);
 
     const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
@@ -36,9 +35,31 @@ void MainWindow::on_pushButton_clicked()
     te->fileNew();
 
     te->show();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    newFile();
 
 }
 
 void MainWindow::addElementforUser(QString string){
     ui->listWidget->addItem(string);
+}
+
+void MainWindow::on_actionNew_triggered()
+{
+    newFile();
+}
+
+void MainWindow::on_actionAccount_triggered()
+{
+    AccountInterface ai;
+    ai.exec();
+
+}
+
+void MainWindow::on_actionClose_triggered()
+{
+    this->close();
 }
