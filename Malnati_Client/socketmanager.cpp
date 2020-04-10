@@ -3,9 +3,10 @@
 socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent)
 {
     //url = *(new QUrl("localhost:1234"));
-    //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
+    connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
     //connect(webSocket, &QWebSocket::disconnected, this, &socketManager::closed);
-    //webSocket.open(QUrl(url));
+    //webSocket= new QWebSocket();
+    webSocket.open(QUrl(url));
     //qDebug()<<webSocket.isValid();
 }
 
@@ -84,6 +85,8 @@ void socketManager::binaryMessageToServer(Message *m)
 
     //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     webSocket.sendBinaryMessage( bytemex);
+    int i;
+    i=0;
 }
 
 void socketManager::onConnected()
@@ -94,7 +97,7 @@ void socketManager::onConnected()
 
     QByteArray a("Test start");
     long long n = 0;
-    n = webSocket.sendBinaryMessage(a);
+   // n = webSocket.sendBinaryMessage(a);
 
     Message *m = new Message(QChar('I'));
     Symbol *symbol = new Symbol();
@@ -107,7 +110,7 @@ void socketManager::onConnected()
     symbol->setPosizione(v);
     m->setSymbol(symbol);
 
-    binaryMessageToServer(m);
+    //binaryMessageToServer(m);
     //qDebug() << "Numero byte inviati: "<< n;
 
     qDebug() << "socket Connected";

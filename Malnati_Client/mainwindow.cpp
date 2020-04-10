@@ -4,7 +4,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-socketManager *sock;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
