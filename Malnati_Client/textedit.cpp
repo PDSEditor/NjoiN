@@ -112,7 +112,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 
     textEdit = new QTextEdit(this);
-    crdt = new Crdt();
+    //crdt = new Crdt();
     //symbols = new std::vector<Symbol>();
     //QTextDocument document = textEdit->document();
 

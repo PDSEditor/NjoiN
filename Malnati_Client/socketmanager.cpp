@@ -95,6 +95,8 @@ void socketManager::onConnected()
 {
     connect(&webSocket, &QWebSocket::textMessageReceived,
             this, &socketManager::onTextMessageReceived);
+    connect(&webSocket, &QWebSocket::binaryMessageReceived,
+            this, &socketManager::onBinaryMessageReceived);
     //webSocket.sendTextMessage(QStringLiteral("Hello, world!"));
 
     QByteArray a("Test start");
