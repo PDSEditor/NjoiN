@@ -35,8 +35,10 @@ void MainWindow::newFile(){
    // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
 
     te->fileNew();
-
+    emit(newTextEdit(te));
     te->show();
+    // This is available in all editors.
+
 }
 
 void MainWindow::on_pushButton_clicked()

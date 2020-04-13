@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+//#include "mainwindow.h"
 
 #include "textedit.h"
 
@@ -6,8 +6,9 @@
 #include <QDesktopWidget>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
-#include "loginwindow.h"
-#include "socketmanager.h"
+//#include "loginwindow.h"
+//#include "socketmanager.h"
+#include "client.h"
 #include <QStyle>
 #include <QDialog>
 
@@ -27,10 +28,13 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
     parser.addPositionalArgument("file", "The file to open.");
     parser.process(a);
+    QString ip_address("127.0.0.1");
+    if (argc == 2){
+        ip_address = QString(argv[1]);
+    }
 
-
-    LoginWindow lw;
-    /*const QRect availableGeometry = QApplication::desktop()->availableGeometry(&lw);
+    /*LoginWindow lw;
+    const QRect availableGeometry = QApplication::desktop()->availableGeometry(&lw);
         lw.resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
         lw.move((availableGeometry.width() - lw.width()) / 2,
                 (availableGeometry.height() - lw.height()) / 2);
@@ -41,12 +45,12 @@ int main(int argc, char *argv[])
             height *= 0.5; // 90% of the screen size
             QSize newSize( width, height );
 
-            lw.resize(newSize);*/
+            lw.resize(newSize);
 
     lw.exec();
 
     if(lw.getIsLogin()==1){
-        MainWindow mw;
+        MainWindow mw;*/
        /* const QRect availableGeometryMw = QApplication::desktop()->availableGeometry(&mw);
         int width = availableGeometryMw.width();
             int height = availableGeometryMw.height();
@@ -61,10 +65,10 @@ int main(int argc, char *argv[])
                        QApplication::desktop()->availableGeometry(&mw)
                    )
                );*/
-        mw.show();
+       /* mw.show();
         return a.exec();
-    }
-
+    }*/
+    Client client();
 
 
 
@@ -72,6 +76,6 @@ int main(int argc, char *argv[])
     //te.show();
     //te.onTextConncet();
 
-    return 1;
+    return a.exec();
 }
 
