@@ -19,6 +19,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Crdt.cpp \
+    client.cpp \
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
 
 HEADERS += \
     Crdt.h \
+    client.h \
     loginwindow.h \
     mainwindow.h \
     message.h \

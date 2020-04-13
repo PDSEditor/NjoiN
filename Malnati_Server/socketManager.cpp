@@ -33,7 +33,7 @@ void SocketManager::messageToUser( Message* m, int siteId) {
     if (it != clients.end()) {
         QWebSocket *user = it.value();
         //serialize message in JSON
-        user->sendTextMessage("Serialized message");
+        user->sendBinaryMessage("Serialized message");
     }
 }
 
@@ -333,7 +333,13 @@ void SocketManager::onNewConnection()
     clients.insert(siteId, socket);
 
     //successivamente comunicare al client il proprio siteId
-
+   Symbol s;
+   s.setPosizione({1,2});
+   s.setValue('a');
+    Message m;
+    m.setAction('I');
+    m.setSymbol(&s);
+    messageToUser(&m,0);
 }
 
 void SocketManager::socketDisconnected()
