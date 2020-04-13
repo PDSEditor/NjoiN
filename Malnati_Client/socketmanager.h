@@ -22,11 +22,9 @@ signals:
     void newMessage(Message* m);
 
 public slots:
-
-
     void onConnected();
     void onTextMessageReceived(QString message);
-    void onBinaryMessageReceived(QByteArray bytemex);
+    void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal
 
 public:
      void binaryMessageToServer (Message* m);

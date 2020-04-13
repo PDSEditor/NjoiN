@@ -23,6 +23,8 @@ void socketManager::messageToServer(Message *m)
     //qDebug()<<"Testo inviato: sia m diu ";
 }
 
+
+//Send a message from client to server
 void socketManager::binaryMessageToServer(Message *m)
 {
     //qDebug()<<"Testo ricevuto: ";
@@ -124,6 +126,7 @@ void socketManager::onTextMessageReceived(QString message)
 
 }
 
+//Received binary message from server and emit a signal
 void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 {
     QByteArray c;
