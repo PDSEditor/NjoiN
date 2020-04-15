@@ -22,7 +22,7 @@ private:
     MainWindow *ptrmw;
     socketManager *sockm;
     Crdt *crdt;
-    QMap<QString,TextEdit> textList;
+   // QMap<QString,TextEdit> textList;
 
 };
 
