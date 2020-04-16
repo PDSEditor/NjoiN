@@ -19,7 +19,7 @@ void ChangePwd::on_buttonBox_accepted()
 {
     QString pwd = ui->lineEdit->text();
     if ( pwd.size() == 0 ){
-        QMessageBox::warning(this, "PoliDox", "Password not valid");
+        QMessageBox::warning(this, "Password", "Password not valid");
     } else {
         emit pwdUpdate(pwd);
         this->hide();
