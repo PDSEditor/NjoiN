@@ -7,19 +7,16 @@ Client::Client()
      LoginWindow lw;
 
      lw.exec();
-        MainWindow *mw = new MainWindow();
+         mw = new MainWindow();
      if(lw.getIsLogin()==1){
-
-         ptrmw = mw;
          mw->show();
-
      }
 
     //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
     connect(mw, &MainWindow::newTextEdit, this, &Client::receive_textEdit);
 }
 Client::~Client(){
-
+    delete mw;
 }
 void Client::receive_textEdit(TextEdit *t){
    // this->textList.insert("prova1",t);
