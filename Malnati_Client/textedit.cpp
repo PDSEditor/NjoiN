@@ -453,7 +453,7 @@ void TextEdit::setCurrentFileName(const QString &fileName)
 void TextEdit::fileNew()
 {
     if (maybeSave()) {
-        textEdit->clear();
+        //textEdit->clear();
         setCurrentFileName(QString());
     }
 }
@@ -702,11 +702,10 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     qDebug() << "position: " << position;
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
     if(charsAdded!= 0){
-            //s1= new std::vector<int>();
+        for(int i=0; i<charsAdded; i++){
             Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-            //symbols->push_back(symbol);
-
-
+            position+=1;
+        }
         }
         else{
             //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
@@ -716,8 +715,11 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     //textEdit->textCursor().setPosition(symbol.getPosizione());
 
     if(charsRemoved!=0){
-   // Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());
-   // crdt->localErase(symbol);
+        //Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());
+        //crdt->localErase(textEdit->document()->characterAt(position).toLatin1(), position-1);
+        for(int i=0; i<charsRemoved; i++){
+            crdt->localErase(position+i);
+        }
     }
     // Code that executes on text change here
 }

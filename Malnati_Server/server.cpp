@@ -2,8 +2,21 @@
 
 Server::Server(QObject *parent) : QObject(parent)
 {
+
     this->socketMan = new SocketManager();
     this->dbMan = new DatabaseManager();
+
+    /***************************
+     ****** TEST DB ***********
+     *************************/
+
+//    QString name = "angelo";
+//    QString pass = "ciao";
+//    dbMan->registerUser(name, pass);
+//    dbMan->checkUserPsw(name, pass);
+//    dbMan->deleteUser(name);
+
+    /*****************************/
 
     QObject::connect(this->socketMan, &SocketManager::newMessage, this, &Server::processMessage);
 

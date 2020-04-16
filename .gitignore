@@ -2,3 +2,5 @@ build-Malnati_Client-Desktop-Debug
 build-Malnati_Client-Desktop_Qt_5_14_1_GCC_64bit-Debug/
 build-Malnati_Server-Desktop_Qt_5_14_1_GCC_64bit-Debug/
 build-Malnati_Server-Desktop-Debug
+build-Malnati_Client-Desktop_Qt_5_14_1_MinGW_32_bit-Debug
+build-Malnati_Server-Desktop_Qt_5_14_1_MinGW_32_bit-Debug

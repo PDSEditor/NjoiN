@@ -15,8 +15,8 @@ void print(const std::vector<int>& input)
     }
 }
 
-Crdt::Crdt():siteId(1) //da prendere dal server?
-{
+Crdt::Crdt(){
+    this->siteId=1; //da far generare al server
 }
 
 std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following, std::vector<int> &tmp, const int maxnum){
@@ -280,4 +280,9 @@ int Crdt::compare(Symbol s1, Symbol s2){
 
     }
     return res;
+}
+
+Crdt::~Crdt(){
+    //rilasciare la memoria
+
 }

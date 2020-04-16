@@ -26,6 +26,8 @@ public:
     int remotedelete(Symbol s);
 
     std::vector<Symbol> getSymbols();
+
+    ~Crdt();
 };
 
 #endif // CRDT_H
