@@ -25,9 +25,13 @@ public slots:
     void onConnected();
     void onTextMessageReceived(QString message);
     void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal
+    void binaryMessageToServer (Message* m);
+    //
 
+
+//
 public:
-     void binaryMessageToServer (Message* m);
+
      void messageToServer (Message* m);
 
 private:

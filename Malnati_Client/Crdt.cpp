@@ -60,7 +60,7 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
  * si può ancora EVITARE di avere i due vect temp following e preceding
  * passando this->symbols[precedingC].getPosizione() per valore
  * ******************************/
-Symbol Crdt::localInsert(char value, int precedingC, int followingC){
+Message Crdt::localInsert(char value, int precedingC, int followingC){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
     size_t symbolsSize = this->symbols.size();
@@ -139,14 +139,14 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
     Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounterAndIncrement());
 //
     this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
-    Message *m;
-    m->setAction('I');
+    Message m;
+    m.setAction('I');
 
-    m->setSymbol(&symbolToInsert);
-    sock->messageToServer(m);
-    sock->binaryMessageToServer(m);
+    m.setSymbol(&symbolToInsert);
+    //sock->messageToServer(m);
+    //sock->binaryMessageToServer(m);
     print(fractionalPos);
-    return symbolToInsert;
+    return m;
 }
 
 //MAI USATA

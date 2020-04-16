@@ -34,7 +34,7 @@ private:
 
 public:
     explicit Crdt();
-    Symbol localInsert(char value, int preceding, int following);
+    Message localInsert(char value, int preceding, int following);
     void localErase(int position);
     int getSiteId();
     int getCounter();

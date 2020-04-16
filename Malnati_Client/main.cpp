@@ -68,8 +68,16 @@ int main(int argc, char *argv[])
        /* mw.show();
         return a.exec();
     }*/
-    Client client();
+    LoginWindow lw;
 
+    lw.exec();
+    MainWindow mw;
+    Client client(&mw);
+    if(lw.getIsLogin()==1){
+
+
+        mw.show();
+    }
 
 
     //QObject::connect(&client, &EchoClient::closed, &a, &QCoreApplication::quit);

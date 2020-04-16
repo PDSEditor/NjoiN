@@ -185,3 +185,6 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 }
 
 
+
+
+

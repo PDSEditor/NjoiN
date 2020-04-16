@@ -12,8 +12,9 @@ class Client: public QObject
 {
     Q_OBJECT
 public:
-    Client();
-    ~Client();
+    Client(MainWindow* mw);
+    //~Client();
+
 
 private slots:
     void receive_textEdit(TextEdit *t);
@@ -22,7 +23,7 @@ private:
     MainWindow *ptrmw;
     socketManager *sockm;
     Crdt *crdt;
-    QMap<QString,TextEdit> textList;
+    QMap<QString,TextEdit*> textList;
 
 };
 
