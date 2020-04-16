@@ -19,7 +19,7 @@ private slots:
     void receive_textEdit(TextEdit *t);
 
 private:
-    MainWindow *ptrmw;
+    MainWindow *mw = nullptr;
     socketManager *sockm;
     Crdt *crdt;
    // QMap<QString,TextEdit> textList;
