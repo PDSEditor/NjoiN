@@ -3,8 +3,10 @@
 #include "Crdt.h"
 #include "symbol.h"
 
+
 int Crdt::maxnum=100;
 int Crdt::counter=0;
+ extern socketManager *sock;
 
 bool exists(int index, std::vector<int> vector);
 
@@ -15,8 +17,10 @@ void print(const std::vector<int>& input)
     }
 }
 
-Crdt::Crdt(){
-    this->siteId=1; //da far generare al server
+Crdt::Crdt() //da prendere dal server?
+{
+
+
 }
 
 std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following, std::vector<int> &tmp, const int maxnum){
@@ -56,7 +60,7 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
  * si può ancora EVITARE di avere i due vect temp following e preceding
  * passando this->symbols[precedingC].getPosizione() per valore
  * ******************************/
-Symbol Crdt::localInsert(char value, int precedingC, int followingC){
+Message Crdt::localInsert(char value, int precedingC, int followingC){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
     size_t symbolsSize = this->symbols.size();
@@ -133,11 +137,16 @@ Symbol Crdt::localInsert(char value, int precedingC, int followingC){
     }
 
     Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounterAndIncrement());
-
+//
     this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
+    Message m;
+    m.setAction('I');
 
+    m.setSymbol(&symbolToInsert);
+    //sock->messageToServer(m);
+    //sock->binaryMessageToServer(m);
     print(fractionalPos);
-    return symbolToInsert;
+    return m;
 }
 
 //MAI USATA
@@ -255,6 +264,11 @@ int Crdt::remotedelete(Symbol s){
 
 
 
+void Crdt::remoteM(Message *m)
+{
+
+}
+
 int Crdt::compare(Symbol s1, Symbol s2){
     int len1=s1.getPosizione().size();
     int len2=s2.getPosizione().size();
@@ -280,9 +294,4 @@ int Crdt::compare(Symbol s1, Symbol s2){
 
     }
     return res;
-}
-
-Crdt::~Crdt(){
-    //rilasciare la memoria
-
 }

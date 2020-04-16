@@ -17,17 +17,24 @@ class QMenu;
 class QPrinter;
 QT_END_NAMESPACE
 
+
+
+
 class TextEdit : public QMainWindow
 {
     Q_OBJECT
 
 public:
     TextEdit(QWidget *parent = 0);
-
     bool load(const QString &f);
+    void setCrdt(Crdt *crdtclient);
+    void setSocketM(socketManager *sockclient);
 
 public slots:
     void fileNew();
+
+signals:
+    void sendMessage(Message *m);
 
 protected:
     void closeEvent(QCloseEvent *e) override;
@@ -95,6 +102,7 @@ private:
     QString fileName;
     QTextEdit *textEdit;
     Crdt *crdt;
+    socketManager *sockm;
     std :: vector<Symbol> *symbols;
 };
 

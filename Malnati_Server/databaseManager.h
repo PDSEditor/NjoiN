@@ -29,9 +29,9 @@ private:
     mongocxx::database db;
     mongocxx::client client;
     mongocxx::uri uri;
-
+    
 public:
-    DatabaseManager();
+    explicit DatabaseManager(QObject *parent = nullptr);
     int registerUser(QString _id, QString password);
     int deleteUser  (QString _id);
     int checkUserPsw(QString _id, QString password);

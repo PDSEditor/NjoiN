@@ -5,6 +5,10 @@
 #include "QtWebSockets/qwebsocket.h"
 #include "message.h"
 #include <QDebug>
+#include <string>
+#include "string.h"
+#include <QDataStream>
+
 
 class socketManager : public QObject
 {
@@ -18,14 +22,22 @@ signals:
     void newMessage(Message* m);
 
 public slots:
-    void messageToServer (Message* m);
-    void binaryMessageToServer (Message* m);
     void onConnected();
     void onTextMessageReceived(QString message);
+    void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal
+    void binaryMessageToServer (Message* m);
+    //
+
+
+//
+public:
+
+     void messageToServer (Message* m);
 
 private:
     QWebSocket webSocket;
     QUrl url;
+    int i=100;
 };
 
 #endif // SOCKETMANAGER_H

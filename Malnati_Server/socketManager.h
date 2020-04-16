@@ -34,6 +34,7 @@ signals:
 
 public slots:
     void messageToUser (Message* m, int siteId);
+    void binaryMessageToUser(Message* m, int siteId);
     void fileToUser (std::vector<Symbol> file, int user);
     void onNewConnection();
     void processTextMessage(QString message);

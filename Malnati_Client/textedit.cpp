@@ -48,6 +48,8 @@
 **
 ****************************************************************************/
 
+#include <QColor>
+
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -94,6 +96,9 @@ const QString rsrcPath = ":/images/mac";
 const QString rsrcPath = ":/images/win";
 #endif
 
+
+
+
 TextEdit::TextEdit(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -102,8 +107,11 @@ TextEdit::TextEdit(QWidget *parent)
 #endif
     setWindowTitle(QCoreApplication::applicationName());
 
+
+
+
+
     textEdit = new QTextEdit(this);
-    crdt = new Crdt();
     //symbols = new std::vector<Symbol>();
     //QTextDocument document = textEdit->document();
 
@@ -169,6 +177,8 @@ TextEdit::TextEdit(QWidget *parent)
     pal.setColor(QPalette::Text, QColor(Qt::black));
     textEdit->setPalette(pal);
 #endif
+
+
 }
 
 
@@ -418,6 +428,17 @@ bool TextEdit::load(const QString &f)
     return true;
 }
 
+void TextEdit::setCrdt(Crdt *crdtclient)
+{
+    crdt=crdtclient;
+}
+
+void TextEdit::setSocketM(socketManager *sockclient)
+{
+    sockm=sockclient;
+     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
+}
+
 bool TextEdit::maybeSave()
 {
     if (!textEdit->document()->isModified())
@@ -448,14 +469,16 @@ void TextEdit::setCurrentFileName(const QString &fileName)
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName, QCoreApplication::applicationName()));
     setWindowModified(false);
+
 }
 
 void TextEdit::fileNew()
 {
     if (maybeSave()) {
         //textEdit->clear();
-        setCurrentFileName(QString());
+        (setCurrentFileName(QString()));
     }
+
 }
 
 void TextEdit::fileOpen()
@@ -471,6 +494,7 @@ void TextEdit::fileOpen()
         statusBar()->showMessage(tr("Opened \"%1\"").arg(QDir::toNativeSeparators(fn)));
     else
         statusBar()->showMessage(tr("Could not open \"%1\"").arg(QDir::toNativeSeparators(fn)));
+
 }
 
 bool TextEdit::fileSave()
@@ -699,39 +723,22 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
     QTextCursor  cursor = textEdit->textCursor();
+
     qDebug() << "position: " << position;
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
     if(charsAdded!= 0){
         for(int i=0; i<charsAdded; i++){
-            Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+            Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
             position+=1;
+            emit(sendMessage(&m));
         }
-        }
-        else{
-            //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
-            //symbols->push_back(symbol);
-        }
-
-    //textEdit->textCursor().setPosition(symbol.getPosizione());
-
+    }
     if(charsRemoved!=0){
-        //Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());
-        //crdt->localErase(textEdit->document()->characterAt(position).toLatin1(), position-1);
         for(int i=0; i<charsRemoved; i++){
             crdt->localErase(position+i);
         }
     }
-    // Code that executes on text change here
 }
-
-/*Symbol TextEdit :: searchSymbolToErase(char c){
-    for( std::vector<Symbol>::iterator i = symbols->begin(); i!=symbols->end(); ++i){
-        if(i->getValue()== c){
-            return *i;
-         }
-    }
-    return *new Symbol();
-}*/
 
 void TextEdit::cursorPositionChanged()
 {
