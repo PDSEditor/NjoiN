@@ -1,6 +1,7 @@
 QT += core gui
 QT += websockets
 
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -18,7 +19,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    crdt.cpp \
+    accountinterface.cpp \
+    changepwd.cpp \
+    Crdt.cpp \
+    client.cpp \
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -28,7 +32,10 @@ SOURCES += \
     socketmanager.cpp
 
 HEADERS += \
-    crdt.h \
+    accountinterface.h \
+    changepwd.h \
+    Crdt.h \
+    client.h \
     loginwindow.h \
     mainwindow.h \
     message.h \
@@ -37,6 +44,8 @@ HEADERS += \
     socketmanager.h
 
 FORMS += \
+    accountinterface.ui \
+    changepwd.ui \
     loginwindow.ui \
     mainwindow.ui
 
@@ -53,3 +62,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 #unix|win32: LIBS += -lmongoc-1.0
+
+DISTFILES +=

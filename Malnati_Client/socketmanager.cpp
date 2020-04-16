@@ -5,6 +5,7 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     //url = *(new QUrl("localhost:1234"));
     connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
     //connect(webSocket, &QWebSocket::disconnected, this, &socketManager::closed);
+    //webSocket= new QWebSocket();
     webSocket.open(QUrl(url));
     //qDebug()<<webSocket.isValid();
 }
@@ -16,23 +17,27 @@ socketManager::~socketManager()
 
 void socketManager::messageToServer(Message *m)
 {
-    QString tmp = m->getAction();
-    webSocket.sendTextMessage(tmp);
+    //QString tmp = m->getAction();
+    //webSocket.sendTextMessage(tmp);
 
-    qDebug()<<"Testo inviato: "<<tmp;
+    //qDebug()<<"Testo inviato: sia m diu ";
 }
 
+
+//Send a message from client to server
 void socketManager::binaryMessageToServer(Message *m)
 {
+    //qDebug()<<"Testo ricevuto: ";
+
     int tmp;
     QByteArray bytemex;
     QChar action = m->getAction();
     Symbol *symbol = m->getSymbol();
-    QVector<QString> params = m->getParams();
 
 
-    if(action==("I")||action==("D")){
-        if(action==("I")){
+
+    if(action==('I')||action==("D")){
+        if(action==('I')){
             bytemex.append('I');
         }
         else{
@@ -55,6 +60,7 @@ void socketManager::binaryMessageToServer(Message *m)
 
     }
     else if(action==('C')||action==('R')){
+        QVector<QString> params = m->getParams();
         if(action==('C')){
             bytemex.append('C');
         }
@@ -65,6 +71,7 @@ void socketManager::binaryMessageToServer(Message *m)
 
     }
     else if(action=='L'){
+        QVector<QString> params = m->getParams();
         bytemex.append('L');
         tmp=params.at(0).length();
         for(int p=0;p<4;p++){
@@ -78,14 +85,18 @@ void socketManager::binaryMessageToServer(Message *m)
         bytemex.append(params.at(1));
     }
 
-    qDebug()<<'lunghezza array di byte'<<bytemex.size();
+    //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     webSocket.sendBinaryMessage( bytemex);
+    int i;
+    i=0;
 }
 
 void socketManager::onConnected()
 {
     connect(&webSocket, &QWebSocket::textMessageReceived,
             this, &socketManager::onTextMessageReceived);
+    connect(&webSocket, &QWebSocket::binaryMessageReceived,
+            this, &socketManager::onBinaryMessageReceived);
     //webSocket.sendTextMessage(QStringLiteral("Hello, world!"));
 
     QByteArray a("Test start");
@@ -103,7 +114,7 @@ void socketManager::onConnected()
     symbol->setPosizione(v);
     m->setSymbol(symbol);
 
-    binaryMessageToServer(m);
+    //binaryMessageToServer(m);
     //qDebug() << "Numero byte inviati: "<< n;
 
     qDebug() << "socket Connected";
@@ -115,6 +126,7 @@ void socketManager::onTextMessageReceived(QString message)
 
 }
 
+//Received binary message from server and emit a signal
 void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 {
     QByteArray c;
@@ -171,5 +183,8 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 
 
 }
+
+
+
 
 

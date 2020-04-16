@@ -7,7 +7,7 @@
 #include <QDesktopWidget>
 
 LoginWindow::LoginWindow(QWidget *parent) :
-    QMainWindow(parent),
+    QDialog(parent),
     ui(new Ui::LoginWindow)
 {
     isLogin = 0;
@@ -28,36 +28,22 @@ void LoginWindow::on_pushButton_login_clicked()
 
     if(username == "test" && password == "test"){
         QMessageBox::information(this,"Login","Username e password corretti");
-        mw = new MainWindow(this);
-
+       // mw = new MainWindow(this);
+        setIsLogin(1);
        // TextEdit te;
-
-        const QRect availableGeometryMw = QApplication::desktop()->availableGeometry(mw);
       //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
       /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
                 (availableGeometryMw.height() - mw->height()) / 2);*/
 
-        int width = availableGeometryMw.width();
-            int height = availableGeometryMw.height();
-            width *= 0.9; // 90% of the screen size
-            height *= 0.9; // 90% of the screen size
-            QSize newSize( width, height );
-            setGeometry(
-                   QStyle::alignedRect(
-                       Qt::LeftToRight,
-                       Qt::AlignCenter,
-                       newSize,
-                       QApplication::desktop()->availableGeometry(mw)
-                   )
-               );
 
+        this->accept();
 
         //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
        // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
 
         //te.fileNew();
-        mw->show();
-        hide();
+       // mw->show();
+       // hide();
     }
     else{
         QMessageBox::warning(this,"Login","Username e password non sono corretti");

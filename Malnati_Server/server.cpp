@@ -55,15 +55,15 @@ void Server::processMessage( Message* mes) {
 
     switch (first){
     case ('I' | 'i') :
-        dbMan->insertInDB(mes);
+        //dbMan->insertInDB(mes);
         this->dispatchMessage(mes);
         break;
     case ('D' | 'd' ):
-        dbMan->deleteFromDB(mes);
+        //dbMan->deleteFromDB(mes);
         this->dispatchMessage(mes);
         break;
     case ('F' | 'f'):
-        dbMan->retrieveFile(nomeFile);
+        //dbMan->retrieveFile(nomeFile);
         break;
     default:
         socketMan->sendError("01 - Azione richiesta non riconosciuta");

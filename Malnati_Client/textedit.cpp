@@ -96,6 +96,9 @@ const QString rsrcPath = ":/images/mac";
 const QString rsrcPath = ":/images/win";
 #endif
 
+
+
+
 TextEdit::TextEdit(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -104,8 +107,11 @@ TextEdit::TextEdit(QWidget *parent)
 #endif
     setWindowTitle(QCoreApplication::applicationName());
 
+
+
+
+
     textEdit = new QTextEdit(this);
-    crdt = new Crdt();
     //symbols = new std::vector<Symbol>();
     //QTextDocument document = textEdit->document();
 
@@ -171,6 +177,8 @@ TextEdit::TextEdit(QWidget *parent)
     pal.setColor(QPalette::Text, QColor(Qt::black));
     textEdit->setPalette(pal);
 #endif
+
+
 }
 
 
@@ -418,6 +426,17 @@ bool TextEdit::load(const QString &f)
 
     setCurrentFileName(f);
     return true;
+}
+
+void TextEdit::setCrdt(Crdt *crdtclient)
+{
+    crdt=crdtclient;
+}
+
+void TextEdit::setSocketM(socketManager *sockclient)
+{
+    sockm=sockclient;
+     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
 }
 
 bool TextEdit::maybeSave()
@@ -709,9 +728,9 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
     if(charsAdded!= 0){
             //s1= new std::vector<int>();
-            Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+            Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
             //symbols->push_back(symbol);
-
+            emit(sendMessage(&m));
 
 
 
