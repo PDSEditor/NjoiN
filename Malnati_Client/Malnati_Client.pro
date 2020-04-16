@@ -61,6 +61,6 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-unix|win32: LIBS += -lmongoc-1.0
+#unix|win32: LIBS += -lmongoc-1.0
 
 DISTFILES +=

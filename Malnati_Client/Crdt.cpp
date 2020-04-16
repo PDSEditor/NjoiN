@@ -295,3 +295,9 @@ int Crdt::compare(Symbol s1, Symbol s2){
     }
     return res;
 }
+
+Crdt::~Crdt(){
+    //rilasciare la memoria
+
+}
+

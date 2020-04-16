@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QCryptographicHash>
 
-DatabaseManager::DatabaseManager()
+DatabaseManager::DatabaseManager(QObject* parent)
 {
 //    this->instance = new mongocxx::instance{};
     //this->_instance = std::unique_ptr<mongocxx::instance>(new mongocxx::instance{});  //this should be done only once.
