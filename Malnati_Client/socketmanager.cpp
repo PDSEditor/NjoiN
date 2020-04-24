@@ -101,7 +101,7 @@ void socketManager::onConnected()
 
     QByteArray a("Test start");
     long long n = 0;
-    n = webSocket.sendBinaryMessage(a);
+    //n = webSocket.sendBinaryMessage(a);
 
     Message *m = new Message(QChar('I'));
     Symbol *symbol = new Symbol();
@@ -134,7 +134,7 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
     QChar action;
     Symbol *symbol = new Symbol();
     QVector<QString> params;
-
+    action=bytemex.at(0);
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
         std::vector<int> vtmp;
         int i=2;

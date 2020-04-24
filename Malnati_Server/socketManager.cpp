@@ -256,7 +256,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     QChar action;
     Symbol *symbol = new Symbol();
     QVector<QString> params;
-
+    action=bytemex.at(0);
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
         std::vector<int> vtmp;
         int i=2;
@@ -302,7 +302,8 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     m->setSymbol(symbol);
 
     m->debugPrint();
-
+    //
+    this->binaryMessageToUser(m,0);
     emit newMessage(m);
 
 }
@@ -339,7 +340,7 @@ void SocketManager::onNewConnection()
     Message m;
     m.setAction('I');
     m.setSymbol(&s);
-    messageToUser(&m,0);
+    //messageToUser(&m,0);
 }
 
 void SocketManager::socketDisconnected()

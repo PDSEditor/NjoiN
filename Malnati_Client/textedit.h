@@ -32,6 +32,7 @@ public:
 
 public slots:
     void fileNew();
+    void reciveSymbol(Message *m);
 
 signals:
     void sendMessage(Message *m);
@@ -76,6 +77,7 @@ private:
     void colorChanged(const QColor &c);
     void alignmentChanged(Qt::Alignment a);
     Symbol searchSymbolToErase(char c);
+    bool externAction;
 
     QAction *actionSave;
     QAction *actionTextBold;

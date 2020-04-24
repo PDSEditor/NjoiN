@@ -112,6 +112,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 
     textEdit = new QTextEdit(this);
+    externAction=false;
     //symbols = new std::vector<Symbol>();
     //QTextDocument document = textEdit->document();
 
@@ -481,6 +482,17 @@ void TextEdit::fileNew()
 
 }
 
+void TextEdit::reciveSymbol(Message *m)
+{
+    externAction=true;
+    Symbol tmp;
+    tmp.setValue('a');
+    tmp.setPosizione({75});
+    textEdit->textCursor().insertText("a");
+    crdt->remoteinsert(tmp);
+
+}
+
 void TextEdit::fileOpen()
 {
     QFileDialog fileDialog(this, tr("Open File..."));
@@ -722,12 +734,14 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
-    QTextCursor  cursor = textEdit->textCursor();
+   if(externAction==false){
+       QTextCursor  cursor = textEdit->textCursor();
 
     qDebug() << "position: " << position;
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
     if(charsAdded!= 0){
             //s1= new std::vector<int>();
+        int c=textEdit->document()->characterAt(position).toLatin1();
             Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
             //symbols->push_back(symbol);
             emit(sendMessage(&m));
@@ -748,6 +762,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
     }
     // Code that executes on text change here
+   }
+   externAction=false;
 }
 
 /*Symbol TextEdit :: searchSymbolToErase(char c){
