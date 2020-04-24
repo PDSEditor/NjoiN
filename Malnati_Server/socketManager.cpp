@@ -5,8 +5,9 @@
 
 SocketManager::SocketManager(QObject *parent) : QObject(parent),
     qWebSocketServer(new QWebSocketServer(QStringLiteral("Server Shared Editor"),
-                                          QWebSocketServer::NonSecureMode, this))
-    {
+                                          QWebSocketServer::NonSecureMode, this)){
+
+        SocketManager::siteId = 0;
 
         if (qWebSocketServer->listen(QHostAddress::Any, N_PORT)) {   //ascolta su tutte le interfacce, posta scelta automaticamente
 
@@ -16,6 +17,7 @@ SocketManager::SocketManager(QObject *parent) : QObject(parent),
                     this, &SocketManager::onNewConnection);
 
             //connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &EchoServer::closed);
+
 
         }
 }
@@ -31,9 +33,11 @@ void SocketManager::messageToUser( Message* m, int siteId) {
 
     auto it = this->clients.find(siteId);
     if (it != clients.end()) {
+        qDebug()<<"Invio site id al client n "<< siteId;
         QWebSocket *user = it.value();
         //serialize message in JSON
-        user->sendBinaryMessage("Serialized message");
+        binaryMessageToUser(m, siteId);
+        //user->sendBinaryMessage("Serialized message");
     }
 }
 
@@ -92,13 +96,20 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
         }
         bytemex.append(params.at(1));
     }
+    else if (action == 'S') {
+        bytemex.append('S');
+        tmp=params.at(0).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(0));
+    }
 
-    qDebug()<<'lunghezza array di byte'<<bytemex.size();
+    //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     //webSocket.sendBinaryMessage( bytemex);
     auto it = this->clients.find(siteId);
     if (it != clients.end()) {
         QWebSocket *user = it.value();
-        //serialize message in JSON
         user->sendBinaryMessage(bytemex);
     }
 }
@@ -258,6 +269,10 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     QVector<QString> params;
     action=bytemex.at(0);
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
+        if(bytemex.at(0)=='I')
+            action='I';
+        else
+            action='D';
         std::vector<int> vtmp;
         int i=2;
         while(bytemex.at(i)!=']'){
@@ -330,24 +345,30 @@ void SocketManager::onNewConnection()
     connect(socket, &QWebSocket::binaryMessageReceived, this, &SocketManager::processBinaryMessage);
     connect(socket, &QWebSocket::disconnected, this, &SocketManager::socketDisconnected);
 
-    int siteId = 0;       //vedere come gestire i siteId (probabilmente uno static int che si incrementa)
-    clients.insert(siteId, socket);
+    clients.insert(SocketManager::siteId, socket);
+
 
     //successivamente comunicare al client il proprio siteId
-   Symbol s;
-   s.setPosizione({1,2});
-   s.setValue('a');
     Message m;
+<<<<<<< HEAD
     m.setAction('I');
     m.setSymbol(&s);
     //messageToUser(&m,0);
+=======
+    m.setAction('S');
+    QString s = QString::number(SocketManager::siteId);
+    m.setParams({s});
+    messageToUser(&m,SocketManager::siteId);
+
+    SocketManager::siteId++;
+>>>>>>> 3fcdb79448b6c4c2e0bf4df3207fe663f0373d83
 }
 
 void SocketManager::socketDisconnected()
 {
     QWebSocket *client = qobject_cast<QWebSocket *>(sender());
     //if (m_debug)
-        //qDebug() << "socketDisconnected:" << pClient;
+        qDebug() << "socketDisconnected";
 
     if (client) {
         auto it = clients.begin();

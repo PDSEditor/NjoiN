@@ -8,6 +8,8 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     //webSocket= new QWebSocket();
     webSocket.open(QUrl(url));
     //qDebug()<<webSocket.isValid();
+
+    siteId = 0;
 }
 
 socketManager::~socketManager()
@@ -33,7 +35,7 @@ void socketManager::binaryMessageToServer(Message *m)
     QByteArray bytemex;
     QChar action = m->getAction();
     Symbol *symbol = m->getSymbol();
-
+    symbol->setSiteId(socketManager::siteId);
 
 
     if(action==('I')||action==("D")){
@@ -134,7 +136,12 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
     QChar action;
     Symbol *symbol = new Symbol();
     QVector<QString> params;
+<<<<<<< HEAD
     action=bytemex.at(0);
+=======
+    bool emitS = true;
+
+>>>>>>> 3fcdb79448b6c4c2e0bf4df3207fe663f0373d83
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
         std::vector<int> vtmp;
         int i=2;
@@ -173,14 +180,27 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         params.push_back(bytemex.right(tmp));
     }
+    else if(bytemex.at(0)=='S'){
+        action='S';
+        c.clear();
+        c.append(bytemex.mid(1,4));
+        memcpy(&tmp,c,4);
+        params.push_back(bytemex.mid(5,tmp));
 
-    Message *m = new Message;
-    m->setAction(action);
-    m->setParams(params);
-    m->setSymbol(symbol);
+        emitS = false;
+        socketManager::siteId = params.at(0).toInt();
 
-    emit newMessage(m);
+        qDebug() << "siteId received = " <<siteId;
+    }
 
+    if (emitS) {
+        Message *m = new Message;
+        m->setAction(action);
+        m->setParams(params);
+        m->setSymbol(symbol);
+
+        emit newMessage(m);
+    }
 
 }
 

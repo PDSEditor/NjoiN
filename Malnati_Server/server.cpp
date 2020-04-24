@@ -19,14 +19,16 @@ Server::Server(QObject *parent) : QObject(parent)
 }
 
 void Server::dispatchMessage(Message* mes) {
-    QMap<int, QWebSocket *>::iterator it = this->socketMan->getClients().begin();
-    QMap<int, QWebSocket *>::iterator itEnd = this->socketMan->getClients().end();
+    QMap<int, QWebSocket*> clients = this->socketMan->getClients();
+    QMap<int, QWebSocket *>::iterator it;
+
     //std::map<int, Account>::iterator it = this->onlineAccounts.begin();
     //std::map<int, Account>::iterator itEnd = this->onlineAccounts.end();
     int sender = mes->getSymbol()->getSiteId();
 
-    for(; it!= itEnd; it++) {
-        if(it.key()!= sender)
+    for(it=clients.begin(); it!= clients.end(); it++) {
+        if(it.key() != sender)
+            //qDebug()<< "Mando la remote insert al client n" << it.key();
             this->socketMan->messageToUser(mes, it.key());
     }
 }
@@ -54,15 +56,15 @@ void Server::processMessage( Message* mes) {
 
 
     switch (first){
-    case ('I' | 'i') :
+    case 'I':
         //dbMan->insertInDB(mes);
         this->dispatchMessage(mes);
         break;
-    case ('D' | 'd' ):
+    case 'D':
         //dbMan->deleteFromDB(mes);
         this->dispatchMessage(mes);
         break;
-    case ('F' | 'f'):
+    case 'F' :
         //dbMan->retrieveFile(nomeFile);
         break;
     default:

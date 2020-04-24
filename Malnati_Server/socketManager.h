@@ -45,6 +45,8 @@ private:
     QWebSocketServer* qWebSocketServer;
     QMap<int, QWebSocket *> clients;
 
+    int siteId;
+
 };
 
 #endif // SOCKETMANAGER_H
