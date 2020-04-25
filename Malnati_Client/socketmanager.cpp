@@ -45,14 +45,14 @@ void socketManager::binaryMessageToServer(Message *m)
         else{
             bytemex.append('D');
         }
-        bytemex.append('[');
+        bytemex.append('{');
         for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
             tmp=(symbol->getPosizione().at(i));
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
-        bytemex.append(']');
+        bytemex.append('}');
         bytemex.append(symbol->getSiteId());//dimensione massima
         tmp=(symbol->getCounter());
         for(int p=0;p<4;p++){
@@ -136,16 +136,15 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
     QChar action;
     Symbol *symbol = new Symbol();
     QVector<QString> params;
-<<<<<<< HEAD
-    action=bytemex.at(0);
-=======
+
     bool emitS = true;
 
->>>>>>> 3fcdb79448b6c4c2e0bf4df3207fe663f0373d83
+
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
+        action=bytemex.at(0);
         std::vector<int> vtmp;
         int i=2;
-        while(bytemex.at(i)!=']'){
+        while(bytemex.at(i)!='}'){
             c.clear();
             c.append(bytemex.mid(i,4));
             memcpy(&tmp,c,4);

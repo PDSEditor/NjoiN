@@ -485,11 +485,26 @@ void TextEdit::fileNew()
 void TextEdit::reciveSymbol(Message *m)
 {
     externAction=true;
+
+    QTextCursor curs = textEdit->textCursor();
+    int position,oldposition;
+    oldposition=curs.position();
     Symbol tmp;
-    tmp.setValue('a');
-    tmp.setPosizione({75});
-    textEdit->textCursor().insertText("a");
-    crdt->remoteinsert(tmp);
+    tmp.setValue(m->getSymbol()->getValue());
+    tmp.setPosizione(m->getSymbol()->getPosizione());
+    if(m->getAction()=='I'){
+        position=crdt->remoteinsert(tmp);
+        curs.setPosition(position);
+        curs.insertText((QString)tmp.getValue());
+    }
+    else if(m->getAction()=='D'){
+        position=crdt->remotedelete(tmp);
+        curs.setPosition(position);
+        curs.deleteChar();
+
+    }
+
+    curs.setPosition(oldposition);
 
 }
 
@@ -758,8 +773,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
     if(charsRemoved!=0){
     //Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());//forse è sbagliata
-   // crdt->localErase(symbol);
-
+    Message m=crdt->localErase(position);
+    emit(sendMessage(&m));
     }
     // Code that executes on text change here
    }

@@ -156,9 +156,13 @@ bool exists(int index, std::vector<int> vector){
     else return false;
 }
 
-void Crdt::localErase(int position){
+Message Crdt::localErase(int position){
+    Message m;
     std::vector<Symbol>::iterator i = this->symbols.begin()+position;
+    m.setAction('D');
+    m.setSymbol(&this->symbols.at(position));
     this->symbols.erase(i);
+    return m;
 }
 
 int Crdt::getSiteId(){
@@ -186,13 +190,17 @@ int Crdt::remoteinsert(Symbol s){
     std::vector<int> index=s.getPosizione();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
-    //controllo se è ultimo
-    if(symbols[max].getPosizione().back()<index.front()){
+    //controllo se è vuoto
+    if(symbols.size()==0){
         symbols.push_back(s);
-        return max;
+    }
+    //controllo se è ultimo
+    else if(symbols[max].getPosizione().back()<index.front()){
+        symbols.push_back(s);
+        return max+1;
     }
     //controllo se è primo
-    if(symbols[0].getPosizione().front()>index.back()){
+    else if(symbols[0].getPosizione().front()>index.back()){
         it=symbols.begin();
         symbols.insert(it,s);
         return min;

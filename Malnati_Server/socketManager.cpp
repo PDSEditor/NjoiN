@@ -57,14 +57,14 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
         else{
             bytemex.append('D');
         }
-        bytemex.append('[');
+        bytemex.append('{');
         for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
             tmp=(symbol->getPosizione().at(i));
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
-        bytemex.append(']');
+        bytemex.append('}');
         bytemex.append(symbol->getSiteId());//dimensione massima
         tmp=(symbol->getCounter());
         for(int p=0;p<4;p++){
@@ -275,7 +275,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             action='D';
         std::vector<int> vtmp;
         int i=2;
-        while(bytemex.at(i)!=']'){
+        while(bytemex.at(i)!='}'){
             c.clear();
             c.append(bytemex.mid(i,4));
             memcpy(&tmp,c,4);
@@ -350,18 +350,14 @@ void SocketManager::onNewConnection()
 
     //successivamente comunicare al client il proprio siteId
     Message m;
-<<<<<<< HEAD
-    m.setAction('I');
-    m.setSymbol(&s);
-    //messageToUser(&m,0);
-=======
+
     m.setAction('S');
     QString s = QString::number(SocketManager::siteId);
     m.setParams({s});
     messageToUser(&m,SocketManager::siteId);
 
     SocketManager::siteId++;
->>>>>>> 3fcdb79448b6c4c2e0bf4df3207fe663f0373d83
+
 }
 
 void SocketManager::socketDisconnected()
