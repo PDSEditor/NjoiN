@@ -39,4 +39,7 @@ Message::Message()
     symbol =new Symbol();
 }
 
+Message::~Message(){
+    delete symbol;
+}
 

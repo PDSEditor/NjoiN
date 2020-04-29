@@ -12,7 +12,8 @@ DatabaseManager::DatabaseManager(QObject* parent)
     std::unique_ptr<mongocxx::instance> instance(new mongocxx::instance);
     this->_instance = std::move(instance);
 
-    this->uri = mongocxx::uri("mongodb://localhost:27017");
+//    this->uri = mongocxx::uri("mongodb://localhost:27017");
+    this->uri = mongocxx::uri("mongodb://172.17.0.3:27017");
     this->client = mongocxx::client(this->uri);
 
     this->db = mongocxx::database(this->client["mydb"]);

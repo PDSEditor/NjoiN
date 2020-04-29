@@ -10,9 +10,9 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-//    QString name = "angelo";
-//    QString pass = "ciao";
-//    dbMan->registerUser(name, pass);
+    QString name = "angelo";
+    QString pass = "ciao";
+    dbMan->registerUser(name, pass);
 //    dbMan->checkUserPsw(name, pass);
 //    dbMan->deleteUser(name);
 

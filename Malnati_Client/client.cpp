@@ -26,6 +26,7 @@ Client::Client()
 Client::~Client(){
     delete mw;
     delete crdt;
+    delete sockm;
 
 }
 void Client::receive_textEdit(TextEdit *t){

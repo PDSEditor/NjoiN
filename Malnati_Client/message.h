@@ -34,6 +34,7 @@ public:
         void setSymbol(Symbol *value);
         QVector<QString> getParams() const;
         void setParams(const QVector<QString> &value);
+        ~Message();
 
 };
 
