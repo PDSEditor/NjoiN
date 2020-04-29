@@ -42,7 +42,7 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
     int tmp;
     QByteArray bytemex;
     QChar action = m->getAction();
-    Symbol *symbol = m->getSymbol();
+    Symbol symbol = m->getSymbol();
     QVector<QString> params = m->getParams();
 
 
@@ -54,19 +54,19 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
             bytemex.append('D');
         }
         bytemex.append('[');
-        for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
-            tmp=(symbol->getPosizione().at(i));
+        for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
+            tmp=(symbol.getPosizione().at(i));
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
         bytemex.append(']');
-        bytemex.append(symbol->getSiteId());//dimensione massima
-        tmp=(symbol->getCounter());
+        bytemex.append(symbol.getSiteId());//dimensione massima
+        tmp=(symbol.getCounter());
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(symbol->getValue());
+        bytemex.append(symbol.getValue());
 
     }
     else if(action==('C')||action==('R')){
@@ -254,7 +254,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     QByteArray c;
     int tmp;
     QChar action;
-    Symbol *symbol = new Symbol();
+    Symbol symbol;
     QVector<QString> params;
 
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
@@ -268,14 +268,14 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             i+=4;
         }
         i++;
-        symbol->setPosizione(vtmp);
-        symbol->setSiteId((int)bytemex.at(i++));
+        symbol.setPosizione(vtmp);
+        symbol.setSiteId((int)bytemex.at(i++));
         c.clear();
         c.append(bytemex.mid(i,4));
         memcpy(&tmp,c,4);
-        symbol->setCounter(tmp);
+        symbol.setCounter(tmp);
         i+=4;
-        symbol->setValue(bytemex.at(i));
+        symbol.setValue(bytemex.at(i));
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')
@@ -338,7 +338,7 @@ void SocketManager::onNewConnection()
    s.setValue('a');
     Message m;
     m.setAction('I');
-    m.setSymbol(&s);
+    m.setSymbol(s);
     messageToUser(&m,0);
 }
 
