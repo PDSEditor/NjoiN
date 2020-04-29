@@ -17,24 +17,22 @@ class Message
 {
 
 private:
-    Symbol *symbol;
+    Symbol symbol;
      QChar action;
      QVector<QString> params;
 
 
 public:
     Message(QChar action): action(action) {}
-        Message();
+    Message();
+    ~Message();
 
-
-        QChar getAction() const;
-        void setAction(const QChar &value);
-
-        Symbol *getSymbol() const;
-        void setSymbol(Symbol *value);
-        QVector<QString> getParams() const;
-        void setParams(const QVector<QString> &value);
-        ~Message();
+    QChar getAction() const;
+    void setAction(const QChar &value);
+    Symbol getSymbol() const;
+    void setSymbol(Symbol value);
+    QVector<QString> getParams() const;
+    void setParams(const QVector<QString> &value);
 
 };
 
