@@ -1,6 +1,6 @@
 #include <iostream>
 #include <QtDebug>
-#include "Crdt.h"
+#include "crdt.h"
 #include "symbol.h"
 
 
