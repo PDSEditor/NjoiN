@@ -36,7 +36,7 @@ void Server::dispatchMessage(Message* mes) {
     QMap<int, QWebSocket *>::iterator itEnd = this->socketMan->getClients().end();
     //std::map<int, Account>::iterator it = this->onlineAccounts.begin();
     //std::map<int, Account>::iterator itEnd = this->onlineAccounts.end();
-    int sender = mes->getSymbol()->getSiteId();
+    int sender = mes->getSymbol().getSiteId();
 
     for(; it!= itEnd; it++) {
         if(it.key()!= sender)
