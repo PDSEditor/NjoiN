@@ -32,7 +32,7 @@ void socketManager::binaryMessageToServer(Message *m)
     int tmp;
     QByteArray bytemex;
     QChar action = m->getAction();
-    Symbol *symbol = m->getSymbol();
+    Symbol symbol = m->getSymbol();
 
 
 
@@ -44,19 +44,19 @@ void socketManager::binaryMessageToServer(Message *m)
             bytemex.append('D');
         }
         bytemex.append('[');
-        for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
-            tmp=(symbol->getPosizione().at(i));
+        for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
+            tmp=(symbol.getPosizione().at(i));
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
         bytemex.append(']');
-        bytemex.append(symbol->getSiteId());//dimensione massima
-        tmp=(symbol->getCounter());
+        bytemex.append(symbol.getSiteId());//dimensione massima
+        tmp=(symbol.getCounter());
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(symbol->getValue());
+        bytemex.append(symbol.getValue());
 
     }
     else if(action==('C')||action==('R')){
@@ -104,14 +104,23 @@ void socketManager::onConnected()
     n = webSocket.sendBinaryMessage(a);
 
     Message *m = new Message(QChar('I'));
-    Symbol *symbol = new Symbol();
-    symbol->setValue('a');
-    symbol->setSiteId(5);
-    symbol->setCounter(1);
+//    Symbol *symbol = new Symbol();
+//    symbol->setValue('a');
+//    symbol->setSiteId(5);
+//    symbol->setCounter(1);
+//    std::vector<int> v;
+//    v.push_back(2);
+//    v.push_back(3);
+//    symbol->setPosizione(v);
+//    m->setSymbol(symbol);
+    Symbol symbol;
+    symbol.setValue('a');
+    symbol.setSiteId(5);
+    symbol.setCounter(1);
     std::vector<int> v;
     v.push_back(2);
     v.push_back(3);
-    symbol->setPosizione(v);
+    symbol.setPosizione(v);
     m->setSymbol(symbol);
 
     //binaryMessageToServer(m);
@@ -132,7 +141,8 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
     QByteArray c;
     int tmp;
     QChar action;
-    Symbol *symbol = new Symbol();
+    //Symbol *symbol = new Symbol();
+    Symbol symbol;
     QVector<QString> params;
 
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
@@ -146,14 +156,22 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
             i+=4;
         }
         i++;
-        symbol->setPosizione(vtmp);
-        symbol->setSiteId((int)bytemex.at(i++));
+//        symbol->setPosizione(vtmp);
+//        symbol->setSiteId((int)bytemex.at(i++));
+//        c.clear();
+//        c.append(bytemex.mid(i,4));
+//        memcpy(&tmp,c,4);
+//        symbol->setCounter(tmp);
+//        i+=4;
+//        symbol->setValue(bytemex.at(i));
+        symbol.setPosizione(vtmp);
+        symbol.setSiteId((int)bytemex.at(i++));
         c.clear();
         c.append(bytemex.mid(i,4));
         memcpy(&tmp,c,4);
-        symbol->setCounter(tmp);
+        symbol.setCounter(tmp);
         i+=4;
-        symbol->setValue(bytemex.at(i));
+        symbol.setValue(bytemex.at(i));
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')

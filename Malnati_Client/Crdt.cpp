@@ -142,7 +142,7 @@ Message Crdt::localInsert(char value, int precedingC, int followingC){
     Message m;
     m.setAction('I');
 
-    m.setSymbol(&symbolToInsert);
+    m.setSymbol(symbolToInsert);
     //sock->messageToServer(m);
     //sock->binaryMessageToServer(m);
     print(fractionalPos);
