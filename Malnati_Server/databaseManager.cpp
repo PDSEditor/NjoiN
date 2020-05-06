@@ -5,17 +5,11 @@
 
 DatabaseManager::DatabaseManager(QObject* parent)
 {
-//    this->instance = new mongocxx::instance{};
-    //this->_instance = std::unique_ptr<mongocxx::instance>(new mongocxx::instance{});  //this should be done only once.
-
-    //this->_instance = mongocxx::instance {};
     std::unique_ptr<mongocxx::instance> instance(new mongocxx::instance);
     this->_instance = std::move(instance);
-
-//    this->uri = mongocxx::uri("mongodb://localhost:27017");
     this->uri = mongocxx::uri("mongodb://172.17.0.3:27017");
+    this->uri = mongocxx::uri("mongodb://localhost:27017");
     this->client = mongocxx::client(this->uri);
-
     this->db = mongocxx::database(this->client["mydb"]);
 }
 
@@ -37,7 +31,7 @@ DatabaseManager::DatabaseManager(QObject* parent)
            }
 }*/
 
-int DatabaseManager::registerUser(QString _id, QString password){
+bool DatabaseManager::registerUser(QString _id, QString password){
 
     mongocxx::collection userCollection = (this->db)["user"];
 
@@ -69,13 +63,13 @@ int DatabaseManager::registerUser(QString _id, QString password){
     try {
         userCollection.insert_one(view);
     } catch (mongocxx::bulk_write_exception& e) {
-        return -1;
+        return false;
     }
 
-    return 0;
+    return true;
 }
 
-int DatabaseManager::deleteUser(QString _id){
+bool DatabaseManager::deleteUser(QString _id){
     mongocxx::collection userCollection = (this->db)["user"];
     try {
         userCollection.delete_one(
@@ -83,13 +77,13 @@ int DatabaseManager::deleteUser(QString _id){
                     << "_id" << _id.toStdString()
                     << bsoncxx::builder::stream::finalize);
     } catch (mongocxx::bulk_write_exception& e) {
-        return -1;
+        return false;
     }
 
-    return 0;
+    return true;
 }
 
-int DatabaseManager::checkUserPsw(QString _id, QString password){
+bool DatabaseManager::checkUserPsw(QString _id, QString password){
 
     mongocxx::collection userCollection = (this->db)["user"];
 
@@ -105,8 +99,7 @@ int DatabaseManager::checkUserPsw(QString _id, QString password){
     try {
         result = userCollection.find_one(userView);
     } catch (mongocxx::query_exception& e) {
-        return -1;
-        throw;
+        return false;
     }
 
     if(result){
@@ -115,22 +108,43 @@ int DatabaseManager::checkUserPsw(QString _id, QString password){
         std::string b = element.get_utf8().value.to_string();
 
         if(b==hashpsw.toStdString())
-            return 0;
-        else return -1;
+            return true;
+        else return false;
     }
-    return 0;
+    else return false;
 }
 
-void DatabaseManager::insertInDB(Message* mes) {
+bool DatabaseManager::insertInDB(Message mes) {
+    Symbol symbol = mes.getSymbol();
+    mongocxx::collection symbolCollection = (this->db)["symbol"];
+    bsoncxx::stdx::optional<bsoncxx::document::value> result;
+    auto builder = bsoncxx::builder::stream::document{};
+
+    bsoncxx::document::value symbolToInsert = builder
+            /*<< "_id" << ? */
+            << "value" << symbol.getValue()
+            << "siteId" << symbol.getSiteId()
+            << "counter" << symbol.getCounter()
+            << "posizione" << symbol.getPosizione().at(0)
+               /****** DA METTERE TUTTO IL VETTORE NON SOLO 0 **************/
+            << bsoncxx::builder::stream::finalize;
+
+    bsoncxx::document::view view = symbolToInsert.view();
+    try {
+        symbolCollection.insert_one(view);
+    } catch (mongocxx::bulk_write_exception& e) {
+        return false;
+    }
+    return true;
 
 }
 
-void DatabaseManager::deleteFromDB(Message* mes)
+void DatabaseManager::deleteFromDB(Message mes)
 {
 
 }
 
-void DatabaseManager::updateDB(Message* m)
+void DatabaseManager::updateDB(Message m)
 {
 
 }
@@ -149,5 +163,4 @@ DatabaseManager::~DatabaseManager(){
     this->db.~database();
     this->client.~client();
     this->uri.~uri();
-    //this->_instance.~instance();
 }

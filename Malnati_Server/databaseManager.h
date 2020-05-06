@@ -25,21 +25,24 @@ class DatabaseManager
 {
 private:
     std::unique_ptr<mongocxx::instance> _instance;
-    //mongocxx::instance _instance;
     mongocxx::database db;
     mongocxx::client client;
     mongocxx::uri uri;
     
 public:
     explicit DatabaseManager(QObject *parent = nullptr);
-    int registerUser(QString _id, QString password);
-    int deleteUser  (QString _id);
-    int checkUserPsw(QString _id, QString password);
-    void insertInDB(Message* mes);
-    void deleteFromDB(Message* mes);
-    void updateDB(Message* m);
+    /*** USER ****/
+    bool registerUser(QString _id, QString password);
+    bool deleteUser  (QString _id);
+    bool checkUserPsw(QString _id, QString password);
+    /************/
+
+    bool insertInDB(Message mes);
+    void deleteFromDB(Message mes);
+    void updateDB(Message m);
     void createFile(QString nome, int user);
     void retrieveFile(QString nome);
+
     ~DatabaseManager();
 };
 

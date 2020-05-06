@@ -2,23 +2,36 @@
 
 Server::Server(QObject *parent) : QObject(parent)
 {
-
-    this->socketMan = new SocketManager();
-    this->dbMan = new DatabaseManager();
+    std::unique_ptr<SocketManager> socketMan(new SocketManager);
+    this->socketMan = std::move(socketMan);
+//    this->socketMan = new SocketManager();
+    std::unique_ptr<DatabaseManager> dbMan(new DatabaseManager);
+    this->dbMan = std::move(dbMan);
+//    this->dbMan = new DatabaseManager();
 
     /***************************
      ****** TEST DB ***********
      *************************/
 
-    QString name = "angelo";
-    QString pass = "ciao";
-    dbMan->registerUser(name, pass);
-//    dbMan->checkUserPsw(name, pass);
-//    dbMan->deleteUser(name);
+//    QString name = "angelo";
+//    QString pass = "ciao";
+//    if(this->dbMan.get()->registerUser(name, pass))
+//        qDebug() << "inserted?" ;
+//    if(this->dbMan.get()->checkUserPsw(name,pass))
+//        qDebug() << "passok" ;
+//    if(this->dbMan.get()->deleteUser(name))
+//        qDebug() << "deleted" ;
 
     /*****************************/
 
-    QObject::connect(this->socketMan, &SocketManager::newMessage, this, &Server::processMessage);
+
+    QObject::connect(this->socketMan.get(),
+                     &SocketManager::newMessage,
+                     this,
+                     &Server::processMessage
+                     );
+/*//    QObject::connect(this->socketMan, &SocketManager::newMessage, this, &Server::processMessage);
+
 
 
     //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
@@ -26,25 +39,25 @@ Server::Server(QObject *parent) : QObject(parent)
 
     //QObject::connect(this, &Server::sendMessage, socketMan, &SocketManager::messageToUser);
 
-    //QObject::connect(dbMan, &DatabaseManager::sendFile, socketMan, &SocketManager::fileToUser );
+    //QObject::connect(dbMan, &DatabaseManager::sendFile, socketMan, &SocketManager::fileToUser );*/
 
 
 }
 
-void Server::dispatchMessage(Message* mes) {
-    QMap<int, QWebSocket *>::iterator it = this->socketMan->getClients().begin();
-    QMap<int, QWebSocket *>::iterator itEnd = this->socketMan->getClients().end();
+void Server::dispatchMessage(Message mes) {
+    QMap<int, QWebSocket *>::iterator it = this->socketMan.get()->getClients().begin();
+    QMap<int, QWebSocket *>::iterator itEnd = this->socketMan.get()->getClients().end();
     //std::map<int, Account>::iterator it = this->onlineAccounts.begin();
     //std::map<int, Account>::iterator itEnd = this->onlineAccounts.end();
-    int sender = mes->getSymbol().getSiteId();
+    int sender = mes.getSymbol().getSiteId();
 
     for(; it!= itEnd; it++) {
         if(it.key()!= sender)
-            this->socketMan->messageToUser(mes, it.key());
+            this->socketMan.get()->messageToUser(mes, it.key());
     }
 }
 
-void Server::processMessage( Message* mes) {
+void Server::processMessage( Message mes) {
 
     /* tabella di conversione:
      * Significato -> Lettera nel Messaggio -> int corrispondente
@@ -54,7 +67,7 @@ void Server::processMessage( Message* mes) {
      *
     */
 
-    QChar action = mes->getAction();
+    QChar action = mes.getAction();
     char first =  action.toLatin1();
 
     QString nomeFile;
@@ -79,7 +92,7 @@ void Server::processMessage( Message* mes) {
         //dbMan->retrieveFile(nomeFile);
         break;
     default:
-        socketMan->sendError("01 - Azione richiesta non riconosciuta");
+        socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
     }
 
 }
