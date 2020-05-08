@@ -46,7 +46,7 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
     int tmp;
     QByteArray bytemex;
     QChar action = m->getAction();
-    Symbol *symbol = m->getSymbol();
+    Symbol symbol = m->getSymbol();
     QVector<QString> params = m->getParams();
 
 
@@ -57,20 +57,32 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
         else{
             bytemex.append('D');
         }
+<<<<<<< HEAD
         bytemex.append('{');
         for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
             tmp=(symbol->getPosizione().at(i));
+=======
+        bytemex.append('[');
+        for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
+            tmp=(symbol.getPosizione().at(i));
+>>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
+<<<<<<< HEAD
         bytemex.append('}');
         bytemex.append(symbol->getSiteId());//dimensione massima
         tmp=(symbol->getCounter());
+=======
+        bytemex.append(']');
+        bytemex.append(symbol.getSiteId());//dimensione massima
+        tmp=(symbol.getCounter());
+>>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(symbol->getValue());
+        bytemex.append(symbol.getValue());
 
     }
     else if(action==('C')||action==('R')){
@@ -265,7 +277,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     QByteArray c;
     int tmp;
     QChar action;
-    Symbol *symbol = new Symbol();
+    Symbol symbol;
     QVector<QString> params;
     action=bytemex.at(0);
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
@@ -283,14 +295,14 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             i+=4;
         }
         i++;
-        symbol->setPosizione(vtmp);
-        symbol->setSiteId((int)bytemex.at(i++));
+        symbol.setPosizione(vtmp);
+        symbol.setSiteId((int)bytemex.at(i++));
         c.clear();
         c.append(bytemex.mid(i,4));
         memcpy(&tmp,c,4);
-        symbol->setCounter(tmp);
+        symbol.setCounter(tmp);
         i+=4;
-        symbol->setValue(bytemex.at(i));
+        symbol.setValue(bytemex.at(i));
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')
@@ -350,6 +362,7 @@ void SocketManager::onNewConnection()
 
     //successivamente comunicare al client il proprio siteId
     Message m;
+<<<<<<< HEAD
 
     m.setAction('S');
     QString s = QString::number(SocketManager::siteId);
@@ -358,6 +371,11 @@ void SocketManager::onNewConnection()
 
     SocketManager::siteId++;
 
+=======
+    m.setAction('I');
+    m.setSymbol(s);
+    messageToUser(&m,0);
+>>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
 }
 
 void SocketManager::socketDisconnected()

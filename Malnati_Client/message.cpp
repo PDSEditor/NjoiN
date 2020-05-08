@@ -14,12 +14,12 @@ void Message::setAction(const QChar &value)
 }
 
 
-Symbol *Message::getSymbol() const
+Symbol Message::getSymbol() const
 {
     return symbol;
 }
 
-void Message::setSymbol(Symbol *value)
+void Message::setSymbol(Symbol value)
 {
     symbol = value;
 }
@@ -36,7 +36,12 @@ void Message::setParams(const QVector<QString> &value)
 
 Message::Message()
 {
-    symbol =new Symbol();
+    Symbol symbol;
+    this->symbol=std::move(symbol);
+}
+
+Message::~Message(){
+    //delete symbol;
 }
 
 

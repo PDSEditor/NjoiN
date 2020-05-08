@@ -15,7 +15,7 @@ class Message
 {
 
 private:
-    Symbol *symbol;
+    Symbol symbol;
     QChar action;
     QVector<QString> params;
 
@@ -30,8 +30,8 @@ public:
     QChar getAction() const;
     void setAction(const QChar &value);
 
-    Symbol *getSymbol() const;
-    void setSymbol(Symbol *value);
+    Symbol getSymbol() const;
+    void setSymbol(Symbol value);
     QVector<QString> getParams() const;
     void setParams(const QVector<QString> &value);
 

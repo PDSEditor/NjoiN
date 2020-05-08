@@ -24,7 +24,7 @@ void Server::dispatchMessage(Message* mes) {
 
     //std::map<int, Account>::iterator it = this->onlineAccounts.begin();
     //std::map<int, Account>::iterator itEnd = this->onlineAccounts.end();
-    int sender = mes->getSymbol()->getSiteId();
+    int sender = mes->getSymbol().getSiteId();
 
     for(it=clients.begin(); it!= clients.end(); it++) {
         if(it.key() != sender)
