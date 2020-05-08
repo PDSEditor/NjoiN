@@ -154,6 +154,7 @@ TextEdit::TextEdit(QWidget *parent)
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
 
+
     setWindowModified(textEdit->document()->isModified());
     actionSave->setEnabled(textEdit->document()->isModified());
     actionUndo->setEnabled(textEdit->document()->isUndoAvailable());
@@ -485,7 +486,7 @@ void TextEdit::fileNew()
 void TextEdit::reciveSymbol(Message *m)
 {
     externAction=true;
-
+    QTextEdit *text=new QTextEdit(this);
     QTextCursor curs = textEdit->textCursor();
     int position,oldposition;
     oldposition=curs.position();
@@ -494,13 +495,18 @@ void TextEdit::reciveSymbol(Message *m)
     tmp.setPosizione(m->getSymbol()->getPosizione());
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
-        curs.setPosition(position);
+        curs.setPosition(position);      
+        QColor q=textEdit->textColor();
+        this->textEdit->setTextColor(QColor(200,2,20));
+
+         q=textEdit->textColor();
         curs.insertText((QString)tmp.getValue());
+
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
-        curs.setPosition(position);
-        curs.deleteChar();
+        curs.setPosition(position+1);
+        curs.deletePreviousChar();
 
     }
 

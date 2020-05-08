@@ -158,10 +158,15 @@ bool exists(int index, std::vector<int> vector){
 
 Message Crdt::localErase(int position){
     Message m;
+    Symbol tmp;
     std::vector<Symbol>::iterator i = this->symbols.begin()+position;
     m.setAction('D');
-    m.setSymbol(&this->symbols.at(position));
+    tmp.setValue(this->symbols.at(position).getValue());
+    tmp.setSiteId(this->symbols.at(position).getSiteId());
+    tmp.setPosizione(this->symbols.at(position).getPosizione());
+    m.setSymbol(&tmp);
     this->symbols.erase(i);
+
     return m;
 }
 
@@ -195,7 +200,7 @@ int Crdt::remoteinsert(Symbol s){
         symbols.push_back(s);
     }
     //controllo se è ultimo
-    else if(symbols[max].getPosizione().back()<index.front()){
+    else if(this->compare(s,symbols[max])>0){
         symbols.push_back(s);
         return max+1;
     }
