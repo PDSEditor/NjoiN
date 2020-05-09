@@ -57,28 +57,20 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
         else{
             bytemex.append('D');
         }
-<<<<<<< HEAD
+
         bytemex.append('{');
-        for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
-            tmp=(symbol->getPosizione().at(i));
-=======
-        bytemex.append('[');
         for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
             tmp=(symbol.getPosizione().at(i));
->>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
+
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
-<<<<<<< HEAD
+
         bytemex.append('}');
-        bytemex.append(symbol->getSiteId());//dimensione massima
-        tmp=(symbol->getCounter());
-=======
-        bytemex.append(']');
         bytemex.append(symbol.getSiteId());//dimensione massima
         tmp=(symbol.getCounter());
->>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
+
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
@@ -362,7 +354,7 @@ void SocketManager::onNewConnection()
 
     //successivamente comunicare al client il proprio siteId
     Message m;
-<<<<<<< HEAD
+
 
     m.setAction('S');
     QString s = QString::number(SocketManager::siteId);
@@ -371,11 +363,7 @@ void SocketManager::onNewConnection()
 
     SocketManager::siteId++;
 
-=======
-    m.setAction('I');
-    m.setSymbol(s);
-    messageToUser(&m,0);
->>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
+
 }
 
 void SocketManager::socketDisconnected()

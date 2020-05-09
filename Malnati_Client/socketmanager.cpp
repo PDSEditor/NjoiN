@@ -34,13 +34,13 @@ void socketManager::binaryMessageToServer(Message *m)
     int tmp;
     QByteArray bytemex;
     QChar action = m->getAction();
-<<<<<<< HEAD
-    Symbol *symbol = m->getSymbol();
-    symbol->setSiteId(socketManager::siteId);
-=======
-    Symbol symbol = m->getSymbol();
 
->>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
+
+
+
+    Symbol symbol = m->getSymbol();
+    symbol.setSiteId(socketManager::siteId);
+
 
 
     if(action==('I')||action==("D")){
@@ -50,28 +50,20 @@ void socketManager::binaryMessageToServer(Message *m)
         else{
             bytemex.append('D');
         }
-<<<<<<< HEAD
+
         bytemex.append('{');
-        for(unsigned long long i=0;i<symbol->getPosizione().size();i++){
-            tmp=(symbol->getPosizione().at(i));
-=======
-        bytemex.append('[');
         for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
             tmp=(symbol.getPosizione().at(i));
->>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
+
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
-<<<<<<< HEAD
+
         bytemex.append('}');
-        bytemex.append(symbol->getSiteId());//dimensione massima
-        tmp=(symbol->getCounter());
-=======
-        bytemex.append(']');
         bytemex.append(symbol.getSiteId());//dimensione massima
         tmp=(symbol.getCounter());
->>>>>>> eabf83f209eff5f0c13dd461f3ded3596c3a02fa
+
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }

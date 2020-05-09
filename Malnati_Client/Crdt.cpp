@@ -164,7 +164,7 @@ Message Crdt::localErase(int position){
     tmp.setValue(this->symbols.at(position).getValue());
     tmp.setSiteId(this->symbols.at(position).getSiteId());
     tmp.setPosizione(this->symbols.at(position).getPosizione());
-    m.setSymbol(&tmp);
+    m.setSymbol(tmp);
     this->symbols.erase(i);
 
     return m;
@@ -205,7 +205,7 @@ int Crdt::remoteinsert(Symbol s){
         return max+1;
     }
     //controllo se è primo
-    else if(symbols[0].getPosizione().front()>index.back()){
+    else if(this->compare(s,symbols[0])<0){
         it=symbols.begin();
         symbols.insert(it,s);
         return min;
