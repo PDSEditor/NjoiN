@@ -8,10 +8,10 @@ CONFIG -= app_bundle
 ################################################################
 # to find external libraries about mongocxx driver for mongodb #
 ################################################################
-#QT_CONFIG -= no-pkg-config
-#CONFIG += link_pkgconfig
-#PKGCONFIG += libmongocxx
-
+QT_CONFIG -= no-pkg-config
+CONFIG += link_pkgconfig
+#PKGCONFIG +=lmongocxx
+INCLUDEPATH += C:\mongo-cxx-driver\
 #mac {
  # PKG_CONFIG = /usr/local/bin/pkg-config
 #}
@@ -51,3 +51,5 @@ HEADERS += \
     sharedDocument.h \
     socketManager.h \
     symbol.h
+
+
