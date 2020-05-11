@@ -24,14 +24,18 @@ private:
     //std::map<std::string, std::vector<Symbol>> documents;     in questo caso il file andrebbe aggiornato anche lato server (ottimizzazione futura = OF)
     //std::map<int, Account> onlineAccounts;
     //std::queue<Message> codaMessaggi;             Questo sarebbe il modo classico di gestirlo in c++, provare a usare invece signal e slots per gestire gli eventi
+    std::unique_ptr<SocketManager> socketMan;
+//    SocketManager *socketMan;
+    std::unique_ptr<DatabaseManager> dbMan;
+//    DatabaseManager *dbMan;
 
 
 public:
-    SocketManager* socketMan;
-    DatabaseManager* dbMan;
+//    SocketManager* socketMan;
+//    DatabaseManager* dbMan;
 
     explicit Server(QObject *parent = nullptr);
-    void dispatchMessage(Message* mes);          //capisci a quali client inviare il messaggi
+    void dispatchMessage(Message mes);          //capisci a quali client inviare il messaggi
 
 
 signals:
@@ -40,7 +44,7 @@ signals:
     void closed();  //TODO: decidere quando emettere questo segnale
 
 public slots:
-    void processMessage(Message* mes);
+    void processMessage(Message mes);
     //void tryInLocal (std::string);              //controlla se il file è tra quelli nella memoria locale del server (in documents) OF
 
 };

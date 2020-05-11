@@ -8,6 +8,7 @@ CONFIG -= app_bundle
 ################################################################
 # to find external libraries about mongocxx driver for mongodb #
 ################################################################
+
 QT_CONFIG -= no-pkg-config
 CONFIG += link_pkgconfig
 #PKGCONFIG +=lmongocxx
@@ -15,6 +16,11 @@ INCLUDEPATH += C:\mongo-cxx-driver\
 #mac {
  # PKG_CONFIG = /usr/local/bin/pkg-config
 #}
+
+#QT_CONFIG -= no-pkg-config
+#CONFIG += link_pkgconfig
+#PKGCONFIG += libmongocxx
+
 ################################################################
 
 # The following define makes your compiler emit warnings if you use
@@ -52,4 +58,13 @@ HEADERS += \
     socketManager.h \
     symbol.h
 
+<<<<<<< HEAD
+=======
+####################################################################
+
+
+
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += libmongocxx
+>>>>>>> 16b5aafa1067981b6d7de0379b32eef4167904d1
 

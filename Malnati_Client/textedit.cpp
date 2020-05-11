@@ -727,37 +727,18 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     qDebug() << "position: " << position;
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
     if(charsAdded!= 0){
-            //s1= new std::vector<int>();
+        for(int i=0; i<charsAdded; i++){
             Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-            //symbols->push_back(symbol);
+            position+=1;
             emit(sendMessage(&m));
-
-
-
         }
-        else{
-            //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
-            //symbols->push_back(symbol);
-        }
-
-    //textEdit->textCursor().setPosition(symbol.getPosizione());
-
+    }
     if(charsRemoved!=0){
-    //Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());//forse è sbagliata
-   // crdt->localErase(symbol);
-
+        for(int i=0; i<charsRemoved; i++){
+            crdt->localErase(position+i);
+        }
     }
-    // Code that executes on text change here
 }
-
-/*Symbol TextEdit :: searchSymbolToErase(char c){
-    for( std::vector<Symbol>::iterator i = symbols->begin(); i!=symbols->end(); ++i){
-        if(i->getValue()== c){
-            return *i;
-         }
-    }
-    return *new Symbol();
-}*/
 
 void TextEdit::cursorPositionChanged()
 {

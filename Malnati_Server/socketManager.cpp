@@ -25,7 +25,7 @@ void SocketManager::sendError(std::string)
 
 }
 
-void SocketManager::messageToUser( Message* m, int siteId) {
+void SocketManager::messageToUser( Message m, int siteId) {
 
    //TODO: invia il singolo messaggio ai vari client
 
@@ -37,13 +37,13 @@ void SocketManager::messageToUser( Message* m, int siteId) {
     }
 }
 
-void SocketManager::binaryMessageToUser(Message *m, int siteId)
+void SocketManager::binaryMessageToUser(Message m, int siteId)
 {
     int tmp;
     QByteArray bytemex;
-    QChar action = m->getAction();
-    Symbol symbol = m->getSymbol();
-    QVector<QString> params = m->getParams();
+    QChar action = m.getAction();
+    Symbol symbol = m.getSymbol();
+    QVector<QString> params = m.getParams();
 
 
     if(action==("I")||action==("D")){
@@ -113,7 +113,8 @@ void SocketManager::processTextMessage(QString message)
     //deserialize JSON
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
     qDebug()<<message;
-    Message *m = new Message();         //crea il messaggio
+//    Message *m = new Message();         //crea il messaggio
+    Message m;
     emit newMessage(m);
 
 }
@@ -296,12 +297,13 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
         params.push_back(bytemex.right(tmp));
     }
 
-    Message *m = new Message;
-    m->setAction(action);
-    m->setParams(params);
-    m->setSymbol(symbol);
+//    Message *m = new Message;
+    Message m;
+    m.setAction(action);
+    m.setParams(params);
+    m.setSymbol(symbol);
 
-    m->debugPrint();
+    m.debugPrint();
 
     emit newMessage(m);
 
@@ -339,7 +341,7 @@ void SocketManager::onNewConnection()
     Message m;
     m.setAction('I');
     m.setSymbol(s);
-    messageToUser(&m,0);
+    messageToUser(m,0);
 }
 
 void SocketManager::socketDisconnected()

@@ -199,6 +199,7 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 
     emit newMessage(m);
 
+    delete m;
 
 }
 

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <QtDebug>
-#include "Crdt.h"
+#include "crdt.h"
 #include "symbol.h"
 
 
@@ -295,3 +295,9 @@ int Crdt::compare(Symbol s1, Symbol s2){
     }
     return res;
 }
+
+Crdt::~Crdt(){
+    //rilasciare la memoria
+
+}
+
