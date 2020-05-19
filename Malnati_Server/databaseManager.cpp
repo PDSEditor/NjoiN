@@ -3,14 +3,16 @@
 #include <QDebug>
 #include <QCryptographicHash>
 
-DatabaseManager::DatabaseManager(QObject* parent)
+//DatabaseManager::DatabaseManager(QObject* parent)
+DatabaseManager::DatabaseManager()
 {
-    std::unique_ptr<mongocxx::instance> instance(new mongocxx::instance);
-    this->_instance = std::move(instance);
-    this->uri = mongocxx::uri("mongodb://172.17.0.3:27017");
-    this->uri = mongocxx::uri("mongodb://localhost:27017");
-    this->client = mongocxx::client(this->uri);
-    this->db = mongocxx::database(this->client["mydb"]);
+//    std::unique_ptr<mongocxx::instance> instance(new mongocxx::instance);
+//    this->_instance = std::move(instance);
+    this->_instance =   std::make_unique<mongocxx::instance>();
+    this->uri =         mongocxx::uri("mongodb://172.17.0.3:27017");
+    this->uri =         mongocxx::uri("mongodb://localhost:27017");
+    this->client =      mongocxx::client(this->uri);
+    this->db =          mongocxx::database(this->client["mydb"]);
 }
 
 /*    mongocxx::collection countersCollection = db["counter"];
@@ -33,13 +35,15 @@ DatabaseManager::DatabaseManager(QObject* parent)
 
 bool DatabaseManager::registerUser(QString _id, QString password){
 
-    mongocxx::collection userCollection = (this->db)["user"];
+    auto userCollection = (this->db)["user"];
+//    mongocxx::collection userCollection = (this->db)["user"];
 
     auto builder = bsoncxx::builder::stream::document{};
 
     QString hashpsw = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Sha256);
 
-    bsoncxx::document::value userToInsert = builder
+//    bsoncxx::document::value userToInsert = builder
+    auto userToInsert = builder
             << "_id" << _id.toStdString()
             << "password" << hashpsw.toStdString()
             /*<< "array"    << bsoncxx::builder::stream::open_array
@@ -51,7 +55,8 @@ bool DatabaseManager::registerUser(QString _id, QString password){
             << bsoncxx::builder::stream::close_document*/
             << bsoncxx::builder::stream::finalize;
 
-    bsoncxx::document::view view = userToInsert.view();
+//    bsoncxx::document::view view = userToInsert.view();
+    auto view = userToInsert.view();
 
     /*bsoncxx::document::element element = view["username"];
 

@@ -8,6 +8,7 @@
 #include "sharedDocument.h"
 #include "socketManager.h"
 #include "databaseManager.h"
+#include "filemanager.h"
 #include "account.h"
 #include "message.h"
 
@@ -28,6 +29,12 @@ private:
 //    SocketManager *socketMan;
     std::unique_ptr<DatabaseManager> dbMan;
 //    DatabaseManager *dbMan;
+    std::unique_ptr<FileManager> fileMan;
+
+    int remoteInsert(Symbol symbol);
+    int remoteDelete(Symbol symbol);
+
+    std::vector<Symbol> symbols;
 
 
 public:

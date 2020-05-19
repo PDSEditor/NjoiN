@@ -19,7 +19,8 @@
 #include <memory>
 #include <functional>
 
-#include <message.h>
+#include "message.h"
+#include "account.h"
 
 class DatabaseManager
 {
@@ -30,11 +31,14 @@ private:
     mongocxx::uri uri;
     
 public:
-    explicit DatabaseManager(QObject *parent = nullptr);
+//    explicit DatabaseManager(QObject *parent = nullptr);
+    DatabaseManager();
     /*** USER ****/
     bool registerUser(QString _id, QString password);
     bool deleteUser  (QString _id);
     bool checkUserPsw(QString _id, QString password);
+    bool changePassword(QString _id, QString password);
+    Account getAccount(int siteId);
     /************/
 
     bool insertInDB(Message mes);
