@@ -112,6 +112,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 
     textEdit = new QTextEdit(this);
+    externAction=false;
     //symbols = new std::vector<Symbol>();
     //QTextDocument document = textEdit->document();
 
@@ -152,6 +153,7 @@ TextEdit::TextEdit(QWidget *parent)
             actionRedo, &QAction::setEnabled);
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
+
 
     setWindowModified(textEdit->document()->isModified());
     actionSave->setEnabled(textEdit->document()->isModified());
@@ -481,6 +483,37 @@ void TextEdit::fileNew()
 
 }
 
+void TextEdit::reciveSymbol(Message *m)
+{
+    externAction=true;
+    QTextEdit *text=new QTextEdit(this);
+    QTextCursor curs = textEdit->textCursor();
+    int position,oldposition;
+    oldposition=curs.position();
+    Symbol tmp;
+    tmp.setValue(m->getSymbol().getValue());
+    tmp.setPosizione(m->getSymbol().getPosizione());
+    if(m->getAction()=='I'){
+        position=crdt->remoteinsert(tmp);
+        curs.setPosition(position);      
+        QColor q=textEdit->textColor();
+        this->textEdit->setTextColor(QColor(200,2,20));
+
+         q=textEdit->textColor();
+        curs.insertText((QString)tmp.getValue());
+
+    }
+    else if(m->getAction()=='D'){
+        position=crdt->remotedelete(tmp);
+        curs.setPosition(position+1);
+        curs.deletePreviousChar();
+
+    }
+
+    curs.setPosition(oldposition);
+
+}
+
 void TextEdit::fileOpen()
 {
     QFileDialog fileDialog(this, tr("Open File..."));
@@ -722,22 +755,26 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
-    QTextCursor  cursor = textEdit->textCursor();
+   if(externAction==false){
+       QTextCursor  cursor = textEdit->textCursor();
 
-    qDebug() << "position: " << position;
-    qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
-    if(charsAdded!= 0){
-        for(int i=0; i<charsAdded; i++){
-            Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-            position+=1;
-            emit(sendMessage(&m));
+        qDebug() << "position: " << position;
+        qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
+        if(charsAdded!= 0){
+            for(int i=0; i<charsAdded; i++){
+                Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+                position+=1;
+                emit(sendMessage(&m));
+            }
         }
-    }
-    if(charsRemoved!=0){
-        for(int i=0; i<charsRemoved; i++){
-            crdt->localErase(position+i);
+        if(charsRemoved!=0){
+            for(int i=0; i<charsRemoved; i++){
+                Message m=crdt->localErase(position);
+                emit(sendMessage(&m));
+            }
         }
-    }
+   }
+   externAction=false;
 }
 
 void TextEdit::cursorPositionChanged()

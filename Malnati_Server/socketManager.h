@@ -33,8 +33,8 @@ signals:
     void newMessage(Message m);
 
 public slots:
-    void messageToUser (Message m, int siteId);
-    void binaryMessageToUser(Message m, int siteId);
+    void messageToUser (Message *m, int siteId);
+    void binaryMessageToUser(Message *m, int siteId);
     void fileToUser (std::vector<Symbol> file, int user);
     void onNewConnection();
     void processTextMessage(QString message);
@@ -44,6 +44,8 @@ public slots:
 private:
     QWebSocketServer* qWebSocketServer;
     QMap<int, QWebSocket *> clients;
+
+    int siteId;
 
 };
 
