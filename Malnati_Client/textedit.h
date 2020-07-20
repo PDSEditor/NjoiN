@@ -34,8 +34,10 @@ public slots:
     void fileNew();
     void reciveSymbol(Message *m);
 
+
 signals:
     void sendMessage(Message *m);
+
 
 protected:
     void closeEvent(QCloseEvent *e) override;

@@ -155,6 +155,7 @@ TextEdit::TextEdit(QWidget *parent)
             this, &TextEdit::onTextChanged);
 
 
+
     setWindowModified(textEdit->document()->isModified());
     actionSave->setEnabled(textEdit->document()->isModified());
     actionUndo->setEnabled(textEdit->document()->isUndoAvailable());
@@ -486,8 +487,15 @@ void TextEdit::fileNew()
 void TextEdit::reciveSymbol(Message *m)
 {
     externAction=true;
-    QTextEdit *text=new QTextEdit(this);
     QTextCursor curs = textEdit->textCursor();
+       //
+    QTextCharFormat qform, preqform;
+    preqform=textEdit->currentCharFormat();
+    qform.setBackground(Qt::red);
+   // preqform.setUnderlineColor(Qt::white);
+
+
+             //
     int position,oldposition;
     oldposition=curs.position();
     Symbol tmp;
@@ -496,11 +504,13 @@ void TextEdit::reciveSymbol(Message *m)
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);      
-        QColor q=textEdit->textColor();
-        this->textEdit->setTextColor(QColor(200,2,20));
+        curs.insertText((QChar)tmp.getValue(),qform);
 
-         q=textEdit->textColor();
-        curs.insertText((QString)tmp.getValue());
+        //curs.insertHtml("<style = 'color: blue'>" + (QString)tmp.getValue());
+
+
+
+
 
     }
     else if(m->getAction()=='D'){
@@ -509,10 +519,13 @@ void TextEdit::reciveSymbol(Message *m)
         curs.deletePreviousChar();
 
     }
+    textEdit->setCurrentCharFormat(preqform);
 
-    curs.setPosition(oldposition);
+
 
 }
+
+
 
 void TextEdit::fileOpen()
 {
@@ -755,15 +768,18 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
+
    if(externAction==false){
        QTextCursor  cursor = textEdit->textCursor();
 
     qDebug() << "position: " << position;
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
     if(charsAdded!= 0){
+
+
             //s1= new std::vector<int>();
         int c=textEdit->document()->characterAt(position).toLatin1();
-            Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+            Message m = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
             //symbols->push_back(symbol);
             emit(sendMessage(&m));
 
@@ -785,6 +801,11 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
     // Code that executes on text change here
    }
    externAction=false;
+   /*QTextCharFormat qform;
+   qform=textEdit->currentCharFormat();
+   qform.setBackground(Qt::white);
+   textEdit->currentCharFormat()=qform;*/
+
 }
 
 /*Symbol TextEdit :: searchSymbolToErase(char c){
@@ -798,6 +819,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
 void TextEdit::cursorPositionChanged()
 {
+     textEdit->setTextBackgroundColor(Qt::white);
+
     alignmentChanged(textEdit->alignment());
     QTextList *list = textEdit->textCursor().currentList();
 
@@ -835,6 +858,7 @@ void TextEdit::cursorPositionChanged()
         int headingLevel = textEdit->textCursor().blockFormat().headingLevel();
         comboStyle->setCurrentIndex(headingLevel ? headingLevel + 8 : 0);
     }
+
 }
 
 void TextEdit::clipboardDataChanged()

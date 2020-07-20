@@ -34,7 +34,7 @@ private:
 
 public:
     explicit Crdt();
-    Message localInsert(char value, int preceding, int following);
+    Message localInsert(QChar value, int preceding, int following);
     Message localErase(int position);
     int getSiteId();
     int getCounter();

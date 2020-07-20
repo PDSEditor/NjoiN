@@ -67,6 +67,10 @@ void socketManager::binaryMessageToServer(Message *m)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
+        tmp=(symbol.getCounter());
+        /*for(int p=0;p<2;p++){
+            bytemex.append(tmp >> (p*8));
+        }*/
         bytemex.append(symbol.getValue());
 
     }
@@ -186,7 +190,9 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         symbol.setCounter(tmp);
         i+=4;
-        symbol.setValue(bytemex.at(i));
+        QChar ch=bytemex.at(i);
+
+        symbol.setValue(ch);
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')

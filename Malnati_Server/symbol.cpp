@@ -14,12 +14,12 @@ Symbol::Symbol()
 {
 
 }
-char Symbol::getValue() const
+QChar Symbol::getValue() const
 {
     return value;
 }
 
-void Symbol::setValue(char v)
+void Symbol::setValue(QChar v)
 {
     value = v;
 }

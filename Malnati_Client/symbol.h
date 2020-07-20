@@ -1,19 +1,20 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 #include <vector>
+#include <QChar>
 
 class Symbol
 {
 private:
-    char value;
+    QChar value;
     std::vector<int> posizione;
     int siteId;
     int counter;
 public:
-    Symbol(char value, std::vector<int> posizione, int siteId, int counter);
+    Symbol(QChar value, std::vector<int> posizione, int siteId, int counter);
     Symbol();
-        char getValue() const;
-        void setValue(char value);
+        QChar getValue() const;
+        void setValue(QChar value);
         std::vector<int> getPosizione() const;
         void setPosizione(const std::vector<int> &value);
         int getSiteId() const;

@@ -2,13 +2,14 @@
 #define SYMBOL_H
 
 #include <vector>
+#include <QChar>
 
 
 class Symbol
 {
 
 private:
-    char value;
+    QChar value;
     std::vector<int> posizione;
     int siteId;
     int counter;
@@ -23,8 +24,8 @@ public:
     void setSiteId(int value);
     int getCounter() const;
     void setCounter(int value);
-    char getValue() const;
-    void setValue(char v);
+    QChar getValue() const;
+    void setValue(QChar v);
 };
 
 #endif // SYMBOL_H
