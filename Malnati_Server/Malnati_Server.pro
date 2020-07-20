@@ -30,6 +30,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         account.cpp \
+        accountManager.cpp \
         databaseManager.cpp \
         main.cpp \
         message.cpp \
@@ -45,6 +46,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     account.h \
+    accountManager.h \
     databaseManager.h \
     message.h \
     server.h \

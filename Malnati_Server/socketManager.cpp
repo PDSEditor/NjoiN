@@ -155,8 +155,6 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
      *      stampa semplicemente output
      */
 
-    //enum Actions { I, D, R, C, L, T};
-
     /*
     QString dataStr = QString::fromStdString(data.toStdString());
 
@@ -361,7 +359,9 @@ void SocketManager::onNewConnection()
     m.setParams({s});
     messageToUser(&m,SocketManager::siteId);
 
+    emit newAccountOnline(SocketManager::siteId);
     SocketManager::siteId++;
+
 
 
 }
@@ -382,5 +382,8 @@ void SocketManager::socketDisconnected()
         }
         client->deleteLater();
     }
+
+    //emetti segnale per rimuovere da onlineAccounts
+
 }
 

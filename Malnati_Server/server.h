@@ -8,6 +8,7 @@
 #include "sharedDocument.h"
 #include "socketManager.h"
 #include "databaseManager.h"
+#include "accountManager.h"
 #include "account.h"
 #include "message.h"
 
@@ -29,6 +30,7 @@ private:
 public:
     SocketManager* socketMan;
     DatabaseManager* dbMan;
+    AccountManager* acMan;
 
     explicit Server(QObject *parent = nullptr);
     void dispatchMessage(Message* mes);          //capisci a quali client inviare il messaggi

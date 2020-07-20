@@ -31,6 +31,7 @@ public:
 
 signals:
     void newMessage(Message* m);
+    void newAccountOnline (int siteId);
 
 public slots:
     void messageToUser (Message* m, int siteId);
