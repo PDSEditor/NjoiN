@@ -9,11 +9,6 @@ Client::Client()
 
 
 
-
-
-
-
-
      lw.exec();
          mw = new MainWindow();
      if(lw.getIsLogin()==1){

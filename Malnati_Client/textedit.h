@@ -80,6 +80,9 @@ private:
     void alignmentChanged(Qt::Alignment a);
     Symbol searchSymbolToErase(char c);
     bool externAction;
+    QMap<int,QColor> colors;
+    std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
+    int contcolor=0;
 
     QAction *actionSave;
     QAction *actionTextBold;

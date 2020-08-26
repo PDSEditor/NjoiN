@@ -32,6 +32,7 @@ void socketManager::binaryMessageToServer(Message *m)
     //qDebug()<<"Testo ricevuto: ";
 
     int tmp;
+    QChar tmpc;
     QByteArray bytemex;
     QChar action = m->getAction();
 
@@ -68,10 +69,15 @@ void socketManager::binaryMessageToServer(Message *m)
             bytemex.append(tmp >> (p * 8));
         }
         tmp=(symbol.getCounter());
+        tmpc=symbol.getValue();
+        bytemex.append(tmpc.cell());
+        bytemex.append(tmpc.row());
+
         /*for(int p=0;p<2;p++){
-            bytemex.append(tmp >> (p*8));
+            bytemex.append(tmpc >> (p*8));
         }*/
-        bytemex.append(symbol.getValue());
+
+        //bytemex.append(symbol.getValue());
 
     }
     else if(action==('C')||action==('R')){
@@ -156,6 +162,7 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
     QByteArray c;
     int tmp;
     QChar action;
+    QChar tmpc;
     //Symbol *symbol = new Symbol();
     Symbol symbol;
     QVector<QString> params;
@@ -190,9 +197,10 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         symbol.setCounter(tmp);
         i+=4;
-        QChar ch=bytemex.at(i);
-
-        symbol.setValue(ch);
+        c.clear();
+        c.append(bytemex.mid(i,2));
+        memcpy(&tmpc,c,2);
+        symbol.setValue(tmpc);
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')

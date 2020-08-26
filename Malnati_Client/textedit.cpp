@@ -489,13 +489,19 @@ void TextEdit::reciveSymbol(Message *m)
     externAction=true;
     QTextCursor curs = textEdit->textCursor();
        //
+    QColor col;
     QTextCharFormat qform, preqform;
     preqform=textEdit->currentCharFormat();
-    qform.setBackground(Qt::red);
-   // preqform.setUnderlineColor(Qt::white);
+    if(colors.find(m->getSymbol().getSiteId())==colors.end()){
+        int pos=m->getSymbol().getSiteId()%5;
+        //
+        QColor q=listcolor.at(pos);
+        //
+        colors.insert(m->getSymbol().getSiteId(),q);
+    }
+    col=colors.take(m->getSymbol().getSiteId());
+    qform.setBackground(col);
 
-
-             //
     int position,oldposition;
     oldposition=curs.position();
     Symbol tmp;
@@ -503,7 +509,7 @@ void TextEdit::reciveSymbol(Message *m)
     tmp.setPosizione(m->getSymbol().getPosizione());
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
-        curs.setPosition(position);      
+        curs.setPosition(position);
         curs.insertText((QChar)tmp.getValue(),qform);
 
         //curs.insertHtml("<style = 'color: blue'>" + (QString)tmp.getValue());
