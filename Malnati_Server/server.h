@@ -42,7 +42,7 @@ public:
 //    DatabaseManager* dbMan;
 
     explicit Server(QObject *parent = nullptr);
-    void dispatchMessage(Message mes);          //capisci a quali client inviare il messaggi
+    void dispatchMessage(Message &mes);          //capisci a quali client inviare il messaggi
 
 
 signals:

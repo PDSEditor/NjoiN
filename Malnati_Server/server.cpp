@@ -45,7 +45,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
 }
 
-void Server::dispatchMessage(Message mes) {
+void Server::dispatchMessage(Message &mes) {
     QMap<int, QWebSocket*> clients = this->socketMan->getClients();
     QMap<int, QWebSocket *>::iterator it;
 
@@ -54,7 +54,7 @@ void Server::dispatchMessage(Message mes) {
     for(it=clients.begin(); it!= clients.end(); it++) {
         if(it.key() != sender)
             //qDebug()<< "Mando la remote insert al client n" << it.key();
-            this->socketMan->messageToUser(&mes, it.key());
+            this->socketMan->messageToUser(mes, it.key());
     }
 }
 
@@ -84,18 +84,18 @@ void Server::processMessage( Message mes) {
     case 'I':
         //dbMan->insertInDB(mes);
         this->dispatchMessage(mes);
-        remoteInsert(mes.getSymbol());
+//        remoteInsert(mes.getSymbol());
         break;
     case 'D':
         //dbMan->deleteFromDB(mes);
         this->dispatchMessage(mes);
-        remoteDelete(mes.getSymbol());
+//        remoteDelete(mes.getSymbol());
         break;
     case 'F' :
         //dbMan->retrieveFile(nomeFile);
         break;
     default:
-        socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
+        this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
     }
 
 }

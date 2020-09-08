@@ -27,7 +27,7 @@ void SocketManager::sendError(std::string)
 
 }
 
-void SocketManager::messageToUser( Message *m, int siteId) {
+void SocketManager::messageToUser( Message &m, int siteId) {
 
    //TODO: invia il singolo messaggio ai vari client
 
@@ -41,7 +41,95 @@ void SocketManager::messageToUser( Message *m, int siteId) {
     }
 }
 
-void SocketManager::binaryMessageToUser(Message m, int siteId)
+/****PRESA DA LORENZO ****/
+
+void SocketManager::binaryMessageToUser(Message &m, int siteId)
+{
+    int tmp;
+    QChar tmpc;
+    QByteArray bytemex;
+    QChar action = m.getAction();
+    Symbol symbol = m.getSymbol();
+    QVector<QString> params = m.getParams();
+
+
+    if(action==("I")||action==("D")){
+        if(action==("I")){
+            bytemex.append('I');
+        }
+        else{
+            bytemex.append('D');
+        }
+
+        bytemex.append('{');
+        for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
+            tmp=(symbol.getPosizione().at(i));
+
+            for(int p=0;p<4;p++){
+                bytemex.append(tmp >> (p * 8));
+            }
+        }
+
+        bytemex.append('}');
+        bytemex.append(symbol.getSiteId());//dimensione massima
+        tmp=(symbol.getCounter());
+
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+
+        /*for(int p=0;p<2;p++){
+            bytemex.append(tmp >> (p*8));
+        }*/
+        tmpc=symbol.getValue();
+        bytemex.append(tmpc.cell());
+        bytemex.append(tmpc.row());
+
+    }
+    else if(action==('C')||action==('R')){
+        if(action==('C')){
+            bytemex.append('C');
+        }
+        else{
+            bytemex.append('R');
+        }
+        bytemex.append(params.at(0));
+
+    }
+    else if(action=='L'){
+        bytemex.append('L');
+        tmp=params.at(0).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(0));
+        tmp=params.at(1).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(1));
+    }
+    else if (action == 'S') {
+        bytemex.append('S');
+        tmp=params.at(0).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(0));
+    }
+
+    //qDebug()<<'lunghezza array di byte'<<bytemex.size();
+    //webSocket.sendBinaryMessage( bytemex);
+    auto it = this->clients.find(siteId);
+    if (it != clients.end()) {
+        QWebSocket *user = it.value();
+        user->sendBinaryMessage(bytemex);
+    }
+}
+
+/*********************
+
+void SocketManager::binaryMessageToUser(Message *m, int siteId)
 {
     int tmp;
     QByteArray bytemex;
@@ -117,6 +205,7 @@ void SocketManager::binaryMessageToUser(Message m, int siteId)
         user->sendBinaryMessage(bytemex);
     }
 }
+**********************************/
 
 void SocketManager::fileToUser(std::vector<Symbol> file, int user)
 {
@@ -359,7 +448,7 @@ void SocketManager::onNewConnection()
     m.setAction('S');
     QString s = QString::number(SocketManager::siteId);
     m.setParams({s});
-    messageToUser(&m,SocketManager::siteId);
+    messageToUser(m,SocketManager::siteId);
 
     SocketManager::siteId++;
 }

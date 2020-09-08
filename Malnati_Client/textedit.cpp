@@ -760,16 +760,20 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
         qDebug() << "position: " << position;
         qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
-        if(charsAdded!= 0){
-            for(int i=0; i<charsAdded; i++){
-                Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-                position+=1;
-                emit(sendMessage(&m));
-            }
-        }
-        if(charsRemoved!=0){
+
+        if(charsRemoved!=0 && charsAdded==0){
             for(int i=0; i<charsRemoved; i++){
                 Message m=crdt->localErase(position);
+                emit(sendMessage(&m));
+            }
+        }else
+        if(charsAdded!= 0){
+            if(charsRemoved>0)
+                charsAdded--;
+            for(int i=0; i<charsAdded; i++){
+                qDebug() << "char: " << textEdit->document()->characterAt(position);
+                Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+                position+=1;
                 emit(sendMessage(&m));
             }
         }
