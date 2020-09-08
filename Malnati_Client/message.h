@@ -29,7 +29,6 @@ public:
 
     QChar getAction() const;
     void setAction(const QChar &value);
-
     Symbol getSymbol() const;
     void setSymbol(Symbol value);
     QVector<QString> getParams() const;

@@ -758,43 +758,28 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
    if(externAction==false){
        QTextCursor  cursor = textEdit->textCursor();
 
-    qDebug() << "position: " << position;
-    qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
-    if(charsAdded!= 0){
-            //s1= new std::vector<int>();
-        int c=textEdit->document()->characterAt(position).toLatin1();
-            Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-            //symbols->push_back(symbol);
-            emit(sendMessage(&m));
+        qDebug() << "position: " << position;
+        qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
 
-
-
+        if(charsRemoved!=0 && charsAdded==0){
+            for(int i=0; i<charsRemoved; i++){
+                Message m=crdt->localErase(position);
+                emit(sendMessage(&m));
+            }
+        }else
+        if(charsAdded!= 0){
+            if(charsRemoved>0)
+                charsAdded--;
+            for(int i=0; i<charsAdded; i++){
+                qDebug() << "char: " << textEdit->document()->characterAt(position);
+                Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+                position+=1;
+                emit(sendMessage(&m));
+            }
         }
-        else{
-            //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
-            //symbols->push_back(symbol);
-        }
-
-    //textEdit->textCursor().setPosition(symbol.getPosizione());
-
-    if(charsRemoved!=0){
-    //Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());//forse è sbagliata
-    Message m=crdt->localErase(position);
-    emit(sendMessage(&m));
-    }
-    // Code that executes on text change here
    }
    externAction=false;
 }
-
-/*Symbol TextEdit :: searchSymbolToErase(char c){
-    for( std::vector<Symbol>::iterator i = symbols->begin(); i!=symbols->end(); ++i){
-        if(i->getValue()== c){
-            return *i;
-         }
-    }
-    return *new Symbol();
-}*/
 
 void TextEdit::cursorPositionChanged()
 {

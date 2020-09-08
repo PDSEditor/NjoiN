@@ -6,7 +6,7 @@ QChar Message::getAction() const
     return action;
 }
 
-void Message::setAction(const QChar &value)
+void Message::setAction(const QChar value)
 {
     action = value;
 }
@@ -27,7 +27,7 @@ QVector<QString> Message::getParams() const
     return params;
 }
 
-void Message::setParams(const QVector<QString> &value)
+void Message::setParams(const QVector<QString> value)
 {
     params = value;
 }

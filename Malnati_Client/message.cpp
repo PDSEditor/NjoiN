@@ -43,5 +43,3 @@ Message::Message()
 Message::~Message(){
     //delete symbol;
 }
-
-

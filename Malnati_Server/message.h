@@ -28,12 +28,12 @@ public:
 
 
     QChar getAction() const;
-    void setAction(const QChar &value);
+    void setAction(const QChar value);
 
     Symbol getSymbol() const;
     void setSymbol(Symbol value);
     QVector<QString> getParams() const;
-    void setParams(const QVector<QString> &value);
+    void setParams(const QVector<QString> value);
 
 };
 

@@ -19,7 +19,7 @@ public:
      ~socketManager() override;
 
 signals:
-    void newMessage(Message* m);
+    void newMessage(Message *m);
 
 public slots:
     void onConnected();

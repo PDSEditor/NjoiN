@@ -1,12 +1,13 @@
 #include <iostream>
 #include <QtDebug>
-#include "Crdt.h"
+#include "crdt.h"
 #include "symbol.h"
 
 
 int Crdt::maxnum=100;
+
 int Crdt::counter=0;
- extern socketManager *sock;
+extern socketManager *sock;
 
 bool exists(int index, std::vector<int> vector);
 
@@ -308,3 +309,9 @@ int Crdt::compare(Symbol s1, Symbol s2){
     }
     return res;
 }
+
+Crdt::~Crdt(){
+    //rilasciare la memoria
+
+}
+

@@ -1,7 +1,7 @@
 QT -= gui
 QT += websockets
 
-CONFIG += c++11 console
+CONFIG += c++14 console
 CONFIG -= app_bundle
 
 
@@ -12,9 +12,9 @@ CONFIG -= app_bundle
 #CONFIG += link_pkgconfig
 #PKGCONFIG += libmongocxx
 
-#mac {
- # PKG_CONFIG = /usr/local/bin/pkg-config
-#}
+mac {
+  PKG_CONFIG = /usr/local/bin/pkg-config
+}
 ################################################################
 
 # The following define makes your compiler emit warnings if you use
@@ -32,6 +32,7 @@ SOURCES += \
         account.cpp \
         accountManager.cpp \
         databaseManager.cpp \
+        filemanager.cpp \
         main.cpp \
         message.cpp \
         server.cpp \
@@ -48,8 +49,17 @@ HEADERS += \
     account.h \
     accountManager.h \
     databaseManager.h \
+    filemanager.h \
     message.h \
     server.h \
     sharedDocument.h \
     socketManager.h \
     symbol.h
+
+####################################################################
+
+
+
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += libmongocxx
+
