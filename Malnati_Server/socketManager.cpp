@@ -33,11 +33,11 @@ void SocketManager::messageToUser( Message &m, int siteId) {
 
     auto it = this->clients.find(siteId);
     if (it != clients.end()) {
-        qDebug()<<"Invio site id al client n "<< siteId;
+        if(m.getAction()=='S') {
+            qDebug()<<"Invio site id al client n "<< siteId;
+        }
         QWebSocket *user = it.value();
-        //serialize message in JSON
         binaryMessageToUser(m, siteId);
-        //user->sendBinaryMessage("Serialized message");
     }
 }
 
@@ -329,7 +329,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     m.setSymbol(symbol);
     m.debugPrint();
     //
-    this->binaryMessageToUser(m,0);
+    //this->binaryMessageToUser(m,0);
     emit newMessage(m);
 
 }
