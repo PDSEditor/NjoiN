@@ -31,5 +31,5 @@ Account::Account(QString username, int siteId){
 }
 
 QString Account::toString(){
-    return this->username + this->siteId;
+    return "username: " + this->username + " siteId: " + QString::number(this->siteId);
 }

@@ -21,13 +21,14 @@ Server::Server(QObject *parent) : QObject(parent)
 
     QString name = "angelo";
     QString pass = "ciao";
+
     Account account;
     account.setUsername(name);
     account.setSiteId(0);
     if(this->dbMan.get()->registerUser(account, pass))
         qDebug() << "inserted?" ;
 
-    Account account2 = dbMan.get()->getAccount(QString("angelo"));
+    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
     qDebug() << account2.toString();
 
     if(this->dbMan.get()->checkUserPsw(name,pass))

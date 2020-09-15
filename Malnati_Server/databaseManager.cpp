@@ -56,6 +56,31 @@ bool DatabaseManager::registerUser(Account account, QString password){
     return true;
 }
 
+Account DatabaseManager::getAccount(QString username){
+    qDebug() << "ciao";
+    mongocxx::collection userCollection = (this->db)["user"];
+
+    auto elementBuilder = bsoncxx::builder::stream::document{};
+    bsoncxx::document::value accountToRetrieve =
+        elementBuilder << "_id" << username.toUtf8().constData()
+                       << bsoncxx::builder::stream::finalize;
+    bsoncxx::document::view accountToRetrieveView = accountToRetrieve.view();
+    bsoncxx::stdx::optional<bsoncxx::document::value> result;
+    Account account;
+    try{
+        result = userCollection.find_one(accountToRetrieveView);
+        if(result){
+            auto a = (*result).view();
+            auto siteId = a["siteId"];
+            account.setUsername(username);
+            account.setSiteId((int)siteId.get_int32());
+        }
+    } catch (mongocxx::query_exception &e){
+        qDebug() << "[ERROR][DatabaseManager::getAccount] find_one error, connection to db failed. Server should shutdown.";
+    }
+    return account;
+}
+
 bool DatabaseManager::deleteUser(QString _id){
     mongocxx::collection userCollection = (this->db)["user"];
     try {
@@ -100,30 +125,6 @@ bool DatabaseManager::checkUserPsw(QString _id, QString password){
         else return false;
     }
     else return false;
-}
-
-Account DatabaseManager::getAccount(QString username){
-    mongocxx::collection userCollection = (this->db)["user"];
-
-    auto elementBuilder = bsoncxx::builder::stream::document{};
-    bsoncxx::document::value accountToRetrieve =
-        elementBuilder << "_id" << username.toUtf8().constData()
-                       << bsoncxx::builder::stream::finalize;
-    bsoncxx::document::view accountToRetrieveView = accountToRetrieve.view();
-    bsoncxx::stdx::optional<bsoncxx::document::value> result;
-    Account account;
-    try{
-        result = userCollection.find_one(accountToRetrieveView);
-        if(result){
-            auto a = (*result).view();
-            auto siteId = a["siteId"];
-            account.setUsername(username);
-            account.setSiteId(siteId.get_int32());
-        }
-    } catch (mongocxx::query_exception &e){
-        qDebug() << "[ERROR][DatabaseManager::getAccount] find_one error, connection to db failed. Server should shutdown.";
-    }
-    return account;
 }
 
 bool DatabaseManager::insertSymbol(Message mes) {
