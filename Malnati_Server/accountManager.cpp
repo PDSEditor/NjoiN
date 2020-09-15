@@ -15,15 +15,15 @@ void AccountManager::checkUserPerFile(int siteId, QString fileName)
 
 void AccountManager::updateOnlineAccounts(int siteId)
 {
-    Account* acc;
+    Account acc;
     if(!this->accounts.contains(siteId)) {     //account che si collega per la prima volta
         //implementare l'inserimento anche nel db
-        this->accounts.insert(siteId, *(new Account()));
+        this->accounts.insert(siteId, acc);
 
     }
 
-    acc = &accounts[siteId];
-    this->onlineAccounts.insert(siteId, acc);
+//    acc = &accounts[siteId];
+//    this->onlineAccounts.insert(siteId, acc);
 }
 
 void AccountManager::removeOnlineAccounts(int siteId)

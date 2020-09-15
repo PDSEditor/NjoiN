@@ -32,37 +32,20 @@ DatabaseManager::DatabaseManager()
            }
 }*/
 
-bool DatabaseManager::registerUser(QString _id, QString password){
+bool DatabaseManager::registerUser(Account account, QString password){
 
     auto userCollection = (this->db)["user"];
-//    mongocxx::collection userCollection = (this->db)["user"];
-
     auto builder = bsoncxx::builder::stream::document{};
 
     QString hashpsw = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Sha256);
 
-//    bsoncxx::document::value userToInsert = builder
     auto userToInsert = builder
-            << "_id" << _id.toStdString()
+            << "_id" << account.getUsername().toUtf8().constData()
             << "password" << hashpsw.toStdString()
-            /*<< "array"    << bsoncxx::builder::stream::open_array
-                << "banana" << "mela" << "pera"
-            << bsoncxx::builder::stream::close_array
-            << "info" << bsoncxx::builder::stream::open_document
-                << "sesso" << "maschio"
-                << "eta"   << 23
-            << bsoncxx::builder::stream::close_document*/
+            << "siteId" << account.getSiteId()
             << bsoncxx::builder::stream::finalize;
 
-//    bsoncxx::document::view view = userToInsert.view();
     auto view = userToInsert.view();
-
-    /*bsoncxx::document::element element = view["username"];
-
-    if(element.type() != bsoncxx::type::k_utf8){
-        return -1;
-    }
-    std::string name = element.get_utf8().value.to_string();*/
 
     try {
         userCollection.insert_one(view);
@@ -103,6 +86,7 @@ bool DatabaseManager::checkUserPsw(QString _id, QString password){
     try {
         result = userCollection.find_one(userView);
     } catch (mongocxx::query_exception& e) {
+        qDebug() << "[ERROR][DatabaseManager::checkUserPsw] find_one error, connection to db failed. Server should shutdown.";
         return false;
     }
 
@@ -118,7 +102,31 @@ bool DatabaseManager::checkUserPsw(QString _id, QString password){
     else return false;
 }
 
-bool DatabaseManager::insertInDB(Message mes) {
+Account DatabaseManager::getAccount(QString username){
+    mongocxx::collection userCollection = (this->db)["user"];
+
+    auto elementBuilder = bsoncxx::builder::stream::document{};
+    bsoncxx::document::value accountToRetrieve =
+        elementBuilder << "_id" << username.toUtf8().constData()
+                       << bsoncxx::builder::stream::finalize;
+    bsoncxx::document::view accountToRetrieveView = accountToRetrieve.view();
+    bsoncxx::stdx::optional<bsoncxx::document::value> result;
+    Account account;
+    try{
+        result = userCollection.find_one(accountToRetrieveView);
+        if(result){
+            auto a = (*result).view();
+            auto siteId = a["siteId"];
+            account.setUsername(username);
+            account.setSiteId(siteId.get_int32());
+        }
+    } catch (mongocxx::query_exception &e){
+        qDebug() << "[ERROR][DatabaseManager::getAccount] find_one error, connection to db failed. Server should shutdown.";
+    }
+    return account;
+}
+
+bool DatabaseManager::insertSymbol(Message mes) {
     Symbol symbol = mes.getSymbol();
     QVector<QString> params = mes.getParams();
     QString documentId = params.at(0);
@@ -134,7 +142,7 @@ bool DatabaseManager::insertInDB(Message mes) {
 
     bsoncxx::document::value symbolToInsert = builder
             /*<< "_id" << ? */
-            << "documentName" << documentId.toUtf8().constData()
+            << "document_id" << documentId.toUtf8().constData()
             << "value" << symbol.getValue()
             << "siteId" << symbol.getSiteId()
             << "counter" << symbol.getCounter()
@@ -152,19 +160,58 @@ bool DatabaseManager::insertInDB(Message mes) {
 
 }
 
-void DatabaseManager::deleteFromDB(Message mes)
+bool DatabaseManager::deleteSymbol(Message mes)
 {
+    Symbol symbol = mes.getSymbol();
+    QVector<QString> params = mes.getParams();
+    QString documentName = params.at(0);
+    mongocxx::collection symbolCollection = (this->db)["symbol"];
+    bsoncxx::stdx::optional<bsoncxx::document::value> result;
+    auto builder = bsoncxx::builder::stream::document{};
 
+    bsoncxx::document::value symbolToDelete =
+            builder << "value" << symbol.getValue()
+                    << "siteId" << symbol.getSiteId()
+                    << "counter" << symbol.getCounter()
+                    << "documentName" << documentName.toUtf8().constData()
+                    << bsoncxx::builder::stream::finalize;
+    bsoncxx::document::view view = symbolToDelete.view();
+    try {
+        symbolCollection.delete_one(view);
+    } catch (mongocxx::exception &e) {
+        qDebug() << "[ERROR][DatabaseManager::deleteFromDB] delete_one error, connection to db failed. Server should shutdown.";
+        return false;
+    }
+    return true;
 }
 
-void DatabaseManager::updateDB(Message m)
+bool DatabaseManager::createDocument(SharedDocument document)
 {
+    mongocxx::collection documentCollection = (this->db)["document"];
+    bsoncxx::stdx::optional<bsoncxx::document::value> result;
+    auto builder = bsoncxx::builder::stream::document{};
+    auto array_builder = bsoncxx::builder::basic::array{};
 
-}
+    for (int i : document.getUserAllowed()){
+        array_builder.append(i);
+    }
 
-void DatabaseManager::createFile(QString nome, int user)
-{
+    bsoncxx::document::value documentToInsert = builder
+            << "_id" << (document.getName() + '_' + QString::number(document.getCreator())).toUtf8().constData()
+            << "documentName" << document.getName().toUtf8().constData()
+            << "creator" << document.getCreator()
+            << "isOpen" << document.getOpen()
+            << "userAllowed" << array_builder
+            << bsoncxx::builder::stream::finalize;
 
+    bsoncxx::document::view view = documentToInsert.view();
+    try {
+        documentCollection.insert_one(view);
+    } catch (mongocxx::bulk_write_exception& e) {
+        qDebug() << "[ERROR][DatabaseManager::insertDocument] insert_one error, connection to db failed. Server should shutdown.";
+        return false;
+    }
+    return true;
 }
 
 QList<Symbol> DatabaseManager::retrieveFile(QString documentName)

@@ -21,6 +21,7 @@
 
 #include "message.h"
 #include "account.h"
+#include "sharedDocument.h"
 
 class DatabaseManager
 {
@@ -34,17 +35,19 @@ public:
 //    explicit DatabaseManager(QObject *parent = nullptr);
     DatabaseManager();
     /*** USER ****/
-    bool registerUser(QString _id, QString password);
+    bool registerUser(Account account, QString password);
     bool deleteUser  (QString _id);
     bool checkUserPsw(QString _id, QString password);
     bool changePassword(QString _id, QString password);
-    Account getAccount(int siteId);
+    Account getAccount(QString username);
     /************/
 
-    bool insertInDB(Message mes);
-    void deleteFromDB(Message mes);
-    void updateDB(Message m);
-    void createFile(QString nome, int user);
+    /** SYMBOL **/
+    bool insertSymbol(Message mes);
+    bool deleteSymbol(Message mes);
+    /************/
+
+    bool createDocument(SharedDocument document);
     QList<Symbol> retrieveFile(QString documentName);
 
     ~DatabaseManager();

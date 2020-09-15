@@ -9,22 +9,31 @@ Server::Server(QObject *parent) : QObject(parent)
     this->dbMan = std::move(dbMan);
 //    this->dbMan = new DatabaseManager();
     std::unique_ptr<FileManager> fileMan(new FileManager);
+    this->fileMan = std::move(fileMan);
 
 //    this->acMan = new AccountManager();
     std::unique_ptr<AccountManager> acMan(new AccountManager);
+    this->acMan = std::move(acMan);
 
     /***************************
      ****** TEST DB ***********
      *************************/
 
-//    QString name = "angelo";
-//    QString pass = "ciao";
-//    if(this->dbMan.get()->registerUser(name, pass))
-//        qDebug() << "inserted?" ;
-//    if(this->dbMan.get()->checkUserPsw(name,pass))
-//        qDebug() << "passok" ;
-//    if(this->dbMan.get()->deleteUser(name))
-//        qDebug() << "deleted" ;
+    QString name = "angelo";
+    QString pass = "ciao";
+    Account account;
+    account.setUsername(name);
+    account.setSiteId(0);
+    if(this->dbMan.get()->registerUser(account, pass))
+        qDebug() << "inserted?" ;
+
+    Account account2 = dbMan.get()->getAccount(QString("angelo"));
+    qDebug() << account2.toString();
+
+    if(this->dbMan.get()->checkUserPsw(name,pass))
+        qDebug() << "passok" ;
+    if(this->dbMan.get()->deleteUser(name))
+        qDebug() << "deleted" ;
 
     /*****************************/
 
@@ -33,12 +42,14 @@ Server::Server(QObject *parent) : QObject(parent)
                      this,
                      &Server::processMessage
                      );
-/*//    QObject::connect(this->socketMan, &SocketManager::newMessage, this, &Server::processMessage);
-
->>>>>>> Angelo
-
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
-    QObject::connect(this->socketMan, &SocketManager::newAccountOnline, this->acMan, &AccountManager::updateOnlineAccounts);
+    QObject::connect(this->socketMan.get(),
+                     &SocketManager::newAccountOnline,
+                     this->acMan.get(),
+                     &AccountManager::updateOnlineAccounts
+                     );
+//                     &AccountManager::updateOnlineAccounts
+//                     );
 
     //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
 
@@ -86,12 +97,15 @@ void Server::processMessage( Message mes) {
         nomeFile.right(index);*/
     }
 
-    QVector<QString> prova {"documento1"};
     QList<Symbol> document;
+    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
+    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
     switch (first){
     case 'I':
         mes.setParams(prova);
-        dbMan->insertInDB(mes);
+//        dbMan->createDocument(sharedDocument);
+        dbMan->insertSymbol(mes);
+//        dbMan->deleteSymbol(mes);
 //        document = dbMan->retrieveFile("documento1"); //di test
         this->dispatchMessage(mes);
 //        remoteInsert(mes.getSymbol());
