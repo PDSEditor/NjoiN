@@ -45,7 +45,7 @@ public:
     void deleteFromDB(Message mes);
     void updateDB(Message m);
     void createFile(QString nome, int user);
-    void retrieveFile(QString nome);
+    QList<Symbol> retrieveFile(QString documentName);
 
     ~DatabaseManager();
 };

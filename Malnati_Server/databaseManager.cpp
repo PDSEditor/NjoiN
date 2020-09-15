@@ -3,7 +3,6 @@
 #include <QDebug>
 #include <QCryptographicHash>
 
-//DatabaseManager::DatabaseManager(QObject* parent)
 DatabaseManager::DatabaseManager()
 {
 //    std::unique_ptr<mongocxx::instance> instance(new mongocxx::instance);
@@ -121,23 +120,32 @@ bool DatabaseManager::checkUserPsw(QString _id, QString password){
 
 bool DatabaseManager::insertInDB(Message mes) {
     Symbol symbol = mes.getSymbol();
+    QVector<QString> params = mes.getParams();
+    QString documentId = params.at(0);
     mongocxx::collection symbolCollection = (this->db)["symbol"];
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     auto builder = bsoncxx::builder::stream::document{};
 
+    auto array_builder = bsoncxx::builder::basic::array{};
+
+    for (int i : symbol.getPosition()){
+        array_builder.append(i);
+    }
+
     bsoncxx::document::value symbolToInsert = builder
             /*<< "_id" << ? */
+            << "documentName" << documentId.toUtf8().constData()
             << "value" << symbol.getValue()
             << "siteId" << symbol.getSiteId()
             << "counter" << symbol.getCounter()
-            << "posizione" << symbol.getPosizione().at(0)
-               /****** DA METTERE TUTTO IL VETTORE NON SOLO 0 **************/
+            << "position" << array_builder
             << bsoncxx::builder::stream::finalize;
 
     bsoncxx::document::view view = symbolToInsert.view();
     try {
         symbolCollection.insert_one(view);
     } catch (mongocxx::bulk_write_exception& e) {
+        qDebug() << "[ERROR][DatabaseManager::insertSymbol] insert_one error, connection to db failed. Server should shutdown.";
         return false;
     }
     return true;
@@ -159,8 +167,43 @@ void DatabaseManager::createFile(QString nome, int user)
 
 }
 
-void DatabaseManager::retrieveFile(QString nome)
+QList<Symbol> DatabaseManager::retrieveFile(QString documentName)
 {
+    QList<Symbol> orderedSymbols;
+    mongocxx::collection symbols = (this->db)["symbol"];
+
+    auto elementBuilder = bsoncxx::builder::stream::document{};
+    bsoncxx::document::value symbolsToRetrieve =
+        elementBuilder << "documentName" << documentName.toUtf8().constData()
+                       << bsoncxx::builder::stream::finalize;
+    bsoncxx::document::view symbolsToRetrieveView = symbolsToRetrieve.view();
+
+    // notice that the only instruction that should be included in try-catch
+    // is insertCollection.find, but we do in this way because of scope problems.
+    // Despite everything, we are sure that this is the only method that can raise
+    // the below type of exception in catch().
+    try{
+        mongocxx::cursor resultIterator = symbols.find(symbolsToRetrieveView);
+        //(.1)Save them in local before ordering
+        for (auto elem : resultIterator) {
+            QString symbol = QString::fromStdString(bsoncxx::to_json(elem));
+            QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());
+            QJsonObject symbolObjJson = stringDocJSON.object();
+            Symbol symbolToInsert = Symbol::fromJson(symbolObjJson);
+            orderedSymbols.push_back(symbolToInsert);
+        }
+    } catch (mongocxx::query_exception) {
+        qDebug() << "[ERROR][DatabaseManager::getAllInserts] find error, connection to db failed. Server should shutdown.";
+        throw;
+    }
+
+    //(.2)Now ordering.
+    //It orders according to the order established in Char object,
+    //so will be returned a vector in fractionalPosition ascending order
+//        std::sort(orderedSymbols.begin(), orderedSymbols.end());
+
+       return orderedSymbols;
+
 
 }
 

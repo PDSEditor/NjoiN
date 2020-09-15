@@ -15,7 +15,6 @@
 
 
 class SharedDocument;
-//class Account;
 class Message;
 
 class Server: public QObject
@@ -25,14 +24,12 @@ Q_OBJECT
 private:
     //std::map<std::string, std::vector<Symbol>> documents;     in questo caso il file andrebbe aggiornato anche lato server (ottimizzazione futura = OF)
     //std::map<int, Account> onlineAccounts;
-    //std::queue<Message> codaMessaggi;             Questo sarebbe il modo classico di gestirlo in c++, provare a usare invece signal e slots per gestire gli eventi
     std::unique_ptr<SocketManager> socketMan;
 //    SocketManager *socketMan;
     std::unique_ptr<DatabaseManager> dbMan;
 //    DatabaseManager *dbMan;
     std::unique_ptr<FileManager> fileMan;
-
-    AccountManager *acMan;
+    std::unique_ptr<AccountManager> acMan;
 
     int remoteInsert(Symbol symbol);
     int remoteDelete(Symbol symbol);

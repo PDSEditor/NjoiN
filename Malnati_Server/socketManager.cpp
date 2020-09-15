@@ -60,8 +60,8 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         }
 
         bytemex.append('{');
-        for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
-            tmp=(symbol.getPosizione().at(i));
+        for(unsigned long long i=0;i<symbol.getPosition().size();i++){
+            tmp=(symbol.getPosition().at(i));
 
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
@@ -294,7 +294,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             i+=4;
         }
         i++;
-        symbol.setPosizione(vtmp);
+        symbol.setPosition(vtmp);
         symbol.setSiteId((int)bytemex.at(i++));
         c.clear();
         c.append(bytemex.mid(i,4));

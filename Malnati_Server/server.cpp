@@ -10,7 +10,8 @@ Server::Server(QObject *parent) : QObject(parent)
 //    this->dbMan = new DatabaseManager();
     std::unique_ptr<FileManager> fileMan(new FileManager);
 
-    this->acMan = new AccountManager();
+//    this->acMan = new AccountManager();
+    std::unique_ptr<AccountManager> acMan(new AccountManager);
 
     /***************************
      ****** TEST DB ***********
@@ -85,10 +86,13 @@ void Server::processMessage( Message mes) {
         nomeFile.right(index);*/
     }
 
-
+    QVector<QString> prova {"documento1"};
+    QList<Symbol> document;
     switch (first){
     case 'I':
-        //dbMan->insertInDB(mes);
+        mes.setParams(prova);
+        dbMan->insertInDB(mes);
+//        document = dbMan->retrieveFile("documento1"); //di test
         this->dispatchMessage(mes);
 //        remoteInsert(mes.getSymbol());
         break;
@@ -131,16 +135,16 @@ void Server::processMessage( Message mes) {
 }
 
 int compare(Symbol s1, Symbol s2){
-    int len1=s1.getPosizione().size();
-    int len2=s2.getPosizione().size();
+    int len1=s1.getPosition().size();
+    int len2=s2.getPosition().size();
     int res=0;
     for(int i=0;i<std::min(len1,len2);i++){
 
-        if(s1.getPosizione()[i]>s2.getPosizione()[i]){
+        if(s1.getPosition()[i]>s2.getPosition()[i]){
             res=1;
             break;
         }
-        if(s1.getPosizione()[i]<s2.getPosizione()[i]){
+        if(s1.getPosition()[i]<s2.getPosition()[i]){
             res=-1;
             break;
         }
@@ -161,16 +165,16 @@ int Server::remoteInsert(Symbol symbol){
     int min=0;
     int max = this->symbols.size()-1;
     int middle=(max+min)/2 , pos;
-    std::vector<int> index=symbol.getPosizione();
+    std::vector<int> index=symbol.getPosition();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     //controllo se è ultimo
-    if(symbols[max].getPosizione().back()<index.front()){
+    if(symbols[max].getPosition().back()<index.front()){
         symbols.push_back(symbol);
         return max;
     }
     //controllo se è primo
-    if(symbols[0].getPosizione().front()>index.back()){
+    if(symbols[0].getPosition().front()>index.back()){
         it=symbols.begin();
         symbols.insert(it,symbol);
         return min;
@@ -202,7 +206,7 @@ int Server::remoteInsert(Symbol symbol){
 
 int Server::remoteDelete(Symbol s){
     int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index=s.getPosizione();
+    std::vector<int> index=s.getPosition();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     it=symbols.begin();
