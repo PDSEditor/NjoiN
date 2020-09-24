@@ -137,11 +137,21 @@ TextEdit::TextEdit(QWidget *parent)
     }
 
     QFont textFont("Helvetica");
-    textFont.setStyleHint(QFont::SansSerif);
+    //
+    //
     textEdit->setFont(textFont);
     fontChanged(textEdit->font());
     colorChanged(textEdit->textColor());
     alignmentChanged(textEdit->alignment());
+
+
+    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    textEdit->setFontFamily("kalapi");
+    textEdit->setFontPointSize(12);
+    textEdit->currentCharFormat().setFontItalic(false);
+    textEdit->currentCharFormat().setFontUnderline(false);
+    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
     connect(textEdit->document(), &QTextDocument::modificationChanged,
             actionSave, &QAction::setEnabled);
@@ -487,11 +497,12 @@ void TextEdit::fileNew()
 void TextEdit::reciveSymbol(Message *m)
 {
     externAction=true;
-    QTextCursor curs = textEdit->textCursor();
-       //
+   QTextCursor curs = textEdit->textCursor(),oldcurs;
+       //QTextCursor curs ,oldcurs=textEdit->textCursor();
+       //textEdit->setTextCursor(curs);
     QColor col;
     QTextCharFormat qform, preqform;
-    preqform=textEdit->currentCharFormat();
+    //preqform=textEdit->currentCharFormat();
     if(colors.find(m->getSymbol().getSiteId())==colors.end()){
         int pos=m->getSymbol().getSiteId()%5;
         //
@@ -500,10 +511,20 @@ void TextEdit::reciveSymbol(Message *m)
         colors.insert(m->getSymbol().getSiteId(),q);
     }
     col=colors.take(m->getSymbol().getSiteId());
+    //textEdit->setTextBackgroundColor(col);
+
     qform.setBackground(col);
+    qform.setFontFamily(m->getFamily());
+    qform.setFontItalic(m->getItalic());
+    qform.setFontUnderline(m->getUnderln());
+    //qform.setFontPointSize((float)m->getSize());
+    qform.setFontPointSize(m->getSize());
+    if(m->getBold())
+        qform.setFontWeight(QFont::Bold);
+    //curs.setCharFormat(qform);
 
     int position,oldposition;
-    oldposition=curs.position();
+    oldposition=textEdit->textCursor().position();
     Symbol tmp;
     tmp.setValue(m->getSymbol().getValue());
     tmp.setPosizione(m->getSymbol().getPosizione());
@@ -512,12 +533,13 @@ void TextEdit::reciveSymbol(Message *m)
         curs.setPosition(position);
         curs.insertText((QChar)tmp.getValue(),qform);
 
-        //curs.insertHtml("<style = 'color: blue'>" + (QString)tmp.getValue());
 
 
-
-
-
+        //prova
+        //textEdit->setTextBackgroundColor(Qt::white);
+        //preqform.setBackground(Qt::white);
+        //curs.setCharFormat(preqform);
+        //textEdit->mergeCurrentCharFormat(preqform);
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -525,7 +547,6 @@ void TextEdit::reciveSymbol(Message *m)
         curs.deletePreviousChar();
 
     }
-    textEdit->setCurrentCharFormat(preqform);
 
 
 
@@ -775,8 +796,13 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
 
+
    if(externAction==false){
+
+
+
        QTextCursor  cursor = textEdit->textCursor();
+
 
     qDebug() << "position: " << position;
     qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
@@ -786,6 +812,13 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
             //s1= new std::vector<int>();
         int c=textEdit->document()->characterAt(position).toLatin1();
             Message m = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
+            m.setSize(textEdit->fontPointSize());
+            m.setFamily(textEdit->fontFamily());
+            m.setUnderln(textEdit->currentCharFormat().fontUnderline());
+           m.setItalic(textEdit->currentCharFormat().fontItalic());
+           m.setBold(actionTextBold->isChecked());
+            QString f=(QString)textEdit->currentFont().styleName();
+
             //symbols->push_back(symbol);
             emit(sendMessage(&m));
 
@@ -825,7 +858,26 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
 void TextEdit::cursorPositionChanged()
 {
-     textEdit->setTextBackgroundColor(Qt::white);
+
+    QTextCursor cursor = textEdit->textCursor();
+    QTextCharFormat form;
+    form.setFontItalic(textEdit->currentCharFormat().fontItalic());
+    form.setFontFamily(textEdit->currentCharFormat().fontFamily());
+    form.setFontUnderline(textEdit->currentCharFormat().fontUnderline());
+    form.setFontPointSize(textEdit->currentCharFormat().fontPointSize());
+    form.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
+    if(!cursor.hasSelection()){
+   textEdit->setTextBackgroundColor(Qt::white);
+   textEdit->setFontFamily(textEdit->fontFamily());
+   textEdit->setFontItalic(textEdit->fontItalic());
+   textEdit->setFontUnderline(textEdit->fontUnderline());
+   cursor.mergeCharFormat(form);
+   textEdit->mergeCurrentCharFormat(form);
+    flagc=false;
+    }
+
+
+
 
     alignmentChanged(textEdit->alignment());
     QTextList *list = textEdit->textCursor().currentList();
@@ -885,9 +937,9 @@ void TextEdit::about()
 void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
 {
     QTextCursor cursor = textEdit->textCursor();
-    if (!cursor.hasSelection())
-        cursor.select(QTextCursor::WordUnderCursor);
-    cursor.mergeCharFormat(format);
+    if (cursor.hasSelection()){
+        //cursor.select(QTextCursor::WordUnderCursor);
+    cursor.mergeCharFormat(format);}
     textEdit->mergeCurrentCharFormat(format);
 }
 

@@ -73,11 +73,18 @@ void socketManager::binaryMessageToServer(Message *m)
         bytemex.append(tmpc.cell());
         bytemex.append(tmpc.row());
 
-        /*for(int p=0;p<2;p++){
-            bytemex.append(tmpc >> (p*8));
-        }*/
 
-        //bytemex.append(symbol.getValue());
+        //inserimento info testo
+
+        bytemex.append(m->getBold());
+        bytemex.append(m->getUnderln());
+        bytemex.append(m->getItalic());
+        tmp=m->getSize();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(m->getFamily());
+
 
     }
     else if(action==('C')||action==('R')){
@@ -160,7 +167,7 @@ void socketManager::onTextMessageReceived(QString message)
 void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 {
     QByteArray c;
-    int tmp;
+    int tmp, d;
     QChar action;
     QChar tmpc;
     //Symbol *symbol = new Symbol();
@@ -169,6 +176,8 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 
     bool emitS = true;
 
+    QString family;
+    bool it,bo,un;
 
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
         action=bytemex.at(0);
@@ -201,6 +210,25 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         c.append(bytemex.mid(i,2));
         memcpy(&tmpc,c,2);
         symbol.setValue(tmpc);
+        i+=2;
+        bo=bytemex.at(i);
+        i++;
+        un=bytemex.at(i);
+        i++;
+        it=bytemex.at(i);
+        i++;
+        c.clear();
+        c.append(bytemex.mid(i,4));
+        memcpy(&tmp,c,4);
+        d=tmp;
+        i+=4;
+        family=bytemex.right(bytemex.length()-i);
+
+
+
+
+
+
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')
@@ -238,6 +266,14 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         m->setAction(action);
         m->setParams(params);
         m->setSymbol(symbol);
+
+        m->setBold(bo);
+        m->setSize(d);
+        m->setItalic(it);
+        m->setUnderln(un);
+        m->setFamily(family);
+
+
 
         emit newMessage(m);
     }

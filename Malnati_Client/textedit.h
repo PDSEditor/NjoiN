@@ -79,7 +79,7 @@ private:
     void colorChanged(const QColor &c);
     void alignmentChanged(Qt::Alignment a);
     Symbol searchSymbolToErase(char c);
-    bool externAction;
+    bool externAction, flagc=false;
     QMap<int,QColor> colors;
     std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
     int contcolor=0;

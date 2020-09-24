@@ -83,6 +83,15 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
         bytemex.append(tmpc.cell());
         bytemex.append(tmpc.row());
 
+        bytemex.append(m->getBold());
+        bytemex.append(m->getUnderln());
+        bytemex.append(m->getItalic());
+        tmp=m->getSize();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(m->getFamily());
+
     }
     else if(action==('C')||action==('R')){
         if(action==('C')){
@@ -272,9 +281,10 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
 
     emit newMessage(m);
     */
-
+    bool it,un,bo;
+    QString family;
     QByteArray c;
-    int tmp;
+    int tmp,d;
     QChar tmpc;
     QChar action;
     Symbol symbol;
@@ -307,6 +317,19 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
         memcpy(&tmpc,c,2);
         symbol.setValue(tmpc);
         //symbol.setValue(bytemex.at(i));
+        i+=2;
+        bo=bytemex.at(i);
+        i++;
+        un=bytemex.at(i);
+        i++;
+        it=bytemex.at(i);
+        i++;
+        c.clear();
+        c.append(bytemex.mid(i,4));
+        memcpy(&tmp,c,4);
+        d=tmp;
+        i+=4;
+        family=bytemex.right(bytemex.length()-i);
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')
@@ -331,6 +354,11 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     m->setAction(action);
     m->setParams(params);
     m->setSymbol(symbol);
+    m->setBold(bo);
+    m->setSize(d);
+    m->setItalic(it);
+    m->setUnderln(un);
+    m->setFamily(family);
 
     m->debugPrint();
     //
