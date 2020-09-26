@@ -6,6 +6,7 @@
 #include <QPointer>
 #include <symbol.h>
 #include <crdt.h>
+#include <QPrinter>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -44,9 +45,9 @@ private slots:
     void fileOpen();
     bool fileSave();
     bool fileSaveAs();
-   /* void filePrint();
+    void filePrint();
     void filePrintPreview();
-    void filePrintPdf();*/
+    void filePrintPdf();
 
     void textBold();
     void textUnderline();
@@ -63,7 +64,7 @@ private slots:
 
     void clipboardDataChanged();
     void about();
-    //void printPreview(QPrinter *);
+    void printPreview(QPrinter *);
 
 private:
     void setupFileActions();

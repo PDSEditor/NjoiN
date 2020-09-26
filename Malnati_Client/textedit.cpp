@@ -220,7 +220,7 @@ void TextEdit::setupFileActions()
     a->setPriority(QAction::LowPriority);
     menu->addSeparator();
 
-/*#ifndef QT_NO_PRINTER
+#ifndef QT_NO_PRINTER
     const QIcon printIcon = QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png"));
     a = menu->addAction(printIcon, tr("&Print..."), this, &TextEdit::filePrint);
     a->setPriority(QAction::LowPriority);
@@ -237,7 +237,7 @@ void TextEdit::setupFileActions()
     tb->addAction(a);
 
     menu->addSeparator();
-#endif*/
+#endif
 
     a = menu->addAction(tr("&Quit"), this, &QWidget::close);
     a->setShortcut(Qt::CTRL + Qt::Key_Q);
@@ -554,16 +554,40 @@ bool TextEdit::fileSaveAs()
     QFileDialog fileDialog(this, tr("Save as..."));
     fileDialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList mimeTypes;
-    mimeTypes << "application/vnd.oasis.opendocument.text" << "text/html" << "text/plain";
+    mimeTypes << "application/vnd.oasis.opendocument.text" << "text/html" << "text/plain" << "application/pdf";
     fileDialog.setMimeTypeFilters(mimeTypes);
-    fileDialog.setDefaultSuffix("odt");
     if (fileDialog.exec() != QDialog::Accepted)
         return false;
+
+    if(fileDialog.selectedMimeTypeFilter()
+            .split("/").contains("pdf")){
+        QString fileName = fileDialog.selectedFiles().first();
+        if(!fileName.split('.').contains("pdf"))
+            fileName = fileName.append(".pdf");
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setOutputFileName(fileName);
+        textEdit->document()->print(&printer);
+        statusBar()->showMessage(tr("Exported \"%1\"")
+                                 .arg(QDir::toNativeSeparators(fileName)));
+        return true;
+    }
+    else if(fileDialog.selectedMimeTypeFilter().contains("opendocument")){
+        fileDialog.setDefaultSuffix("odt");
+    }
+    else if(fileDialog.selectedMimeTypeFilter().contains("plain")){
+        fileDialog.setDefaultSuffix("txt");
+    }
+    else{ if(fileDialog.selectedMimeTypeFilter().contains("html")){
+        fileDialog.setDefaultSuffix("html");
+    }
+       else fileDialog.setDefaultSuffix("odt");
+    }
     const QString fn = fileDialog.selectedFiles().first();
     setCurrentFileName(fn);
     return fileSave();
 }
-/*
+
 void TextEdit::filePrint()
 {
 #if QT_CONFIG(printdialog)
@@ -618,7 +642,7 @@ void TextEdit::filePrintPdf()
 //! [0]
 #endif
 }
-*/
+
 void TextEdit::textBold()
 {
     QTextCharFormat fmt;
