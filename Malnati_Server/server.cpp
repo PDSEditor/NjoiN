@@ -19,22 +19,22 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-    QString name = "angelo";
-    QString pass = "ciao";
+//    QString name = "angelo";
+//    QString pass = "ciao";
 
-    Account account;
-    account.setUsername(name);
-    account.setSiteId(0);
-    if(this->dbMan.get()->registerUser(account, pass))
-        qDebug() << "inserted?" ;
+//    Account account;
+//    account.setUsername(name);
+//    account.setSiteId(0);
+//    if(this->dbMan.get()->registerUser(account, pass))
+//        qDebug() << "inserted?" ;
 
-    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
-    qDebug() << account2.toString();
+//    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
+//    qDebug() << account2.toString();
 
-    if(this->dbMan.get()->checkUserPsw(name,pass))
-        qDebug() << "passok" ;
-    if(this->dbMan.get()->deleteUser(name))
-        qDebug() << "deleted" ;
+//    if(this->dbMan.get()->checkUserPsw(name,pass))
+//        qDebug() << "passok" ;
+//    if(this->dbMan.get()->deleteUser(name))
+//        qDebug() << "deleted" ;
 
     /*****************************/
 
@@ -105,9 +105,12 @@ void Server::processMessage( Message mes) {
     case 'I':
         mes.setParams(prova);
 //        dbMan->createDocument(sharedDocument);
-        dbMan->insertSymbol(mes);
+//        dbMan->insertSymbol(mes);
 //        dbMan->deleteSymbol(mes);
-//        document = dbMan->retrieveFile("documento1"); //di test
+//        document = dbMan->retrieveSymbolsOfDocument(prova.first()); //di test
+        for(auto i : document){
+            qDebug() << i.getValue();
+        }
         this->dispatchMessage(mes);
 //        remoteInsert(mes.getSymbol());
         break;
@@ -253,6 +256,6 @@ int Server::remoteDelete(Symbol s){
 
 }
 
-
-
-
+bool Symbol::operator<(const Symbol &other) const{
+    return this->getPosition() < other.getPosition();
+}

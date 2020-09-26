@@ -31,6 +31,7 @@ public:
     char getValue() const;
     void setValue(char v);
     static Symbol fromJson(const QJsonObject &JsonObj);
+    bool operator < (const Symbol &other) const;
 };
 
 #endif // SYMBOL_H

@@ -20,14 +20,13 @@ void Account::setSiteId(int value)
     siteId = value;
 }
 
-Account::Account()
-{
-    
-}
+Account::Account(QString username, int siteId, QByteArray image): username(username), siteId(siteId), image(image)
+{}
 
-Account::Account(QString username, int siteId){
-    this->username = username;
-    this->siteId = siteId;
+Account::Account(const Account &other){
+    this->siteId = other.siteId;
+    this->username = other.username;
+    this->image = other.image;
 }
 
 QString Account::toString(){

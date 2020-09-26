@@ -7,9 +7,11 @@ class Account
 {
     QString username;
     int siteId;
+    QByteArray image;
 public:
     Account();
-    Account(QString username, int siteId);
+    Account(QString username, int siteId, QByteArray image);
+    Account(const Account &other);
 
     QString getUsername() const;
     void setUsername(const QString &value);

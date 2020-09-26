@@ -32,17 +32,24 @@ DatabaseManager::DatabaseManager()
            }
 }*/
 
-bool DatabaseManager::registerUser(Account account, QString password){
+bool DatabaseManager::registerAccount(Account account, QString password, QByteArray &image){
 
     auto userCollection = (this->db)["user"];
     auto builder = bsoncxx::builder::stream::document{};
 
     QString hashpsw = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Sha256);
 
+    std::vector<unsigned char> vector(image.begin(), image.end());
+    bsoncxx::types::b_binary img {bsoncxx::binary_sub_type::k_binary,
+                                 uint32_t(vector.size()),
+                                 vector.data()
+                                 };
+
     auto userToInsert = builder
             << "_id" << account.getUsername().toUtf8().constData()
             << "password" << hashpsw.toStdString()
             << "siteId" << account.getSiteId()
+            << "image" << img
             << bsoncxx::builder::stream::finalize;
 
     auto view = userToInsert.view();
@@ -67,13 +74,23 @@ Account DatabaseManager::getAccount(QString username){
     bsoncxx::document::view accountToRetrieveView = accountToRetrieve.view();
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     Account account;
+
     try{
         result = userCollection.find_one(accountToRetrieveView);
         if(result){
             auto a = (*result).view();
-            auto siteId = a["siteId"];
-            account.setUsername(username);
-            account.setSiteId((int)siteId.get_int32());
+
+            int siteId = a["siteId"].get_int32();
+
+            auto tmp = a["username"].get_utf8().value.to_string();
+            QString username = QString::fromStdString(tmp);
+
+            auto tmp1 = a["image"].get_binary();
+            auto bytes = tmp1.bytes;
+            auto size = tmp1.size;
+            auto img = QByteArray::fromRawData(reinterpret_cast<const char*>(bytes), size);
+
+            Account account(username, siteId, img);
         }
     } catch (mongocxx::query_exception &e){
         qDebug() << "[ERROR][DatabaseManager::getAccount] find_one error, connection to db failed. Server should shutdown.";
@@ -81,7 +98,7 @@ Account DatabaseManager::getAccount(QString username){
     return account;
 }
 
-bool DatabaseManager::deleteUser(QString _id){
+bool DatabaseManager::deleteAccount(QString _id){
     mongocxx::collection userCollection = (this->db)["user"];
     try {
         userCollection.delete_one(
@@ -95,7 +112,7 @@ bool DatabaseManager::deleteUser(QString _id){
     return true;
 }
 
-bool DatabaseManager::checkUserPsw(QString _id, QString password){
+bool DatabaseManager::checkAccountPsw(QString _id, QString password){
 
     mongocxx::collection userCollection = (this->db)["user"];
 
@@ -215,7 +232,7 @@ bool DatabaseManager::createDocument(SharedDocument document)
     return true;
 }
 
-QList<Symbol> DatabaseManager::retrieveFile(QString documentName)
+QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentName)
 {
     QList<Symbol> orderedSymbols;
     mongocxx::collection symbols = (this->db)["symbol"];
@@ -245,15 +262,15 @@ QList<Symbol> DatabaseManager::retrieveFile(QString documentName)
         throw;
     }
 
-    //(.2)Now ordering.
+    // TODO:test
     //It orders according to the order established in Char object,
     //so will be returned a vector in fractionalPosition ascending order
-//        std::sort(orderedSymbols.begin(), orderedSymbols.end());
+        std::sort(orderedSymbols.begin(), orderedSymbols.end());
 
        return orderedSymbols;
-
-
 }
+
+
 
 DatabaseManager::~DatabaseManager(){
     this->db.~database();

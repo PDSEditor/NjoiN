@@ -32,13 +32,12 @@ private:
     mongocxx::uri uri;
     
 public:
-//    explicit DatabaseManager(QObject *parent = nullptr);
     DatabaseManager();
     /*** USER ****/
-    bool registerUser(Account account, QString password);
-    bool deleteUser  (QString _id);
-    bool checkUserPsw(QString _id, QString password);
-    bool changePassword(QString _id, QString password);
+    bool registerAccount(Account account, QString password, QByteArray &image);
+    bool deleteAccount  (QString _id);
+    bool checkAccountPsw(QString _id, QString password);
+//    bool changePassword(QString _id, QString password);
     Account getAccount(QString username);
     /************/
 
@@ -47,8 +46,14 @@ public:
     bool deleteSymbol(Message mes);
     /************/
 
+    /** DOCUMENT **/
     bool createDocument(SharedDocument document);
-    QList<Symbol> retrieveFile(QString documentName);
+    SharedDocument getDocument(QString documentName); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
+    QList<Symbol> retrieveSymbolsOfDocument(QString documentName);
+    QList<SharedDocument> getAllDocuments(); //todo: da fare
+    
+//    bool deleteDocument(SharedDocument document);
+    /***********/
 
     ~DatabaseManager();
 };
