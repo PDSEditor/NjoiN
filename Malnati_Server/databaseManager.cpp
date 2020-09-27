@@ -32,12 +32,13 @@ DatabaseManager::DatabaseManager()
            }
 }*/
 
+/** FORSE IMAGE SI PUÒ TOGLIERE COME PARAMETRO PERCHÉ GIÀ DENTRO ACCOUNT! **/
 bool DatabaseManager::registerAccount(Account account, QString password, QByteArray &image){
 
     auto userCollection = (this->db)["user"];
     auto builder = bsoncxx::builder::stream::document{};
 
-    QString hashpsw = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Sha256);
+    QString hashpsw = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex();
 
     std::vector<unsigned char> vector(image.begin(), image.end());
     bsoncxx::types::b_binary img {bsoncxx::binary_sub_type::k_binary,
@@ -46,8 +47,9 @@ bool DatabaseManager::registerAccount(Account account, QString password, QByteAr
                                  };
 
     auto userToInsert = builder
+//            << "_id" << account.getUsername().toUtf8().constData()
             << "_id" << account.getUsername().toUtf8().constData()
-            << "password" << hashpsw.toStdString()
+            << "password" << hashpsw.toUtf8().toStdString()
             << "siteId" << account.getSiteId()
             << "image" << img
             << bsoncxx::builder::stream::finalize;
@@ -64,37 +66,24 @@ bool DatabaseManager::registerAccount(Account account, QString password, QByteAr
 }
 
 Account DatabaseManager::getAccount(QString username){
-    qDebug() << "ciao";
     mongocxx::collection userCollection = (this->db)["user"];
 
     auto elementBuilder = bsoncxx::builder::stream::document{};
     bsoncxx::document::value accountToRetrieve =
         elementBuilder << "_id" << username.toUtf8().constData()
                        << bsoncxx::builder::stream::finalize;
-    bsoncxx::document::view accountToRetrieveView = accountToRetrieve.view();
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
-    Account account;
 
     try{
-        result = userCollection.find_one(accountToRetrieveView);
-        if(result){
-            auto a = (*result).view();
-
-            int siteId = a["siteId"].get_int32();
-
-            auto tmp = a["username"].get_utf8().value.to_string();
-            QString username = QString::fromStdString(tmp);
-
-            auto tmp1 = a["image"].get_binary();
-            auto bytes = tmp1.bytes;
-            auto size = tmp1.size;
-            auto img = QByteArray::fromRawData(reinterpret_cast<const char*>(bytes), size);
-
-            Account account(username, siteId, img);
-        }
-    } catch (mongocxx::query_exception &e){
+        result = userCollection.find_one(accountToRetrieve.view());
+    }catch (mongocxx::query_exception &e){
         qDebug() << "[ERROR][DatabaseManager::getAccount] find_one error, connection to db failed. Server should shutdown.";
+        throw;
     }
+
+    QString accountString = QString::fromStdString(bsoncxx::to_json(result->view()));
+    QJsonDocument document = QJsonDocument::fromJson(accountString.toUtf8());
+    Account account(document["_id"].toString(), document["siteId"].toInt(), document["image"].toString().toLatin1());
     return account;
 }
 
@@ -116,7 +105,7 @@ bool DatabaseManager::checkAccountPsw(QString _id, QString password){
 
     mongocxx::collection userCollection = (this->db)["user"];
 
-    QString hashpsw = QCryptographicHash::hash(password.toLatin1(), QCryptographicHash::Sha256);
+    QString hashpsw = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex();
 
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
 
@@ -142,6 +131,68 @@ bool DatabaseManager::checkAccountPsw(QString _id, QString password){
         else return false;
     }
     else return false;
+}
+
+bool DatabaseManager::changePassword(QString _id, QString old_password, QString new_password){
+
+    if(!this->checkAccountPsw(_id, old_password)) return false; //controllo che la vecchia password sia valida
+
+    mongocxx::collection userCollection = (this->db)["user"];
+    QString hashpsw = QCryptographicHash::hash(new_password.toUtf8(), QCryptographicHash::Sha256).toHex();
+
+
+    bsoncxx::document::value user =
+            bsoncxx::builder::stream::document{}
+            << "_id" << _id.toStdString()
+            << bsoncxx::builder::stream::finalize;
+
+    bsoncxx::document::value newUser =
+            bsoncxx::builder::stream::document{}
+            << "$set" << bsoncxx::builder::stream::open_document
+            << "password" << hashpsw.toUtf8().constData()
+            << bsoncxx::builder::stream::close_document
+            << bsoncxx::builder::stream::finalize;
+
+    try {
+        userCollection.update_one(user.view(), newUser.view());
+
+    } catch (const mongocxx::bulk_write_exception &e) {
+        qDebug() << "Error changing password, throws: ";
+        qDebug() << e.what();
+    }
+    return true;
+}
+
+bool DatabaseManager::changeImage(QString _id, QByteArray &image){
+    //CONTROLLARE SE È AUTENTICATO?
+    mongocxx::collection userCollection = (this->db)["user"];
+
+    std::vector<unsigned char> vector(image.begin(), image.end());
+    bsoncxx::types::b_binary img {bsoncxx::binary_sub_type::k_binary,
+                                 uint32_t(vector.size()),
+                                 vector.data()
+                                 };
+
+    bsoncxx::document::value user =
+            bsoncxx::builder::stream::document{}
+            << "_id" << _id.toStdString()
+            << bsoncxx::builder::stream::finalize;
+
+    bsoncxx::document::value newUser =
+            bsoncxx::builder::stream::document{}
+            << "$set" << bsoncxx::builder::stream::open_document
+            << "image" << img
+            << bsoncxx::builder::stream::close_document
+            << bsoncxx::builder::stream::finalize;
+
+    try {
+        userCollection.update_one(user.view(), newUser.view());
+
+    } catch (const mongocxx::bulk_write_exception &e) {
+        qDebug() << "Error changing image, throws: ";
+        qDebug() << e.what();
+    }
+    return true;
 }
 
 bool DatabaseManager::insertSymbol(Message mes) {
@@ -257,8 +308,9 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentName)
             Symbol symbolToInsert = Symbol::fromJson(symbolObjJson);
             orderedSymbols.push_back(symbolToInsert);
         }
-    } catch (mongocxx::query_exception) {
+    } catch (mongocxx::query_exception &e) {
         qDebug() << "[ERROR][DatabaseManager::getAllInserts] find error, connection to db failed. Server should shutdown.";
+        qDebug() << e.what();
         throw;
     }
 

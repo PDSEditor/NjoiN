@@ -22,18 +22,23 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QString name = "angelo";
 //    QString pass = "ciao";
 
-//    Account account;
-//    account.setUsername(name);
-//    account.setSiteId(0);
-//    if(this->dbMan.get()->registerUser(account, pass))
+//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img.readAll();
+
+//    Account account(name, 0, image);
+////    account.setUsername(name);
+////    account.setSiteId(0);
+//    if(this->dbMan.get()->registerAccount(account, pass, image))
 //        qDebug() << "inserted?" ;
 
 //    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
 //    qDebug() << account2.toString();
 
-//    if(this->dbMan.get()->checkUserPsw(name,pass))
+//    if(this->dbMan.get()->checkAccountPsw(name,pass))
 //        qDebug() << "passok" ;
-//    if(this->dbMan.get()->deleteUser(name))
+//    if(this->dbMan.get()->changePassword(name, pass, "ciaone"))
+//        qDebug() << "passChanged";
+//    if(this->dbMan.get()->deleteAccount(name))
 //        qDebug() << "deleted" ;
 
     /*****************************/

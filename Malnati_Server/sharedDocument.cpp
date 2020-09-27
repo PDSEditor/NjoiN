@@ -46,6 +46,7 @@ bool SharedDocument::getOpen() const
 
 void SharedDocument::setOpen(bool value)
 {
+    // todo: una volta chiuso, bisogna salvarlo sul disco!
     open = value;
 }
 

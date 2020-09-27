@@ -37,7 +37,8 @@ public:
     bool registerAccount(Account account, QString password, QByteArray &image);
     bool deleteAccount  (QString _id);
     bool checkAccountPsw(QString _id, QString password);
-//    bool changePassword(QString _id, QString password);
+    bool changePassword(QString _id, QString old_password, QString new_password);
+    bool changeImage(QString _id, QByteArray &image);
     Account getAccount(QString username);
     /************/
 

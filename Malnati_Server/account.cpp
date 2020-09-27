@@ -20,6 +20,10 @@ void Account::setSiteId(int value)
     siteId = value;
 }
 
+Account::Account(){
+
+}
+
 Account::Account(QString username, int siteId, QByteArray image): username(username), siteId(siteId), image(image)
 {}
 
