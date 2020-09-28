@@ -208,11 +208,11 @@ bool DatabaseManager::insertSymbol(Message mes) {
     for (int i : symbol.getPosition()){
         array_builder.append(i);
     }
- QChar prova;
+
     bsoncxx::document::value symbolToInsert = builder
             /*<< "_id" << ? */
             << "document_id" << documentId.toUtf8().constData()
-            << "value" << prova
+            << "value" << symbol.getValue()
             << "siteId" << symbol.getSiteId()
             << "counter" << symbol.getCounter()
             << "position" << array_builder
