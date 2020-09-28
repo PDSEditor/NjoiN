@@ -60,3 +60,4 @@ public:
 };
 
 #endif // DATABASEMANAGER_H
+

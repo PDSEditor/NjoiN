@@ -19,6 +19,13 @@ private:
     QChar action;
     QVector<QString> params;
 
+    QString family;
+    bool bold;
+    bool italic;
+    bool underln;
+    qreal size;
+
+
 
 public:
     Message(QChar action): action(action) {}
@@ -28,12 +35,24 @@ public:
 
 
     QChar getAction() const;
-    void setAction(const QChar value);
+    void setAction(const QChar &value);
 
     Symbol getSymbol() const;
     void setSymbol(Symbol value);
     QVector<QString> getParams() const;
-    void setParams(const QVector<QString> value);
+    void setParams(const QVector<QString> &value);
+
+    QString getFamily();
+    bool getBold();
+    bool getItalic();
+    bool getUnderln();
+    qreal getSize();
+    void setFamily(QString f);
+    void setBold(bool b);
+    void setItalic(bool i);
+    void setUnderln(bool u);
+    void setSize(qreal s);
+
 
 };
 

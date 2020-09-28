@@ -61,7 +61,7 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
  * si può ancora EVITARE di avere i due vect temp following e preceding
  * passando this->symbols[precedingC].getPosizione() per valore
  * ******************************/
-Message Crdt::localInsert(char value, int precedingC, int followingC){
+Message Crdt::localInsert(QChar value, int precedingC, int followingC){
     //mi da la dimensione del mio vettore di simboli
     //int symbolsSize = this.symbols.size();
     size_t symbolsSize = this->symbols.size();

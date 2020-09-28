@@ -10,7 +10,7 @@ Symbol::Symbol(std::vector<int> posizione, int siteId, int counter)
 
 }
 
-Symbol::Symbol(char value, std::vector<int> posizione, int siteId, int counter)
+Symbol::Symbol(QChar value, std::vector<int> posizione, int siteId, int counter)
 {
     this->position = std::move(posizione);
     this->siteId = siteId;
@@ -23,12 +23,12 @@ Symbol::Symbol()
 {
 
 }
-char Symbol::getValue() const
+QChar Symbol::getValue() const
 {
     return value;
 }
 
-void Symbol::setValue(char v)
+void Symbol::setValue(QChar v)
 {
     value = v;
 }

@@ -1,6 +1,6 @@
 #include "symbol.h"
 
-Symbol::Symbol(char value, std::vector<int> posizione, int siteId, int counter): value(value), siteId(siteId), counter(counter)
+Symbol::Symbol(QChar value, std::vector<int> posizione, int siteId, int counter): value(value), siteId(siteId), counter(counter)
 {
     //this->value = value;
     this->posizione = std::move(posizione);
@@ -10,10 +10,10 @@ Symbol::Symbol(char value, std::vector<int> posizione, int siteId, int counter):
 Symbol::Symbol(){
 
 }
-char Symbol::getValue() const{
+QChar Symbol::getValue() const{
     return value;
 }
-void Symbol::setValue(char value){
+void Symbol::setValue(QChar value){
     this->value = value;
 }
 
