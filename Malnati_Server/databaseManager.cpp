@@ -198,7 +198,7 @@ bool DatabaseManager::changeImage(QString _id, QByteArray &image){
 bool DatabaseManager::insertSymbol(Message mes) {
     Symbol symbol = mes.getSymbol();
     QVector<QString> params = mes.getParams();
-    QString documentId = params.at(0);
+    QString documentId = params.at(0); //controllare se il documento esiste?
     mongocxx::collection symbolCollection = (this->db)["symbol"];
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     auto builder = bsoncxx::builder::stream::document{};
@@ -222,7 +222,7 @@ bool DatabaseManager::insertSymbol(Message mes) {
     try {
         symbolCollection.insert_one(view);
     } catch (mongocxx::bulk_write_exception& e) {
-        qDebug() << "[ERROR][DatabaseManager::insertSymbol] insert_one error, connection to db failed. Server should shutdown.";
+        qDebug() << "[ERROR][DatabaseManager::insertSymbol] insert_one error, connection to db failed.";
         return false;
     }
     return true;
@@ -309,7 +309,7 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentName)
             orderedSymbols.push_back(symbolToInsert);
         }
     } catch (mongocxx::query_exception &e) {
-        qDebug() << "[ERROR][DatabaseManager::getAllInserts] find error, connection to db failed. Server should shutdown.";
+        qDebug() << "[ERROR][DatabaseManager::retrieveSymbolsOfDocument] find error, connection to db failed";
         qDebug() << e.what();
         throw;
     }

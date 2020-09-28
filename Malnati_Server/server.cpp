@@ -103,24 +103,26 @@ void Server::processMessage( Message mes) {
         nomeFile.right(index);*/
     }
 
-    QList<Symbol> document;
-    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
-    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+//    QList<Symbol> document;
+//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
+//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
     switch (first){
     case 'I':
-        mes.setParams(prova);
+//        mes.setParams(prova);
 //        dbMan->createDocument(sharedDocument);
 //        dbMan->insertSymbol(mes);
 //        dbMan->deleteSymbol(mes);
 //        document = dbMan->retrieveSymbolsOfDocument(prova.first()); //di test
-        for(auto i : document){
-            qDebug() << i.getValue();
-        }
+//        for(auto i : document){
+//            qDebug() << i.getValue();
+//        }
+
+//        this->dbMan.get()->insertSymbol(mes);
         this->dispatchMessage(mes);
 //        remoteInsert(mes.getSymbol());
         break;
     case 'D':
-        //dbMan->deleteFromDB(mes);
+//        this->dbMan.get()->deleteSymbol(mes);
         this->dispatchMessage(mes);
 //        remoteDelete(mes.getSymbol());
         break;
@@ -131,7 +133,7 @@ void Server::processMessage( Message mes) {
         siteId = mes.getParams()[1].toInt();
         nomeFile = mes.getParams()[0];
         acMan->checkUserPerFile(siteId, nomeFile);
-
+//        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
         //Restituisci il file
         break;
 
