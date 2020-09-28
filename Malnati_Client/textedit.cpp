@@ -231,7 +231,7 @@ void TextEdit::setupFileActions()
     a->setPriority(QAction::LowPriority);
     menu->addSeparator();
 
-/*#ifndef QT_NO_PRINTER
+#ifndef QT_NO_PRINTER
     const QIcon printIcon = QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png"));
     a = menu->addAction(printIcon, tr("&Print..."), this, &TextEdit::filePrint);
     a->setPriority(QAction::LowPriority);
@@ -248,7 +248,7 @@ void TextEdit::setupFileActions()
     tb->addAction(a);
 
     menu->addSeparator();
-#endif*/
+#endif
 
     a = menu->addAction(tr("&Quit"), this, &QWidget::close);
     a->setShortcut(Qt::CTRL + Qt::Key_Q);
@@ -594,16 +594,40 @@ bool TextEdit::fileSaveAs()
     QFileDialog fileDialog(this, tr("Save as..."));
     fileDialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList mimeTypes;
-    mimeTypes << "application/vnd.oasis.opendocument.text" << "text/html" << "text/plain";
+    mimeTypes << "application/vnd.oasis.opendocument.text" << "text/html" << "text/plain" << "application/pdf";
     fileDialog.setMimeTypeFilters(mimeTypes);
-    fileDialog.setDefaultSuffix("odt");
     if (fileDialog.exec() != QDialog::Accepted)
         return false;
+
+    if(fileDialog.selectedMimeTypeFilter()
+            .split("/").contains("pdf")){
+        QString fileName = fileDialog.selectedFiles().first();
+        if(!fileName.split('.').contains("pdf"))
+            fileName = fileName.append(".pdf");
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setOutputFileName(fileName);
+        textEdit->document()->print(&printer);
+        statusBar()->showMessage(tr("Exported \"%1\"")
+                                 .arg(QDir::toNativeSeparators(fileName)));
+        return true;
+    }
+    else if(fileDialog.selectedMimeTypeFilter().contains("opendocument")){
+        fileDialog.setDefaultSuffix("odt");
+    }
+    else if(fileDialog.selectedMimeTypeFilter().contains("plain")){
+        fileDialog.setDefaultSuffix("txt");
+    }
+    else{ if(fileDialog.selectedMimeTypeFilter().contains("html")){
+        fileDialog.setDefaultSuffix("html");
+    }
+       else fileDialog.setDefaultSuffix("odt");
+    }
     const QString fn = fileDialog.selectedFiles().first();
     setCurrentFileName(fn);
     return fileSave();
 }
-/*
+
 void TextEdit::filePrint()
 {
 #if QT_CONFIG(printdialog)
@@ -658,7 +682,7 @@ void TextEdit::filePrintPdf()
 //! [0]
 #endif
 }
-*/
+
 void TextEdit::textBold()
 {
     QTextCharFormat fmt;
@@ -803,41 +827,30 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
        QTextCursor  cursor = textEdit->textCursor();
 
+        qDebug() << "position: " << position;
+        qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
 
-    qDebug() << "position: " << position;
-    qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
-    if(charsAdded!= 0){
-
-
-            //s1= new std::vector<int>();
-        int c=textEdit->document()->characterAt(position).toLatin1();
-            Message m = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
-            m.setSize(textEdit->fontPointSize());
-            m.setFamily(textEdit->fontFamily());
-            m.setUnderln(textEdit->currentCharFormat().fontUnderline());
-           m.setItalic(textEdit->currentCharFormat().fontItalic());
-           m.setBold(actionTextBold->isChecked());
-            QString f=(QString)textEdit->currentFont().styleName();
-
-            //symbols->push_back(symbol);
-            emit(sendMessage(&m));
-
-
-
+        if(charsRemoved!=0 && charsAdded==0){
+            for(int i=0; i<charsRemoved; i++){
+                Message m=crdt->localErase(position);
+                emit(sendMessage(&m));
+            }
+        }else
+        if(charsAdded!= 0){
+            if(charsRemoved>0)
+                charsAdded--;
+            for(int i=0; i<charsAdded; i++){
+                qDebug() << "char: " << textEdit->document()->characterAt(position);
+                Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+                m.setSize(textEdit->fontPointSize());
+                m.setFamily(textEdit->fontFamily());
+                m.setUnderln(textEdit->currentCharFormat().fontUnderline());
+                m.setItalic(textEdit->currentCharFormat().fontItalic());
+                m.setBold(actionTextBold->isChecked());
+                position+=1;
+                emit(sendMessage(&m));
+            }
         }
-        else{
-            //Symbol symbol = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(),symbols->at(position).getPosizione(),symbols->at(position+1).getPosizione());
-            //symbols->push_back(symbol);
-        }
-
-    //textEdit->textCursor().setPosition(symbol.getPosizione());
-
-    if(charsRemoved!=0){
-    //Symbol symbol = searchSymbolToErase(textEdit->document()->characterAt(position).toLatin1());//forse è sbagliata
-    Message m=crdt->localErase(position);
-    emit(sendMessage(&m));
-    }
-    // Code that executes on text change here
    }
    externAction=false;
    /*QTextCharFormat qform;
@@ -846,15 +859,6 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
    textEdit->currentCharFormat()=qform;*/
 
 }
-
-/*Symbol TextEdit :: searchSymbolToErase(char c){
-    for( std::vector<Symbol>::iterator i = symbols->begin(); i!=symbols->end(); ++i){
-        if(i->getValue()== c){
-            return *i;
-         }
-    }
-    return *new Symbol();
-}*/
 
 void TextEdit::cursorPositionChanged()
 {

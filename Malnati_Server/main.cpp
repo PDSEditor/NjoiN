@@ -27,8 +27,9 @@ int main(int argc, char *argv[])
 
         qDebug()<<"porta:"<<port;
 
-        Server* server = new Server();
-        QObject::connect(server, &Server::closed, &a, &QCoreApplication::quit);
+//        Server* server = new Server();
+        Server server;
+        QObject::connect(&server, &Server::closed, &a, &QCoreApplication::quit);
 
         /*int n = 5;
         qDebug()<< (n<<1);

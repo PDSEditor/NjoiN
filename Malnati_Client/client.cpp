@@ -9,6 +9,11 @@ Client::Client()
 
 
 
+
+
+
+
+
      lw.exec();
          mw = new MainWindow();
      if(lw.getIsLogin()==1){
@@ -21,6 +26,7 @@ Client::Client()
 Client::~Client(){
     delete mw;
     delete crdt;
+    delete sockm;
 
 }
 void Client::receive_textEdit(TextEdit *t){
@@ -33,4 +39,5 @@ void Client::receive_textEdit(TextEdit *t){
    // this->textList.insert("prova1",t);
 
 }
+
 

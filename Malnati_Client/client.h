@@ -6,7 +6,7 @@
 #include "mainwindow.h"
 #include "socketmanager.h"
 #include "loginwindow.h"
-#include "Crdt.h"
+#include "crdt.h"
 
 class Client: public QObject
 {
@@ -30,3 +30,4 @@ private:
 };
 
 #endif // CLIENT_H
+

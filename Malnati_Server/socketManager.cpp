@@ -1,4 +1,3 @@
-
 #include "socketManager.h"
 #include "QtWebSockets/qwebsocketserver.h"
 
@@ -27,28 +26,28 @@ void SocketManager::sendError(std::string)
 
 }
 
-void SocketManager::messageToUser( Message* m, int siteId) {
+void SocketManager::messageToUser( Message &m, int siteId) {
 
    //TODO: invia il singolo messaggio ai vari client
 
     auto it = this->clients.find(siteId);
     if (it != clients.end()) {
-        qDebug()<<"Invio site id al client n "<< siteId;
+        if(m.getAction()=='S') {
+            qDebug()<<"Invio site id al client n "<< siteId;
+        }
         QWebSocket *user = it.value();
-        //serialize message in JSON
         binaryMessageToUser(m, siteId);
-        //user->sendBinaryMessage("Serialized message");
     }
 }
 
-void SocketManager::binaryMessageToUser(Message *m, int siteId)
+void SocketManager::binaryMessageToUser(Message &m, int siteId)
 {
     int tmp;
     QChar tmpc;
     QByteArray bytemex;
-    QChar action = m->getAction();
-    Symbol symbol = m->getSymbol();
-    QVector<QString> params = m->getParams();
+    QChar action = m.getAction();
+    Symbol symbol = m.getSymbol();
+    QVector<QString> params = m.getParams();
 
 
     if(action==("I")||action==("D")){
@@ -60,8 +59,8 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
         }
 
         bytemex.append('{');
-        for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
-            tmp=(symbol.getPosizione().at(i));
+        for(unsigned long long i=0;i<symbol.getPosition().size();i++){
+            tmp=(symbol.getPosition().at(i));
 
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
@@ -83,14 +82,14 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
         bytemex.append(tmpc.cell());
         bytemex.append(tmpc.row());
 
-        bytemex.append(m->getBold());
-        bytemex.append(m->getUnderln());
-        bytemex.append(m->getItalic());
-        tmp=m->getSize();
+        bytemex.append(m.getBold());
+        bytemex.append(m.getUnderln());
+        bytemex.append(m.getItalic());
+        tmp=m.getSize();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(m->getFamily());
+        bytemex.append(m.getFamily());
 
     }
     else if(action==('C')||action==('R')){
@@ -134,6 +133,7 @@ void SocketManager::binaryMessageToUser(Message *m, int siteId)
     }
 }
 
+
 void SocketManager::fileToUser(std::vector<Symbol> file, int user)
 {
 
@@ -144,7 +144,8 @@ void SocketManager::processTextMessage(QString message)
     //deserialize JSON
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
     qDebug()<<message;
-    Message *m = new Message();         //crea il messaggio
+//    Message *m = new Message();         //crea il messaggio
+    Message m;
     emit newMessage(m);
 
 }
@@ -305,7 +306,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             i+=4;
         }
         i++;
-        symbol.setPosizione(vtmp);
+        symbol.setPosition(vtmp);
         symbol.setSiteId((int)bytemex.at(i++));
         c.clear();
         c.append(bytemex.mid(i,4));
@@ -350,17 +351,17 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
         params.push_back(bytemex.right(tmp));
     }
 
-    Message *m = new Message;
-    m->setAction(action);
-    m->setParams(params);
-    m->setSymbol(symbol);
-    m->setBold(bo);
-    m->setSize(d);
-    m->setItalic(it);
-    m->setUnderln(un);
-    m->setFamily(family);
+    Message m;
+    m.setAction(action);
+    m.setParams(params);
+    m.setSymbol(symbol);
+    m.setBold(bo);
+    m.setSize(d);
+    m.setItalic(it);
+    m.setUnderln(un);
+    m.setFamily(family);
 
-    m->debugPrint();
+    m.debugPrint();
     //
     this->binaryMessageToUser(m,0);
     emit newMessage(m);
@@ -395,15 +396,13 @@ void SocketManager::onNewConnection()
     //successivamente comunicare al client il proprio siteId
     Message m;
 
-
     m.setAction('S');
     QString s = QString::number(SocketManager::siteId);
     m.setParams({s});
-    messageToUser(&m,SocketManager::siteId);
+    messageToUser(m,SocketManager::siteId);
 
+    emit newAccountOnline(SocketManager::siteId);
     SocketManager::siteId++;
-
-
 }
 
 void SocketManager::socketDisconnected()
@@ -422,5 +421,8 @@ void SocketManager::socketDisconnected()
         }
         client->deleteLater();
     }
+
+    //emetti segnale per rimuovere da onlineAccounts
+
 }
 
