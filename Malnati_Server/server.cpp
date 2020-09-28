@@ -8,6 +8,12 @@ Server::Server(QObject *parent) : QObject(parent)
     std::unique_ptr<DatabaseManager> dbMan(new DatabaseManager);
     this->dbMan = std::move(dbMan);
 //    this->dbMan = new DatabaseManager();
+    std::unique_ptr<FileManager> fileMan(new FileManager);
+    this->fileMan = std::move(fileMan);
+
+//    this->acMan = new AccountManager();
+    std::unique_ptr<AccountManager> acMan(new AccountManager);
+    this->acMan = std::move(acMan);
 
     /***************************
      ****** TEST DB ***********
@@ -15,24 +21,41 @@ Server::Server(QObject *parent) : QObject(parent)
 
 //    QString name = "angelo";
 //    QString pass = "ciao";
-//    if(this->dbMan.get()->registerUser(name, pass))
+
+//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img.readAll();
+
+//    Account account(name, 0, image);
+////    account.setUsername(name);
+////    account.setSiteId(0);
+//    if(this->dbMan.get()->registerAccount(account, pass, image))
 //        qDebug() << "inserted?" ;
-//    if(this->dbMan.get()->checkUserPsw(name,pass))
+
+//    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
+//    qDebug() << account2.toString();
+
+//    if(this->dbMan.get()->checkAccountPsw(name,pass))
 //        qDebug() << "passok" ;
-//    if(this->dbMan.get()->deleteUser(name))
+//    if(this->dbMan.get()->changePassword(name, pass, "ciaone"))
+//        qDebug() << "passChanged";
+//    if(this->dbMan.get()->deleteAccount(name))
 //        qDebug() << "deleted" ;
 
     /*****************************/
-
 
     QObject::connect(this->socketMan.get(),
                      &SocketManager::newMessage,
                      this,
                      &Server::processMessage
                      );
-/*//    QObject::connect(this->socketMan, &SocketManager::newMessage, this, &Server::processMessage);
-
-
+    //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
+    QObject::connect(this->socketMan.get(),
+                     &SocketManager::newAccountOnline,
+                     this->acMan.get(),
+                     &AccountManager::updateOnlineAccounts
+                     );
+//                     &AccountManager::updateOnlineAccounts
+//                     );
 
     //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
 
@@ -44,16 +67,16 @@ Server::Server(QObject *parent) : QObject(parent)
 
 }
 
-void Server::dispatchMessage(Message mes) {
-    QMap<int, QWebSocket *>::iterator it = this->socketMan.get()->getClients().begin();
-    QMap<int, QWebSocket *>::iterator itEnd = this->socketMan.get()->getClients().end();
-    //std::map<int, Account>::iterator it = this->onlineAccounts.begin();
-    //std::map<int, Account>::iterator itEnd = this->onlineAccounts.end();
+void Server::dispatchMessage(Message &mes) {
+    QMap<int, QWebSocket*> clients = this->socketMan->getClients();
+    QMap<int, QWebSocket *>::iterator it;
+
     int sender = mes.getSymbol().getSiteId();
 
-    for(; it!= itEnd; it++) {
-        if(it.key()!= sender)
-            this->socketMan.get()->messageToUser(mes, it.key());
+    for(it=clients.begin(); it!= clients.end(); it++) {
+        if(it.key() != sender)
+            //qDebug()<< "Mando la remote insert al client n" << it.key();
+            this->socketMan->messageToUser(mes, it.key());
     }
 }
 
@@ -63,39 +86,183 @@ void Server::processMessage( Message mes) {
      * Significato -> Lettera nel Messaggio -> int corrispondente
      * INSERT ->    I oppure i ->   73 oppure 105
      * DELETE ->    D oppure d ->   68 oppure 100
-     * FILE REQUEST -> F oppure f
-     *
+     * RETRIEVE file-> R
+     * CREATE file -> C
+     * CLOSE file -> X
     */
 
     QChar action = mes.getAction();
     char first =  action.toLatin1();
 
     QString nomeFile;
-    if (first == 'F' || first == 'f'){
+    int siteId;
+    if (first == 'R'){
         /*QString delimiter = "-";
         int index = action.indexOf(delimiter);
         nomeFile = action;
         nomeFile.right(index);*/
     }
 
-
+//    QList<Symbol> document;
+//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
+//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
     switch (first){
-    case ('I' | 'i') :
-        //dbMan->insertInDB(mes);
+    case 'I':
+//        mes.setParams(prova);
+//        dbMan->createDocument(sharedDocument);
+//        dbMan->insertSymbol(mes);
+//        dbMan->deleteSymbol(mes);
+//        document = dbMan->retrieveSymbolsOfDocument(prova.first()); //di test
+//        for(auto i : document){
+//            qDebug() << i.getValue();
+//        }
+
+//        this->dbMan.get()->insertSymbol(mes);
         this->dispatchMessage(mes);
+//        remoteInsert(mes.getSymbol());
         break;
-    case ('D' | 'd' ):
-        //dbMan->deleteFromDB(mes);
+    case 'D':
+//        this->dbMan.get()->deleteSymbol(mes);
         this->dispatchMessage(mes);
+//        remoteDelete(mes.getSymbol());
         break;
-    case ('F' | 'f'):
+    case 'R' :
         //dbMan->retrieveFile(nomeFile);
+
+        //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
+        siteId = mes.getParams()[1].toInt();
+        nomeFile = mes.getParams()[0];
+        acMan->checkUserPerFile(siteId, nomeFile);
+//        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
+        //Restituisci il file
         break;
+
+    case 'C' :
+        nomeFile = mes.getParams()[0];
+        //controllo db se esiste un file con lo stesso nome
+
+        siteId = mes.getParams()[1].toInt();
+        //creo file e lo salvo nel db con creatore = siteId
+
+        //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
+        //tanto non c'è differenza lato server tra creatore e contributori
+        acMan->checkUserPerFile(siteId, nomeFile);
+        break;
+
+    case 'X' :
+        //gestire chiusura del file
+        break;
+
     default:
-        socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
+        this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
     }
 
 }
 
+int compare(Symbol s1, Symbol s2){
+    int len1=s1.getPosition().size();
+    int len2=s2.getPosition().size();
+    int res=0;
+    for(int i=0;i<std::min(len1,len2);i++){
 
+        if(s1.getPosition()[i]>s2.getPosition()[i]){
+            res=1;
+            break;
+        }
+        if(s1.getPosition()[i]<s2.getPosition()[i]){
+            res=-1;
+            break;
+        }
+    }
+    if(res==0){
+        if(len1>len2){
+            res=1;
+        }else
+        if(len1<len2){
+            res=-1;
+        }
 
+    }
+    return res;
+}
+
+int Server::remoteInsert(Symbol symbol){
+    int min=0;
+    int max = this->symbols.size()-1;
+    int middle=(max+min)/2 , pos;
+    std::vector<int> index=symbol.getPosition();
+    std::vector<int> tmp;
+    std::vector<Symbol>::iterator it;
+    //controllo se è ultimo
+    if(symbols[max].getPosition().back()<index.front()){
+        symbols.push_back(symbol);
+        return max;
+    }
+    //controllo se è primo
+    if(symbols[0].getPosition().front()>index.back()){
+        it=symbols.begin();
+        symbols.insert(it,symbol);
+        return min;
+    }
+    //è in mezzo
+    while(max-min>1){
+       pos=compare(symbol,symbols[middle]);
+       if(pos>0){
+           min=middle;
+       }
+       else if(pos<0){
+           max=middle;
+       }
+       middle=(max+min)/2;
+    }
+    it=symbols.begin();
+    pos=compare(symbol,symbols[min]);
+    if(pos>0){
+        //inserisco dopo il min
+        symbols.insert(it+min+1,symbol);
+        return min+1;
+    }
+    if(pos<0){
+        //inserisco prima del min
+        symbols.insert(it+min-1,symbol);
+        return min-1;
+    }
+}
+
+int Server::remoteDelete(Symbol s){
+    int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
+    std::vector<int> index=s.getPosition();
+    std::vector<int> tmp;
+    std::vector<Symbol>::iterator it;
+    it=symbols.begin();
+    //controllo se è ultimo
+    if(compare(s,symbols[max])==0){
+            symbols.erase(it+max);
+            return max;
+}
+    //controllo se è primo
+    if(compare(s,symbols[min])==0){
+            symbols.erase(it+min);
+            return min;
+        }
+    while(max-min>1){
+       pos=compare(s,symbols[middle]);
+       if(pos>0){
+           min=middle;
+       }
+       else if(pos<0){
+           max=middle;
+       }
+       if(pos==0){
+           symbols.erase(it+middle);
+           break;
+       }
+       middle=(max+min)/2;
+    }
+    return middle;
+
+}
+
+bool Symbol::operator<(const Symbol &other) const{
+    return this->getPosition() < other.getPosition();
+}

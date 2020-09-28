@@ -19,7 +19,7 @@ public:
      ~socketManager() override;
 
 signals:
-    void newMessage(Message* m);
+    void newMessage(Message *m);
 
 public slots:
     void onConnected();
@@ -38,6 +38,7 @@ private:
     QWebSocket webSocket;
     QUrl url;
     int i=100;
+    int siteId;
 };
 
 #endif // SOCKETMANAGER_H

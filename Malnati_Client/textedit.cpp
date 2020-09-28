@@ -112,6 +112,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 
     textEdit = new QTextEdit(this);
+    externAction=false;
     //symbols = new std::vector<Symbol>();
     //QTextDocument document = textEdit->document();
 
@@ -136,11 +137,21 @@ TextEdit::TextEdit(QWidget *parent)
     }
 
     QFont textFont("Helvetica");
-    textFont.setStyleHint(QFont::SansSerif);
+    //
+    //
     textEdit->setFont(textFont);
     fontChanged(textEdit->font());
     colorChanged(textEdit->textColor());
     alignmentChanged(textEdit->alignment());
+
+
+    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    textEdit->setFontFamily("kalapi");
+    textEdit->setFontPointSize(12);
+    textEdit->currentCharFormat().setFontItalic(false);
+    textEdit->currentCharFormat().setFontUnderline(false);
+    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
     connect(textEdit->document(), &QTextDocument::modificationChanged,
             actionSave, &QAction::setEnabled);
@@ -152,6 +163,8 @@ TextEdit::TextEdit(QWidget *parent)
             actionRedo, &QAction::setEnabled);
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
+
+
 
     setWindowModified(textEdit->document()->isModified());
     actionSave->setEnabled(textEdit->document()->isModified());
@@ -218,7 +231,7 @@ void TextEdit::setupFileActions()
     a->setPriority(QAction::LowPriority);
     menu->addSeparator();
 
-/*#ifndef QT_NO_PRINTER
+#ifndef QT_NO_PRINTER
     const QIcon printIcon = QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png"));
     a = menu->addAction(printIcon, tr("&Print..."), this, &TextEdit::filePrint);
     a->setPriority(QAction::LowPriority);
@@ -235,7 +248,7 @@ void TextEdit::setupFileActions()
     tb->addAction(a);
 
     menu->addSeparator();
-#endif*/
+#endif
 
     a = menu->addAction(tr("&Quit"), this, &QWidget::close);
     a->setShortcut(Qt::CTRL + Qt::Key_Q);
@@ -481,6 +494,66 @@ void TextEdit::fileNew()
 
 }
 
+void TextEdit::reciveSymbol(Message *m)
+{
+    externAction=true;
+   QTextCursor curs = textEdit->textCursor(),oldcurs;
+       //QTextCursor curs ,oldcurs=textEdit->textCursor();
+       //textEdit->setTextCursor(curs);
+    QColor col;
+    QTextCharFormat qform, preqform;
+    //preqform=textEdit->currentCharFormat();
+    if(colors.find(m->getSymbol().getSiteId())==colors.end()){
+        int pos=m->getSymbol().getSiteId()%5;
+        //
+        QColor q=listcolor.at(pos);
+        //
+        colors.insert(m->getSymbol().getSiteId(),q);
+    }
+    col=colors.take(m->getSymbol().getSiteId());
+    //textEdit->setTextBackgroundColor(col);
+
+    qform.setBackground(col);
+    qform.setFontFamily(m->getFamily());
+    qform.setFontItalic(m->getItalic());
+    qform.setFontUnderline(m->getUnderln());
+    //qform.setFontPointSize((float)m->getSize());
+    qform.setFontPointSize(m->getSize());
+    if(m->getBold())
+        qform.setFontWeight(QFont::Bold);
+    //curs.setCharFormat(qform);
+
+    int position,oldposition;
+    oldposition=textEdit->textCursor().position();
+    Symbol tmp;
+    tmp.setValue(m->getSymbol().getValue());
+    tmp.setPosizione(m->getSymbol().getPosizione());
+    if(m->getAction()=='I'){
+        position=crdt->remoteinsert(tmp);
+        curs.setPosition(position);
+        curs.insertText((QChar)tmp.getValue(),qform);
+
+
+
+        //prova
+        //textEdit->setTextBackgroundColor(Qt::white);
+        //preqform.setBackground(Qt::white);
+        //curs.setCharFormat(preqform);
+        //textEdit->mergeCurrentCharFormat(preqform);
+    }
+    else if(m->getAction()=='D'){
+        position=crdt->remotedelete(tmp);
+        curs.setPosition(position+1);
+        curs.deletePreviousChar();
+
+    }
+
+
+
+}
+
+
+
 void TextEdit::fileOpen()
 {
     QFileDialog fileDialog(this, tr("Open File..."));
@@ -521,16 +594,40 @@ bool TextEdit::fileSaveAs()
     QFileDialog fileDialog(this, tr("Save as..."));
     fileDialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList mimeTypes;
-    mimeTypes << "application/vnd.oasis.opendocument.text" << "text/html" << "text/plain";
+    mimeTypes << "application/vnd.oasis.opendocument.text" << "text/html" << "text/plain" << "application/pdf";
     fileDialog.setMimeTypeFilters(mimeTypes);
-    fileDialog.setDefaultSuffix("odt");
     if (fileDialog.exec() != QDialog::Accepted)
         return false;
+
+    if(fileDialog.selectedMimeTypeFilter()
+            .split("/").contains("pdf")){
+        QString fileName = fileDialog.selectedFiles().first();
+        if(!fileName.split('.').contains("pdf"))
+            fileName = fileName.append(".pdf");
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setOutputFileName(fileName);
+        textEdit->document()->print(&printer);
+        statusBar()->showMessage(tr("Exported \"%1\"")
+                                 .arg(QDir::toNativeSeparators(fileName)));
+        return true;
+    }
+    else if(fileDialog.selectedMimeTypeFilter().contains("opendocument")){
+        fileDialog.setDefaultSuffix("odt");
+    }
+    else if(fileDialog.selectedMimeTypeFilter().contains("plain")){
+        fileDialog.setDefaultSuffix("txt");
+    }
+    else{ if(fileDialog.selectedMimeTypeFilter().contains("html")){
+        fileDialog.setDefaultSuffix("html");
+    }
+       else fileDialog.setDefaultSuffix("odt");
+    }
     const QString fn = fileDialog.selectedFiles().first();
     setCurrentFileName(fn);
     return fileSave();
 }
-/*
+
 void TextEdit::filePrint()
 {
 #if QT_CONFIG(printdialog)
@@ -585,7 +682,7 @@ void TextEdit::filePrintPdf()
 //! [0]
 #endif
 }
-*/
+
 void TextEdit::textBold()
 {
     QTextCharFormat fmt;
@@ -722,26 +819,70 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
-    QTextCursor  cursor = textEdit->textCursor();
 
-    qDebug() << "position: " << position;
-    qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
-    if(charsAdded!= 0){
-        for(int i=0; i<charsAdded; i++){
-            Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-            position+=1;
-            emit(sendMessage(&m));
+
+   if(externAction==false){
+
+
+
+       QTextCursor  cursor = textEdit->textCursor();
+
+        qDebug() << "position: " << position;
+        qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
+
+        if(charsRemoved!=0 && charsAdded==0){
+            for(int i=0; i<charsRemoved; i++){
+                Message m=crdt->localErase(position);
+                emit(sendMessage(&m));
+            }
+        }else
+        if(charsAdded!= 0){
+            if(charsRemoved>0)
+                charsAdded--;
+            for(int i=0; i<charsAdded; i++){
+                qDebug() << "char: " << textEdit->document()->characterAt(position);
+                Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+                m.setSize(textEdit->fontPointSize());
+                m.setFamily(textEdit->fontFamily());
+                m.setUnderln(textEdit->currentCharFormat().fontUnderline());
+                m.setItalic(textEdit->currentCharFormat().fontItalic());
+                m.setBold(actionTextBold->isChecked());
+                position+=1;
+                emit(sendMessage(&m));
+            }
         }
-    }
-    if(charsRemoved!=0){
-        for(int i=0; i<charsRemoved; i++){
-            crdt->localErase(position+i);
-        }
-    }
+   }
+   externAction=false;
+   /*QTextCharFormat qform;
+   qform=textEdit->currentCharFormat();
+   qform.setBackground(Qt::white);
+   textEdit->currentCharFormat()=qform;*/
+
 }
 
 void TextEdit::cursorPositionChanged()
 {
+
+    QTextCursor cursor = textEdit->textCursor();
+    QTextCharFormat form;
+    form.setFontItalic(textEdit->currentCharFormat().fontItalic());
+    form.setFontFamily(textEdit->currentCharFormat().fontFamily());
+    form.setFontUnderline(textEdit->currentCharFormat().fontUnderline());
+    form.setFontPointSize(textEdit->currentCharFormat().fontPointSize());
+    form.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
+    if(!cursor.hasSelection()){
+   textEdit->setTextBackgroundColor(Qt::white);
+   textEdit->setFontFamily(textEdit->fontFamily());
+   textEdit->setFontItalic(textEdit->fontItalic());
+   textEdit->setFontUnderline(textEdit->fontUnderline());
+   cursor.mergeCharFormat(form);
+   textEdit->mergeCurrentCharFormat(form);
+    flagc=false;
+    }
+
+
+
+
     alignmentChanged(textEdit->alignment());
     QTextList *list = textEdit->textCursor().currentList();
 
@@ -779,6 +920,7 @@ void TextEdit::cursorPositionChanged()
         int headingLevel = textEdit->textCursor().blockFormat().headingLevel();
         comboStyle->setCurrentIndex(headingLevel ? headingLevel + 8 : 0);
     }
+
 }
 
 void TextEdit::clipboardDataChanged()
@@ -799,9 +941,9 @@ void TextEdit::about()
 void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
 {
     QTextCursor cursor = textEdit->textCursor();
-    if (!cursor.hasSelection())
-        cursor.select(QTextCursor::WordUnderCursor);
-    cursor.mergeCharFormat(format);
+    if (cursor.hasSelection()){
+        //cursor.select(QTextCursor::WordUnderCursor);
+    cursor.mergeCharFormat(format);}
     textEdit->mergeCurrentCharFormat(format);
 }
 

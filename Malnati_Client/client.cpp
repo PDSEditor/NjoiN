@@ -35,8 +35,9 @@ void Client::receive_textEdit(TextEdit *t){
     this->textList.insert("prova1",t);
     t->setCrdt(this->crdt);
     t->setSocketM(Client::sockm);
-
+    connect(sockm, &socketManager::newMessage, t, &TextEdit::reciveSymbol);
    // this->textList.insert("prova1",t);
 
 }
+
 

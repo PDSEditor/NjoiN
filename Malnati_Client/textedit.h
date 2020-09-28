@@ -6,6 +6,7 @@
 #include <QPointer>
 #include <symbol.h>
 #include <crdt.h>
+#include <QPrinter>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -32,9 +33,12 @@ public:
 
 public slots:
     void fileNew();
+    void reciveSymbol(Message *m);
+
 
 signals:
     void sendMessage(Message *m);
+
 
 protected:
     void closeEvent(QCloseEvent *e) override;
@@ -43,9 +47,9 @@ private slots:
     void fileOpen();
     bool fileSave();
     bool fileSaveAs();
-   /* void filePrint();
+    void filePrint();
     void filePrintPreview();
-    void filePrintPdf();*/
+    void filePrintPdf();
 
     void textBold();
     void textUnderline();
@@ -62,7 +66,7 @@ private slots:
 
     void clipboardDataChanged();
     void about();
-    //void printPreview(QPrinter *);
+    void printPreview(QPrinter *);
 
 private:
     void setupFileActions();
@@ -76,6 +80,10 @@ private:
     void colorChanged(const QColor &c);
     void alignmentChanged(Qt::Alignment a);
     Symbol searchSymbolToErase(char c);
+    bool externAction, flagc=false;
+    QMap<int,QColor> colors;
+    std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
+    int contcolor=0;
 
     QAction *actionSave;
     QAction *actionTextBold;

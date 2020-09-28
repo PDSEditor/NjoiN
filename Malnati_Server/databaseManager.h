@@ -19,7 +19,9 @@
 #include <memory>
 #include <functional>
 
-#include <message.h>
+#include "message.h"
+#include "account.h"
+#include "sharedDocument.h"
 
 class DatabaseManager
 {
@@ -30,20 +32,32 @@ private:
     mongocxx::uri uri;
     
 public:
-    explicit DatabaseManager(QObject *parent = nullptr);
+    DatabaseManager();
     /*** USER ****/
-    bool registerUser(QString _id, QString password);
-    bool deleteUser  (QString _id);
-    bool checkUserPsw(QString _id, QString password);
+    bool registerAccount(Account account, QString password, QByteArray &image);
+    bool deleteAccount  (QString _id);
+    bool checkAccountPsw(QString _id, QString password);
+    bool changePassword(QString _id, QString old_password, QString new_password);
+    bool changeImage(QString _id, QByteArray &image);
+    Account getAccount(QString username);
     /************/
 
-    bool insertInDB(Message mes);
-    void deleteFromDB(Message mes);
-    void updateDB(Message m);
-    void createFile(QString nome, int user);
-    void retrieveFile(QString nome);
+    /** SYMBOL **/
+    bool insertSymbol(Message mes);
+    bool deleteSymbol(Message mes);
+    /************/
+
+    /** DOCUMENT **/
+    bool createDocument(SharedDocument document);
+    SharedDocument getDocument(QString documentName); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
+    QList<Symbol> retrieveSymbolsOfDocument(QString documentName);
+    QList<SharedDocument> getAllDocuments(); //todo: da fare
+    
+//    bool deleteDocument(SharedDocument document);
+    /***********/
 
     ~DatabaseManager();
 };
 
 #endif // DATABASEMANAGER_H
+

@@ -8,6 +8,8 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     //webSocket= new QWebSocket();
     webSocket.open(QUrl(url));
     //qDebug()<<webSocket.isValid();
+
+    siteId = 0;
 }
 
 socketManager::~socketManager()
@@ -30,9 +32,15 @@ void socketManager::binaryMessageToServer(Message *m)
     //qDebug()<<"Testo ricevuto: ";
 
     int tmp;
+    QChar tmpc;
     QByteArray bytemex;
     QChar action = m->getAction();
+
+
+
+
     Symbol symbol = m->getSymbol();
+    symbol.setSiteId(socketManager::siteId);
 
 
 
@@ -43,20 +51,40 @@ void socketManager::binaryMessageToServer(Message *m)
         else{
             bytemex.append('D');
         }
-        bytemex.append('[');
+
+        bytemex.append('{');
         for(unsigned long long i=0;i<symbol.getPosizione().size();i++){
             tmp=(symbol.getPosizione().at(i));
+
             for(int p=0;p<4;p++){
                 bytemex.append(tmp >> (p * 8));
             }
         }
-        bytemex.append(']');
+
+        bytemex.append('}');
         bytemex.append(symbol.getSiteId());//dimensione massima
         tmp=(symbol.getCounter());
+
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(symbol.getValue());
+        tmp=(symbol.getCounter());
+        tmpc=symbol.getValue();
+        bytemex.append(tmpc.cell());
+        bytemex.append(tmpc.row());
+
+
+        //inserimento info testo
+
+        bytemex.append(m->getBold());
+        bytemex.append(m->getUnderln());
+        bytemex.append(m->getItalic());
+        tmp=m->getSize();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(m->getFamily());
+
 
     }
     else if(action==('C')||action==('R')){
@@ -101,7 +129,7 @@ void socketManager::onConnected()
 
     QByteArray a("Test start");
     long long n = 0;
-    n = webSocket.sendBinaryMessage(a);
+    //n = webSocket.sendBinaryMessage(a);
 
     Message *m = new Message(QChar('I'));
 //    Symbol *symbol = new Symbol();
@@ -139,16 +167,23 @@ void socketManager::onTextMessageReceived(QString message)
 void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 {
     QByteArray c;
-    int tmp;
+    int tmp, d;
     QChar action;
+    QChar tmpc;
     //Symbol *symbol = new Symbol();
     Symbol symbol;
     QVector<QString> params;
 
+    bool emitS = true;
+
+    QString family;
+    bool it,bo,un;
+
     if(bytemex.at(0)=='I'||bytemex.at(0)=='D'){
+        action=bytemex.at(0);
         std::vector<int> vtmp;
         int i=2;
-        while(bytemex.at(i)!=']'){
+        while(bytemex.at(i)!='}'){
             c.clear();
             c.append(bytemex.mid(i,4));
             memcpy(&tmp,c,4);
@@ -171,7 +206,29 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         symbol.setCounter(tmp);
         i+=4;
-        symbol.setValue(bytemex.at(i));
+        c.clear();
+        c.append(bytemex.mid(i,2));
+        memcpy(&tmpc,c,2);
+        symbol.setValue(tmpc);
+        i+=2;
+        bo=bytemex.at(i);
+        i++;
+        un=bytemex.at(i);
+        i++;
+        it=bytemex.at(i);
+        i++;
+        c.clear();
+        c.append(bytemex.mid(i,4));
+        memcpy(&tmp,c,4);
+        d=tmp;
+        i+=4;
+        family=bytemex.right(bytemex.length()-i);
+
+
+
+
+
+
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')
@@ -191,15 +248,35 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         params.push_back(bytemex.right(tmp));
     }
+    else if(bytemex.at(0)=='S'){
+        action='S';
+        c.clear();
+        c.append(bytemex.mid(1,4));
+        memcpy(&tmp,c,4);
+        params.push_back(bytemex.mid(5,tmp));
 
-    Message *m = new Message;
-    m->setAction(action);
-    m->setParams(params);
-    m->setSymbol(symbol);
+        emitS = false;
+        socketManager::siteId = params.at(0).toInt();
 
-    emit newMessage(m);
+        qDebug() << "siteId received = " <<siteId;
+    }
 
-    delete m;
+    if (emitS) {
+        Message *m = new Message;
+        m->setAction(action);
+        m->setParams(params);
+        m->setSymbol(symbol);
+
+        m->setBold(bo);
+        m->setSize(d);
+        m->setItalic(it);
+        m->setUnderln(un);
+        m->setFamily(family);
+
+
+
+        emit newMessage(m);
+    }
 
 }
 
