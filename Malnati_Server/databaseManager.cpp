@@ -212,7 +212,7 @@ bool DatabaseManager::insertSymbol(Message mes) {
     bsoncxx::document::value symbolToInsert = builder
             /*<< "_id" << ? */
             << "document_id" << documentId.toUtf8().constData()
-            << "value" << symbol.getValue()
+            << "value" << symbol.getValue().toLatin1()
             << "siteId" << symbol.getSiteId()
             << "counter" << symbol.getCounter()
             << "position" << array_builder
@@ -239,7 +239,7 @@ bool DatabaseManager::deleteSymbol(Message mes)
     auto builder = bsoncxx::builder::stream::document{};
 
     bsoncxx::document::value symbolToDelete =
-            builder << "value" << symbol.getValue()
+            builder << "value" << symbol.getValue().toLatin1()
                     << "siteId" << symbol.getSiteId()
                     << "counter" << symbol.getCounter()
                     << "documentName" << documentName.toUtf8().constData()
