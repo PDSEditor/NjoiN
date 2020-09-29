@@ -90,7 +90,6 @@ void Server::processMessage( Message mes) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
-     * giovedì alle 19 clinica, venerdì 11 neuromarketing
     */
 
     QChar action = mes.getAction();
