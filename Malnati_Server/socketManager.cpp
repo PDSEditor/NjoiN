@@ -363,7 +363,8 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
 
     m.debugPrint();
     //
-    this->binaryMessageToUser(m,0);
+//    this->binaryMessageToUser(m,0);
+
     emit newMessage(m);
 
 }
