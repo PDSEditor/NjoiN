@@ -1,9 +1,19 @@
 #include "accountManager.h"
 
+QMap<int, Account *> AccountManager::getOnlineAccounts() const
+{
+    return onlineAccounts;
+}
+
+void AccountManager::setOnlineAccounts(const QMap<int, Account *> &value)
+{
+    onlineAccounts = value;
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject(parent)
 {
-
-
+    
+    
 }
 
 void AccountManager::checkUserPerFile(int siteId, QString fileName)

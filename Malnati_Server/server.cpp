@@ -164,7 +164,9 @@ void Server::processMessage( Message mes) {
         SharedDocument doc;
         try {
             doc = this->dbMan->getDocument(documentId);
-            //mes.
+            int siteId = mes.getSender();
+            Account* account = this->acMan->getOnlineAccounts().find(siteId).value();
+
         }
         catch(...) {
             qDebug() << "Documento non esistente";

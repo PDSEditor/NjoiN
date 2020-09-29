@@ -10,7 +10,7 @@ class AccountManager : public QObject
 {
     Q_OBJECT
 private:
-    QMap<int, Account *> onlineAccounts;
+    QMap<int, Account&> onlineAccounts;
     QMap<QString, QList<int>> accountsPerFile;
     QMap<int, Account> accounts;
 
@@ -18,11 +18,14 @@ public:
     explicit AccountManager(QObject *parent = nullptr);
     void checkUserPerFile(int siteId, QString);
 
+    QMap<int, Account *> getOnlineAccounts() const;
+    void setOnlineAccounts(const QMap<int, Account *> &value);
+
 public slots:
     void updateOnlineAccounts (int siteId);
     void removeOnlineAccounts (int siteId);
 
-//signals:
+    //signals:
 };
 
 #endif // ACCOUNTMANAGER_H
