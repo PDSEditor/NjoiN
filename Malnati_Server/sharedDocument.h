@@ -8,6 +8,7 @@
 
 class SharedDocument
 {
+    QString uri;
     QString name;
     QList<int> userAllowed;
     int creator;
@@ -17,6 +18,7 @@ class SharedDocument
 public:
     SharedDocument();
     SharedDocument(QString name, int creator);
+    SharedDocument(QString name, int creator, bool open, QList<int> &userAllowed);
     QString getName() const;
     void setName(const QString &value);
     QList<int> getUserAllowed() const;
@@ -26,6 +28,7 @@ public:
     void setOpen(bool value);
     QList<Symbol> getSymbols() const;
     void setSymbols(const QList<Symbol> &value);
+    QString getUri();
 };
 
 #endif // SHAREDDOCUMENT_H

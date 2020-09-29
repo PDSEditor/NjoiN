@@ -103,16 +103,17 @@ void Server::processMessage( Message mes) {
         nomeFile.right(index);*/
     }
 
-//    QList<Symbol> document;
-//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
-//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+    QList<Symbol> document;
+    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
+    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
     switch (first){
     case 'I':
 //        mes.setParams(prova);
-//        dbMan->createDocument(sharedDocument);
+//        dbMan->insertDocument(sharedDocument); //attenzione se già presente eccezionare
 //        dbMan->insertSymbol(mes);
 //        dbMan->deleteSymbol(mes);
-//        document = dbMan->retrieveSymbolsOfDocument(prova.first()); //di test
+//        sharedDocument = dbMan->getDocument(QString::fromStdString("documento1_0"));
+//        document = dbMan->retrieveSymbolsOfDocument(sharedDocument.getUri()); //di test
 //        for(auto i : document){
 //            qDebug() << i.getValue();
 //        }

@@ -14,6 +14,11 @@ SharedDocument::SharedDocument(QString name, int creator)
     this->symbols = QList<Symbol>();
 }
 
+SharedDocument::SharedDocument(QString name, int creator, bool open, QList<int> &userAllowed): name(name), creator(creator), open(open), userAllowed(userAllowed)
+{
+    this->uri = name + '_' + QString::number(creator);
+}
+
 QString SharedDocument::getName() const
 {
     return name;
@@ -58,6 +63,10 @@ QList<Symbol> SharedDocument::getSymbols() const
 void SharedDocument::setSymbols(const QList<Symbol> &value)
 {
     symbols = value;
+}
+
+QString SharedDocument::getUri(){
+    return this->uri;
 }
 
 
