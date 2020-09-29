@@ -1,5 +1,15 @@
 #include "account.h"
 
+QList<QString> Account::getDocumentUris() const
+{
+    return documentUris;
+}
+
+void Account::setDocumentUris(const QList<QString> &value)
+{
+    documentUris = value;
+}
+
 QString Account::getUsername() const
 {
     return username;
@@ -24,7 +34,7 @@ Account::Account(){
 
 }
 
-Account::Account(QString username, int siteId, QByteArray image, QList<int> &documentUris): username(username), siteId(siteId), image(image)
+Account::Account(QString username, int siteId, QByteArray image, QList<QString> &documentUris): username(username), siteId(siteId), image(image)
 {
     this->documentUris = documentUris;
 }

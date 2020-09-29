@@ -263,14 +263,14 @@ bool DatabaseManager::insertDocument(SharedDocument document)
     auto builder = bsoncxx::builder::stream::document{};
     auto array_builder = bsoncxx::builder::basic::array{};
 
-    for (int i : document.getUserAllowed()){
-        array_builder.append(i);
+    for (QString i : document.getUserAllowed()){
+        array_builder.append(i.toUtf8().constData());
     }
 
     bsoncxx::document::value documentToInsert = builder
-            << "_id" << (document.getName() + '_' + QString::number(document.getCreator())).toUtf8().constData()
+            << "_id" << (document.getName() + '_' + document.getCreator()).toUtf8().constData()
             << "documentName" << document.getName().toUtf8().constData()
-            << "creator" << document.getCreator()
+            << "creator" << document.getCreator().toUtf8().constData()
             << "isOpen" << document.getOpen() //da salvare nel db?
             << "userAllowed" << array_builder
             << bsoncxx::builder::stream::finalize;
@@ -296,7 +296,7 @@ bool DatabaseManager::addAccountToDocument(QString documentId, QString username)
     bsoncxx::document::value newDocument =
             bsoncxx::builder::stream::document{}
             << "userAllowed"
-            << bsoncxx::builder::stream::open_array << username.toUtf8()
+            << bsoncxx::builder::stream::open_array << username.toUtf8().constData()
             << bsoncxx::builder::stream::close_array
             << bsoncxx::builder::stream::finalize;
     try {
@@ -328,11 +328,11 @@ SharedDocument DatabaseManager::getDocument(QString documentId){
     if(result){
         QString string = QString::fromStdString(bsoncxx::to_json(result->view()));
         QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
-        QList<int> userAllowed;
+        QList<QString> userAllowed;
         for (auto i : document["userAllowed"].toArray()){
-            userAllowed.push_back(i.toInt());
+            userAllowed.push_back(i.toString());
         }
-        SharedDocument shared(document["documentName"].toString(), document["creator"].toInt(), document["isOpen"].toBool(), userAllowed);
+        SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
         return shared;
     }
     else throw;

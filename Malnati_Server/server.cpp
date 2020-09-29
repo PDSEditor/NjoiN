@@ -90,7 +90,6 @@ void Server::processMessage( Message mes) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
-     * giovedì alle 19 clinica, venerdì 11 neuromarketing
     */
 
     QChar action = mes.getAction();
@@ -106,8 +105,12 @@ void Server::processMessage( Message mes) {
     }
 
     QList<Symbol> document;
-    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
-    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
+//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+    QString uri;
+    QString documentId;
+    SharedDocument doc;
+
     switch (first){
     case 'I':
 //        mes.setParams(prova);
@@ -156,22 +159,28 @@ void Server::processMessage( Message mes) {
         //gestire chiusura del file
         break;
 
-//    case 'U' :
-//        // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
-//        //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
-//        // nella pagina di scelta
-//        QString uri = mes.getParams()[0];
-//        QString documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
-//        SharedDocument doc;
-//        try {
-//            doc = this->dbMan->getDocument(documentId);
-//            //mes.
-//        }
-//        catch(...) {
-//            qDebug() << "Documento non esistente";
-//        }
+    case 'U' :
+        // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
+        //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
+        // nella pagina di scelta
+        uri = mes.getParams()[0];
+        documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
 
-//        break;
+        try {
+            doc = this->dbMan->getDocument(documentId);
+            int siteId = mes.getSender();
+            auto account = this->acMan->getOnlineAccounts().find(siteId).value();
+            account.get()->getDocumentUris().push_back(uri);
+
+            this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
+
+
+        }
+        catch(...) {
+            qDebug() << "Documento non esistente";
+        }
+
+        break;
 
     default:
         this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
