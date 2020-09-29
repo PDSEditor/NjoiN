@@ -64,12 +64,12 @@ Account DatabaseManager::getAccount(QString username){
         throw;
     }
 
-    QList<int> documentUris;
+    QList<QString> documentUris;
     QString string = QString::fromStdString(bsoncxx::to_json(result->view()));
     QJsonDocument documentJ = QJsonDocument::fromJson(string.toUtf8());
 
     for (auto i : documentJ["documentUris"].toArray()){
-        documentUris.push_back(i.toInt());
+        documentUris.push_back(i.toString());
     }
     QString accountString = QString::fromStdString(bsoncxx::to_json(result->view()));
     QJsonDocument document = QJsonDocument::fromJson(accountString.toUtf8());
@@ -283,6 +283,32 @@ bool DatabaseManager::insertDocument(SharedDocument document)
         return false;
     }
     return true;
+}
+
+bool DatabaseManager::addAccountToDocument(QString documentId, QString username){
+    mongocxx::collection documentCollection = this->db["document"];
+
+    bsoncxx::document::value document =
+            bsoncxx::builder::stream::document{}
+            << "_id" << documentId.toUtf8().constData()
+            << bsoncxx::builder::stream::finalize;
+
+    bsoncxx::document::value newDocument =
+            bsoncxx::builder::stream::document{}
+            << "userAllowed"
+            << bsoncxx::builder::stream::open_array << username.toUtf8()
+            << bsoncxx::builder::stream::close_array
+            << bsoncxx::builder::stream::finalize;
+    try {
+        documentCollection.update_one(document.view(), newDocument.view());
+        return true;
+    } catch (mongocxx::bulk_write_exception &e) {
+        qDebug() << e.what();
+        return false;
+    } catch (mongocxx::logic_error &e){
+        qDebug() << e.what();
+        return false;
+    }
 }
 
 SharedDocument DatabaseManager::getDocument(QString documentId){

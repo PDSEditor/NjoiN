@@ -156,22 +156,22 @@ void Server::processMessage( Message mes) {
         //gestire chiusura del file
         break;
 
-    case 'U' :
-        // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
-        //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
-        // nella pagina di scelta
-        QString uri = mes.getParams()[0];
-        QString documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
-        SharedDocument doc;
-        try {
-            doc = this->dbMan->getDocument(documentId);
-            //mes.
-        }
-        catch(...) {
-            qDebug() << "Documento non esistente";
-        }
+//    case 'U' :
+//        // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
+//        //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
+//        // nella pagina di scelta
+//        QString uri = mes.getParams()[0];
+//        QString documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+//        SharedDocument doc;
+//        try {
+//            doc = this->dbMan->getDocument(documentId);
+//            //mes.
+//        }
+//        catch(...) {
+//            qDebug() << "Documento non esistente";
+//        }
 
-        break;
+//        break;
 
     default:
         this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");

@@ -59,6 +59,7 @@ public:
     /***********/
 
     /** URI **/
+    bool addAccountToDocument(QString documentId, QString username);
 
     /*********/
     DatabaseManager(const DatabaseManager& other) = delete;
