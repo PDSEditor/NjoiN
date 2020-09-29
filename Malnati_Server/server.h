@@ -25,9 +25,7 @@ private:
     //std::map<std::string, std::vector<Symbol>> documents;     in questo caso il file andrebbe aggiornato anche lato server (ottimizzazione futura = OF)
     //std::map<int, Account> onlineAccounts;
     std::unique_ptr<SocketManager> socketMan;
-//    SocketManager *socketMan;
     std::unique_ptr<DatabaseManager> dbMan;
-//    DatabaseManager *dbMan;
     std::unique_ptr<FileManager> fileMan;
     std::unique_ptr<AccountManager> acMan;
 
