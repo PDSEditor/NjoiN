@@ -15,6 +15,7 @@ class Message
 {
 
 private:
+    QString sender;
     Symbol symbol;
     QChar action;
     QVector<QString> params;
@@ -28,6 +29,7 @@ private:
 
 
 public:
+    Message(QString sender, QChar action);
     Message(QChar action): action(action) {}
     Message();
 
@@ -54,6 +56,8 @@ public:
     void setSize(qreal s);
 
 
+    QString getSender() const;
+    void setSender(const QString &value);
 };
 
 #endif // MESSAGE_H
