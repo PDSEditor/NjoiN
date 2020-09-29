@@ -10,6 +10,16 @@ void AccountManager::setOnlineAccounts(const QMap<int, Account *> &value)
     onlineAccounts = value;
 }
 
+QMap<int, std::shared_ptr<Account> > AccountManager::getOnlineAccounts() const
+{
+    return onlineAccounts;
+}
+
+void AccountManager::setOnlineAccounts(const QMap<int, std::shared_ptr<Account> > &value)
+{
+    onlineAccounts = value;
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject(parent)
 {
     

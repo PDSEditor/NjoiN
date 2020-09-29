@@ -108,6 +108,10 @@ void Server::processMessage( Message mes) {
     QList<Symbol> document;
     SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
     QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+    QString uri;
+    QString documentId;
+    SharedDocument doc;
+
     switch (first){
     case 'I':
 //        mes.setParams(prova);
@@ -160,13 +164,16 @@ void Server::processMessage( Message mes) {
         // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
-        QString uri = mes.getParams()[0];
-        QString documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
-        SharedDocument doc;
+        uri = mes.getParams()[0];
+        documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+
         try {
             doc = this->dbMan->getDocument(documentId);
             int siteId = mes.getSender();
-            Account* account = this->acMan->getOnlineAccounts().find(siteId).value();
+            auto account = this->acMan->getOnlineAccounts().find(siteId).value();
+            account.get()->getDocumentUris().push_back(uri);
+
+
 
         }
         catch(...) {

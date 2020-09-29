@@ -1,8 +1,18 @@
 #include "sharedDocument.h"
 
+QList<QString> SharedDocument::getUserAllowed() const
+{
+    return userAllowed;
+}
+
+void SharedDocument::setUserAllowed(const QList<QString> &value)
+{
+    userAllowed = value;
+}
+
 SharedDocument::SharedDocument()
 {
-
+    
 }
 
 SharedDocument::SharedDocument(QString name, int creator)

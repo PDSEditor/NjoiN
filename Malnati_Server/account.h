@@ -10,7 +10,7 @@ private:
     QString username;
     int siteId;
     QByteArray image;
-    QList<int> documentUris = {};
+    QList<QString> documentUris = {};
 
 public:
     Account();
@@ -23,6 +23,8 @@ public:
     int getSiteId() const;
     void setSiteId(int value);
     QString toString();
+    QList<QString> getDocumentUris() const;
+    void setDocumentUris(const QList<QString> &value);
 };
 
 #endif // ACCOUNT_H
