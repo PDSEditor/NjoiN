@@ -24,8 +24,10 @@ Account::Account(){
 
 }
 
-Account::Account(QString username, int siteId, QByteArray image): username(username), siteId(siteId), image(image)
-{}
+Account::Account(QString username, int siteId, QByteArray image, QList<int> &documentUris): username(username), siteId(siteId), image(image)
+{
+    this->documentUris = documentUris;
+}
 
 Account::Account(const Account &other){
     this->siteId = other.siteId;

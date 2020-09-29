@@ -15,6 +15,7 @@
 #include <mongocxx/exception/query_exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
+#include <mongocxx/exception/logic_error.hpp>
 
 #include <memory>
 #include <functional>
@@ -48,14 +49,20 @@ public:
     /************/
 
     /** DOCUMENT **/
-    bool createDocument(SharedDocument document);
+    bool insertDocument(SharedDocument document);
     SharedDocument getDocument(QString documentName); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
     QList<Symbol> retrieveSymbolsOfDocument(QString documentName);
     QList<SharedDocument> getAllDocuments(); //todo: da fare
+    QList<Account> getAccounts(QString documentName); //da fare
     
 //    bool deleteDocument(SharedDocument document);
     /***********/
 
+    /** URI **/
+
+    /*********/
+    DatabaseManager(const DatabaseManager& other) = delete;
+    DatabaseManager(const DatabaseManager&& other) = delete;
     ~DatabaseManager();
 };
 
