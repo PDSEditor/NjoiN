@@ -173,6 +173,7 @@ void Server::processMessage( Message mes) {
             auto account = this->acMan->getOnlineAccounts().find(siteId).value();
             account.get()->getDocumentUris().push_back(uri);
 
+            //this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
 
 
         }
