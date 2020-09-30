@@ -5,6 +5,7 @@
 #include <QList>
 #include <QBuffer>
 #include <QPixmap>
+#include <QIODevice>
 
 class Account
 {
@@ -28,7 +29,7 @@ public:
     QList<QString> getDocumentUris() const;
     void setDocumentUris(const QList<QString> &value);
     void setImage(QPixmap Pix);
-    QPixmap getImage();
+    QPixmap getImage() const;
 };
 
 #endif // ACCOUNT_H
