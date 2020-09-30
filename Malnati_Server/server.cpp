@@ -90,6 +90,8 @@ void Server::processMessage( Message mes) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
+     * REGISTER user (Sign up)  -> S
+     * LOG-IN -> L
     */
 
     QChar action = mes.getAction();
@@ -179,6 +181,16 @@ void Server::processMessage( Message mes) {
         catch(...) {
             qDebug() << "Documento non esistente";
         }
+
+        break;
+
+    case 'S' :
+        //Signup
+
+        break;
+
+    case 'L' :
+        //Login
 
         break;
 
