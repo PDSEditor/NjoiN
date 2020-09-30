@@ -285,32 +285,6 @@ bool DatabaseManager::insertDocument(SharedDocument document)
     return true;
 }
 
-bool DatabaseManager::addAccountToDocument(QString documentId, QString username){
-    mongocxx::collection documentCollection = this->db["document"];
-
-    bsoncxx::document::value document =
-            bsoncxx::builder::stream::document{}
-            << "_id" << documentId.toUtf8().constData()
-            << bsoncxx::builder::stream::finalize;
-
-    bsoncxx::document::value newDocument =
-            bsoncxx::builder::stream::document{}
-            << "userAllowed"
-            << bsoncxx::builder::stream::open_array << username.toUtf8().constData()
-            << bsoncxx::builder::stream::close_array
-            << bsoncxx::builder::stream::finalize;
-    try {
-        documentCollection.update_one(document.view(), newDocument.view());
-        return true;
-    } catch (mongocxx::bulk_write_exception &e) {
-        qDebug() << e.what();
-        return false;
-    } catch (mongocxx::logic_error &e){
-        qDebug() << e.what();
-        return false;
-    }
-}
-
 SharedDocument DatabaseManager::getDocument(QString documentId){
     mongocxx::collection documents = this->db["document"];
     auto documentToRetrieve =
@@ -371,6 +345,32 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
         std::sort(orderedSymbols.begin(), orderedSymbols.end());
 
        return orderedSymbols;
+}
+
+bool DatabaseManager::addAccountToDocument(QString documentId, QString username){
+    mongocxx::collection documentCollection = this->db["document"];
+
+    bsoncxx::document::value document =
+            bsoncxx::builder::stream::document{}
+            << "_id" << documentId.toUtf8().constData()
+            << bsoncxx::builder::stream::finalize;
+
+    bsoncxx::document::value newDocument =
+            bsoncxx::builder::stream::document{}
+            << "userAllowed"
+            << bsoncxx::builder::stream::open_array << username.toUtf8().constData()
+            << bsoncxx::builder::stream::close_array
+            << bsoncxx::builder::stream::finalize;
+    try {
+        documentCollection.update_one(document.view(), newDocument.view());
+        return true;
+    } catch (mongocxx::bulk_write_exception &e) {
+        qDebug() << e.what();
+        return false;
+    } catch (mongocxx::logic_error &e){
+        qDebug() << e.what();
+        return false;
+    }
 }
 
 DatabaseManager::~DatabaseManager(){

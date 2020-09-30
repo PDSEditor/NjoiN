@@ -1,4 +1,4 @@
-QT -= gui
+QT += gui
 QT += websockets
 
 CONFIG += c++14 console

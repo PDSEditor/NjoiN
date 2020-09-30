@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QList>
+#include <QBuffer>
+#include <QPixmap>
 
 class Account
 {
@@ -25,6 +27,8 @@ public:
     QString toString();
     QList<QString> getDocumentUris() const;
     void setDocumentUris(const QList<QString> &value);
+    void setImage(QPixmap Pix);
+    QPixmap getImage();
 };
 
 #endif // ACCOUNT_H
