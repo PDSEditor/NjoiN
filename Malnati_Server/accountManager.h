@@ -20,7 +20,6 @@ public:
     void checkUserPerFile(int siteId, QString);
 
 
-
     QMap<int, std::shared_ptr<Account> > getOnlineAccounts() const;
     void setOnlineAccounts(const QMap<int, std::shared_ptr<Account> > &value);
 

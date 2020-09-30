@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QList>
+#include <QBuffer>
+#include <QPixmap>
 
 class Account
 {
@@ -15,7 +17,7 @@ private:
 public:
     Account();
     Account(QString username, int siteId, QByteArray image);
-    Account(QString username, int siteId, QByteArray image, QList<int> &documentUris);
+    Account(QString username, int siteId, QByteArray image, QList<QString> &documentUris);
     Account(const Account &other);
 
     QString getUsername() const;
@@ -25,6 +27,8 @@ public:
     QString toString();
     QList<QString> getDocumentUris() const;
     void setDocumentUris(const QList<QString> &value);
+    void setImage(QPixmap Pix);
+    QPixmap getImage();
 };
 
 #endif // ACCOUNT_H

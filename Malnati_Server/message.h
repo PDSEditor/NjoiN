@@ -55,9 +55,8 @@ public:
     void setUnderln(bool u);
     void setSize(qreal s);
 
-
     int getSender() const;
-    void setSender(const int &value);
+    void setSender(int value);
 };
 
 #endif // MESSAGE_H

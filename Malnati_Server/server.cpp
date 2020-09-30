@@ -107,8 +107,8 @@ void Server::processMessage( Message mes) {
     }
 
     QList<Symbol> document;
-    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
-    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
+//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
     QString uri;
     QString documentId;
     SharedDocument doc;
@@ -174,7 +174,7 @@ void Server::processMessage( Message mes) {
             auto account = this->acMan->getOnlineAccounts().find(siteId).value();
             account.get()->getDocumentUris().push_back(uri);
 
-            //this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
+            this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
 
 
         }

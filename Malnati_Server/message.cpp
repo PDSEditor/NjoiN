@@ -83,12 +83,12 @@ void Message::setSize(qreal s)
     size=s;
 }
 
-QString Message::getSender() const
+int Message::getSender() const
 {
     return sender;
 }
 
-void Message::setSender(const QString &value)
+void Message::setSender(int value)
 {
     sender = value;
 }
