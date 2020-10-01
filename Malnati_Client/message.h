@@ -8,6 +8,9 @@
 #include "string.h"
 #include <QtCore/QList>
 #include <QVector>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 
 
@@ -17,17 +20,11 @@ class Message
 {
 
 private:
+    int sender;
     Symbol symbol;
      QChar action;
      QVector<QString> params;
-     //informazioni del testo
-     QString family;
-     bool bold;
-     bool italic;
-     bool underln;
-     //QString size;
-     qreal size;
-
+     bool error;
 
 public:
     Message(QChar action): action(action) {}
@@ -36,6 +33,8 @@ public:
 
     QChar getAction() const;
     void setAction(const QChar &value);
+    static Message fromJson(QJsonDocument json);
+    QJsonDocument toJson();
 
     Symbol getSymbol() const;
     void setSymbol(Symbol value);
@@ -47,13 +46,17 @@ public:
     bool getItalic();
     bool getUnderln();
     qreal getSize();
-    //QString getSize();
+    int getSender() const;
+    void setSender(const int &value);
+    void setError(bool e);
+    bool getError();
+
     void setFamily(QString f);
     void setBold(bool b);
     void setItalic(bool i);
     void setUnderln(bool u);
     void setSize(qreal s);
-    //void setSize(QString s);
+
 
 
 };

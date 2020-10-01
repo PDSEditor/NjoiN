@@ -20,8 +20,11 @@ public:
 
 signals:
     void newMessage(Message *m);
+    void receivedLogin(QString&);
+    void receivedInfoAccount(Message&);
 
 public slots:
+    void receiveImage(QByteArray im);
     void onConnected();
     void onTextMessageReceived(QString message);
     void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal

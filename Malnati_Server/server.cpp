@@ -87,7 +87,6 @@ void Server::processMessage( Message mes) {
 
     QChar action = mes.getAction();
     char first =  action.toLatin1();
-
     QString nomeFile;
     int siteId;
     if (first == 'R'){
@@ -149,7 +148,6 @@ void Server::processMessage( Message mes) {
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
-
         break;
 
     case 'X' :
@@ -167,8 +165,10 @@ void Server::processMessage( Message mes) {
         // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
+
         uri = mes.getParams()[0];
         documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+
 
         try {
             doc = this->dbMan->getDocument(documentId);

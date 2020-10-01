@@ -147,7 +147,9 @@ TextEdit::TextEdit(QWidget *parent)
 
     //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     textEdit->setFontFamily("kalapi");
+    localFamily="kalapi";
     textEdit->setFontPointSize(12);
+    localsize=12;
     textEdit->currentCharFormat().setFontItalic(false);
     textEdit->currentCharFormat().setFontUnderline(false);
     //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -514,12 +516,12 @@ void TextEdit::reciveSymbol(Message *m)
     //textEdit->setTextBackgroundColor(col);
 
     qform.setBackground(col);
-    qform.setFontFamily(m->getFamily());
-    qform.setFontItalic(m->getItalic());
-    qform.setFontUnderline(m->getUnderln());
+    qform.setFontFamily(m->getSymbol().getFamily());
+    qform.setFontItalic(m->getSymbol().getItalic());
+    qform.setFontUnderline(m->getSymbol().getUnderln());
     //qform.setFontPointSize((float)m->getSize());
-    qform.setFontPointSize(m->getSize());
-    if(m->getBold())
+    qform.setFontPointSize(m->getSymbol().getSize());
+    if(m->getSymbol().getBold())
         qform.setFontWeight(QFont::Bold);
     //curs.setCharFormat(qform);
 
@@ -532,14 +534,6 @@ void TextEdit::reciveSymbol(Message *m)
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);
         curs.insertText((QChar)tmp.getValue(),qform);
-
-
-
-        //prova
-        //textEdit->setTextBackgroundColor(Qt::white);
-        //preqform.setBackground(Qt::white);
-        //curs.setCharFormat(preqform);
-        //textEdit->mergeCurrentCharFormat(preqform);
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -692,9 +686,20 @@ void TextEdit::textBold()
 
 void TextEdit::textUnderline()
 {
+    QTextCursor curs=textEdit->textCursor();
+    /*
     QTextCharFormat fmt;
     fmt.setFontUnderline(actionTextUnderline->isChecked());
     mergeFormatOnWordOrSelection(fmt);
+    */
+    QTextCharFormat qq;
+    qq.setFontUnderline(1);
+    int p=0;
+    int num=3;
+    curs.setPosition(p);
+    curs.movePosition(QTextCursor::NoMove,QTextCursor::KeepAnchor);
+    curs.setPosition(p+num);
+    curs.mergeCharFormat(qq);
 }
 
 void TextEdit::textItalic()
@@ -708,6 +713,8 @@ void TextEdit::textFamily(const QString &f)
 {
     QTextCharFormat fmt;
     fmt.setFontFamily(f);
+    localFamily=f;
+    flagc=true;
     mergeFormatOnWordOrSelection(fmt);
 }
 
@@ -717,6 +724,8 @@ void TextEdit::textSize(const QString &p)
     if (p.toFloat() > 0) {
         QTextCharFormat fmt;
         fmt.setFontPointSize(pointSize);
+        localsize=p.toFloat();
+        flagc=true;
         mergeFormatOnWordOrSelection(fmt);
     }
 }
@@ -837,26 +846,37 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
             }
         }else
         if(charsAdded!= 0){
-            if(charsRemoved>0)
+            if(charsAdded==charsRemoved){
+                //dati da passare
+                int cpos=cursor.selectionStart();
+                int cn=charsAdded;
+                bool cbold=actionTextBold->isChecked();
+                bool citalic=actionTextItalic->isChecked();
+                bool cundl=actionTextUnderline->isChecked();
+                QString cfam=localFamily;
+                qreal csize=localsize;
+                //
+
+            }
+            else
+                if(charsRemoved>0)
                 charsAdded--;
             for(int i=0; i<charsAdded; i++){
                 qDebug() << "char: " << textEdit->document()->characterAt(position);
                 Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
-                m.setSize(textEdit->fontPointSize());
-                m.setFamily(textEdit->fontFamily());
-                m.setUnderln(textEdit->currentCharFormat().fontUnderline());
-                m.setItalic(textEdit->currentCharFormat().fontItalic());
-                m.setBold(actionTextBold->isChecked());
+                Symbol s=m.getSymbol();
+                s.setSize(textEdit->fontPointSize());
+                s.setFamily(textEdit->fontFamily());
+                s.setUnderln(textEdit->currentCharFormat().fontUnderline());
+                s.setItalic(textEdit->currentCharFormat().fontItalic());
+                s.setBold(actionTextBold->isChecked());
+                m.setSymbol(s);
                 position+=1;
                 emit(sendMessage(&m));
             }
         }
    }
    externAction=false;
-   /*QTextCharFormat qform;
-   qform=textEdit->currentCharFormat();
-   qform.setBackground(Qt::white);
-   textEdit->currentCharFormat()=qform;*/
 
 }
 
@@ -866,18 +886,21 @@ void TextEdit::cursorPositionChanged()
     QTextCursor cursor = textEdit->textCursor();
     QTextCharFormat form;
     form.setFontItalic(textEdit->currentCharFormat().fontItalic());
-    form.setFontFamily(textEdit->currentCharFormat().fontFamily());
+   form.setFontFamily(localFamily);
     form.setFontUnderline(textEdit->currentCharFormat().fontUnderline());
-    form.setFontPointSize(textEdit->currentCharFormat().fontPointSize());
+    form.setFontPointSize(localsize);
     form.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
     if(!cursor.hasSelection()){
-   textEdit->setTextBackgroundColor(Qt::white);
-   textEdit->setFontFamily(textEdit->fontFamily());
-   textEdit->setFontItalic(textEdit->fontItalic());
-   textEdit->setFontUnderline(textEdit->fontUnderline());
-   cursor.mergeCharFormat(form);
-   textEdit->mergeCurrentCharFormat(form);
+    textEdit->setTextBackgroundColor(Qt::transparent);
+    if(flagc==true){
+    textEdit->setFontFamily(localFamily);
+    textEdit->setFontPointSize(localsize);
     flagc=false;
+    }
+    textEdit->setFontItalic(textEdit->fontItalic());
+    textEdit->setFontUnderline(textEdit->fontUnderline());
+    textEdit->setFontWeight(textEdit->fontWeight());
+
     }
 
 
