@@ -2,8 +2,9 @@
 #define FILEMANAGER_H
 
 #include <QFile>
-#include "message.h"
 #include <QVector>
+#include <QBuffer>
+#include "sharedDocument.h"
 
 class FileManager
 {
@@ -11,6 +12,7 @@ class FileManager
 
 public:
     FileManager();
+    bool saveToServer(SharedDocument& document);
 };
 
 #endif // FILEMANAGER_H

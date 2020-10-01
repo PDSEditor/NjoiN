@@ -271,7 +271,7 @@ bool DatabaseManager::insertDocument(SharedDocument document)
             << "_id" << (document.getName() + '_' + document.getCreator()).toUtf8().constData()
             << "documentName" << document.getName().toUtf8().constData()
             << "creator" << document.getCreator().toUtf8().constData()
-            << "isOpen" << document.getOpen() //da salvare nel db?
+//            << "isOpen" << document.getOpen() //da salvare nel db? NO
             << "userAllowed" << array_builder
             << bsoncxx::builder::stream::finalize;
     bsoncxx::document::view view = documentToInsert.view();
