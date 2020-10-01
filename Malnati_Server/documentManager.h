@@ -9,9 +9,14 @@
 class DocumentManager : public QObject
 {
     Q_OBJECT
+
+private:
+    QList<SharedDocument> openDocuments;
+
 public:
     explicit DocumentManager(QObject *parent = nullptr);
     bool saveToServer(SharedDocument& document);
+    void checkPermission(QString username, QString documentId);       //controlla se l'account può accedere al file
 
 signals:
 
