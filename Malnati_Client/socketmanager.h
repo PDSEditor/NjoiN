@@ -20,6 +20,8 @@ public:
 
 signals:
     void newMessage(Message *m);
+    void receivedLogin(QString&);
+    void receivedInfoAccount(Message&);
 
 public slots:
     void receiveImage(QByteArray im);

@@ -24,11 +24,20 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     AccountInterface *getProfilePtr();
+    void setImage(QPixmap im);
+    QPixmap getImage();
+    void setName(QString name);
+    QString getName();
+    QList<QString> getList();
+    void setList(QList<QString> l);
+public slots:
+    void receivedInfoAccount(Message& m);
 signals:
     void newTextEdit(TextEdit* t);
     // prova
     void sendImage(QByteArray& image);
     void sendMessage(Message* mex);
+
 
 private slots:
     void receiveimage(QPixmap& im);
@@ -46,6 +55,9 @@ private:
     TextEdit *te;
     AccountInterface *accountGui = nullptr;
     void newFile();
+    QPixmap image;
+    QString name;
+    QList<QString> documents;
 
 
 };

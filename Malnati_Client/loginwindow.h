@@ -19,6 +19,8 @@ public:
 
 signals:
     void sendMessage(Message* mex);
+ public slots:
+     void receivedLogin(QString& s);
 private slots:
     void on_pushButton_login_clicked();
 

@@ -54,6 +54,35 @@ void MainWindow::receiveimage(QPixmap& q){
 
 }
 
+void MainWindow::setImage(QPixmap im){
+    image=im;
+}
+
+QPixmap MainWindow::getImage(){
+    return image;
+}
+void MainWindow::setName(QString name){
+    MainWindow::name=name;
+}
+QString MainWindow::getName(){
+    return name;
+}
+QList<QString> MainWindow::getList(){
+    return documents;
+}
+void MainWindow::setList(QList<QString> l){
+    documents=l;
+}
+
+void MainWindow::receivedInfoAccount(Message& m){
+   setName(m.getParams().at(0));
+   setImage(m.getParams().at(2));
+   QList<QString> tmp;
+   for(int i=3;i<m.getParams().size();i++){
+       documents.append(m.getParams().at(i));
+   }
+
+}
 void MainWindow::on_pushButton_clicked()
 {
     newFile();

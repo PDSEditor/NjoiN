@@ -28,7 +28,7 @@ void LoginWindow::on_pushButton_login_clicked()
     m.setParams({username,password});
     emit(sendMessage(&m));
 
-    if(username == "test" && password == "test"){
+    if(username == "test" && password == "test"){//sostituire con Islogin==1!!!!!!
         QMessageBox::information(this,"Login","Username e password corretti");
        // mw = new MainWindow(this);
         setIsLogin(1);
@@ -53,6 +53,15 @@ void LoginWindow::on_pushButton_login_clicked()
     }
 }
 
+void LoginWindow::receivedLogin(QString& s){
+    if(s.compare("accesso")){
+        isLogin=1;
+    }
+    else if(s.compare("errore")){
+        isLogin=0;
+    }
+
+}
 int LoginWindow::getIsLogin() const{
     return isLogin;
 }

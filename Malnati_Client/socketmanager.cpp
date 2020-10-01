@@ -1,4 +1,4 @@
-#include "socketmanager.h"
+﻿#include "socketmanager.h"
 
 socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent)
 {
@@ -176,7 +176,22 @@ void socketManager::onConnected()
 
 void socketManager::onTextMessageReceived(QString message)
 {
+Message m=Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
+switch (m.getAction().toLatin1()) {
 
+case 'L':
+    if(m.getError()){
+        QString s="errore";
+        emit(receivedLogin(s));
+    }
+    else{
+        QString s="accesso";
+        emit(receivedLogin(s));
+        emit(receivedInfoAccount(m));
+    }
+
+
+}
 }
 
 //Received binary message from server and emit a signal
