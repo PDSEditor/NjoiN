@@ -17,17 +17,10 @@ class Message
 {
 
 private:
+    int sender;
     Symbol symbol;
      QChar action;
      QVector<QString> params;
-     //informazioni del testo
-     QString family;
-     bool bold;
-     bool italic;
-     bool underln;
-     //QString size;
-     qreal size;
-
 
 public:
     Message(QChar action): action(action) {}
@@ -47,13 +40,15 @@ public:
     bool getItalic();
     bool getUnderln();
     qreal getSize();
-    //QString getSize();
+    int getSender() const;
+    void setSender(const int &value);
+
     void setFamily(QString f);
     void setBold(bool b);
     void setItalic(bool i);
     void setUnderln(bool u);
     void setSize(qreal s);
-    //void setSize(QString s);
+
 
 
 };

@@ -35,9 +35,22 @@ void MainWindow::newFile(){
    // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
 
     te->fileNew();
+    Message m;
+    m.setAction('C');
+    m.setParams({"newfile"});
+    emit(sendMessage(&m));
     emit(newTextEdit(te));
     te->show();
     // This is available in all editors.
+
+}
+
+void MainWindow::receiveimage(QPixmap& q){
+    QByteArray bArray;
+    QBuffer buffer(&bArray);
+    buffer.open(QIODevice::WriteOnly);
+    q.save(&buffer,"PNG");
+    emit sendImage(bArray);
 
 }
 
@@ -59,6 +72,9 @@ void MainWindow::on_actionNew_triggered()
 void MainWindow::on_actionAccount_triggered()
 {
     AccountInterface ai;
+    //
+   connect(&ai,&AccountInterface::changeImage,this,&MainWindow::receiveimage);
+    //
     ai.exec();
 
 }

@@ -143,7 +143,7 @@ void Server::processMessage( Message mes) {
         nomeFile = mes.getParams()[0];
         //controllo db se esiste un file con lo stesso nome
 
-        siteId = mes.getParams()[1].toInt();
+        siteId = mes.getSender();
         //creo file e lo salvo nel db con creatore = siteId
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
@@ -159,7 +159,8 @@ void Server::processMessage( Message mes) {
         // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
-        QString uri = mes.getParams()[0];
+
+        /*QString uri = mes.getParams()[0];
         QString documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
         SharedDocument doc;
         try {
@@ -169,7 +170,7 @@ void Server::processMessage( Message mes) {
         catch(...) {
             qDebug() << "Documento non esistente";
         }
-
+*/
         break;
 
     default:

@@ -25,6 +25,10 @@ void socketManager::messageToServer(Message *m)
     //qDebug()<<"Testo inviato: sia m diu ";
 }
 
+void socketManager::receiveImage(QByteArray im){
+    int i=0;
+}
+
 
 //Send a message from client to server
 void socketManager::binaryMessageToServer(Message *m)
@@ -76,14 +80,18 @@ void socketManager::binaryMessageToServer(Message *m)
 
         //inserimento info testo
 
-        bytemex.append(m->getBold());
-        bytemex.append(m->getUnderln());
-        bytemex.append(m->getItalic());
-        tmp=m->getSize();
+        bytemex.append(symbol.getBold());
+        bytemex.append(symbol.getUnderln());
+        bytemex.append(symbol.getItalic());
+        tmp=symbol.getSize();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(m->getFamily());
+        tmp=siteId;
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(symbol.getFamily());
 
 
     }
@@ -95,12 +103,20 @@ void socketManager::binaryMessageToServer(Message *m)
         else{
             bytemex.append('R');
         }
+        tmp=siteId;
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
         bytemex.append(params.at(0));
 
     }
     else if(action=='L'){
         QVector<QString> params = m->getParams();
         bytemex.append('L');
+        tmp=siteId;
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
         tmp=params.at(0).length();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
@@ -167,7 +183,7 @@ void socketManager::onTextMessageReceived(QString message)
 void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 {
     QByteArray c;
-    int tmp, d;
+    int tmp, d,sender;
     QChar action;
     QChar tmpc;
     //Symbol *symbol = new Symbol();
@@ -191,14 +207,6 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
             i+=4;
         }
         i++;
-//        symbol->setPosizione(vtmp);
-//        symbol->setSiteId((int)bytemex.at(i++));
-//        c.clear();
-//        c.append(bytemex.mid(i,4));
-//        memcpy(&tmp,c,4);
-//        symbol->setCounter(tmp);
-//        i+=4;
-//        symbol->setValue(bytemex.at(i));
         symbol.setPosizione(vtmp);
         symbol.setSiteId((int)bytemex.at(i++));
         c.clear();
@@ -222,29 +230,36 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         d=tmp;
         i+=4;
+        c.clear();
+        c.append(bytemex.mid(i,4));
+        memcpy(&tmp,c,4);
+        sender=tmp;
+        i+=4;
         family=bytemex.right(bytemex.length()-i);
-
-
-
-
-
-
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
         if(bytemex.at(0)=='C')
             action='C';
         else
             action='R';
-        params.push_back(bytemex.right(bytemex.length()-1));
+        c.clear();
+        c.append(bytemex.mid(1,4));
+        memcpy(&tmp,c,4);
+        sender=tmp;
+        params.push_back(bytemex.right(bytemex.length()-5));
     }
     else if(bytemex.at(0)=='L'){
         action='L';
         c.clear();
         c.append(bytemex.mid(1,4));
         memcpy(&tmp,c,4);
-        params.push_back(bytemex.mid(5,tmp));
+        sender=tmp;
         c.clear();
-        c.append(bytemex.mid(tmp+5,4));
+        c.append(bytemex.mid(5,4));
+        memcpy(&tmp,c,4);
+        params.push_back(bytemex.mid(9,tmp));
+        c.clear();
+        c.append(bytemex.mid(tmp+9,4));
         memcpy(&tmp,c,4);
         params.push_back(bytemex.right(tmp));
     }
@@ -253,7 +268,11 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         c.clear();
         c.append(bytemex.mid(1,4));
         memcpy(&tmp,c,4);
-        params.push_back(bytemex.mid(5,tmp));
+        sender=tmp;
+        c.clear();
+        c.append(bytemex.mid(5,4));
+        memcpy(&tmp,c,4);
+        params.push_back(bytemex.mid(9,tmp));
 
         emitS = false;
         socketManager::siteId = params.at(0).toInt();
@@ -265,13 +284,15 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         Message *m = new Message;
         m->setAction(action);
         m->setParams(params);
+        m->setSender(sender);
+        symbol.setBold(bo);
+        symbol.setSize(d);
+        symbol.setItalic(it);
+        symbol.setUnderln(un);
+        symbol.setFamily(family);
         m->setSymbol(symbol);
 
-        m->setBold(bo);
-        m->setSize(d);
-        m->setItalic(it);
-        m->setUnderln(un);
-        m->setFamily(family);
+
 
 
 

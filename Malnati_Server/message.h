@@ -15,16 +15,12 @@ class Message
 {
 
 private:
-    QString sender;
+    int sender;
     Symbol symbol;
     QChar action;
     QVector<QString> params;
 
-    QString family;
-    bool bold;
-    bool italic;
-    bool underln;
-    qreal size;
+
 
 
 
@@ -44,20 +40,9 @@ public:
     QVector<QString> getParams() const;
     void setParams(const QVector<QString> &value);
 
-    QString getFamily();
-    bool getBold();
-    bool getItalic();
-    bool getUnderln();
-    qreal getSize();
-    void setFamily(QString f);
-    void setBold(bool b);
-    void setItalic(bool i);
-    void setUnderln(bool u);
-    void setSize(qreal s);
 
-
-    QString getSender() const;
-    void setSender(const QString &value);
+    int getSender() const;
+    void setSender(const int &value);
 };
 
 #endif // MESSAGE_H

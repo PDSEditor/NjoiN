@@ -63,6 +63,56 @@ void Symbol::setPosition(const std::vector<int> &value)
     position = value;
 }
 
+QString Symbol::getFamily()
+{
+    return family;
+}
+
+bool Symbol::getBold()
+{
+    return bold;
+}
+
+bool Symbol::getItalic()
+{
+    return italic;
+}
+
+bool Symbol::getUnderln()
+{
+    return underln;
+}
+
+qreal Symbol::getSize()
+{
+    return size;
+}
+
+void Symbol::setFamily(QString f)
+{
+    family=f;
+}
+
+void Symbol::setBold(bool b)
+{
+    bold=b;
+}
+
+void Symbol::setItalic(bool i)
+{
+    italic=i;
+}
+
+void Symbol::setUnderln(bool u)
+{
+    underln=u;
+}
+
+void Symbol::setSize(qreal s)
+{
+    size=s;
+}
+
 Symbol Symbol::fromJson(const QJsonObject &charJ){
 //    ushort value = charJ["value"].toString().at(0).unicode();
     int value = charJ["value"].toInt();

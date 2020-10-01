@@ -19,6 +19,7 @@ public:
 private slots:
     void receive_textEdit(TextEdit *t);
 
+
 private:
     MainWindow *mw = nullptr;
     socketManager *sockm;

@@ -22,6 +22,9 @@ Client::Client()
     crdt=new Crdt();
     //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
     connect(mw, &MainWindow::newTextEdit, this, &Client::receive_textEdit);
+
+    connect(mw, &MainWindow::sendImage,sockm,&socketManager::receiveImage);
+    connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
 }
 Client::~Client(){
     delete mw;
@@ -29,6 +32,7 @@ Client::~Client(){
     delete sockm;
 
 }
+
 void Client::receive_textEdit(TextEdit *t){
 
 

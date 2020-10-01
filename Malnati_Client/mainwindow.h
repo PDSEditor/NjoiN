@@ -5,6 +5,7 @@
 #include "textedit.h"
 #include "accountinterface.h"
 #include "socketmanager.h"
+#include "QBuffer"
 
 
 
@@ -25,8 +26,12 @@ public:
     AccountInterface *getProfilePtr();
 signals:
     void newTextEdit(TextEdit* t);
+    // prova
+    void sendImage(QByteArray& image);
+    void sendMessage(Message* mex);
 
 private slots:
+    void receiveimage(QPixmap& im);
     void on_pushButton_clicked();
     void addElementforUser(QString);
 
