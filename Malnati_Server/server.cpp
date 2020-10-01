@@ -131,10 +131,10 @@ void Server::processMessage( Message mes) {
     case 'R' :
 
         //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
-        siteId = mes.getParams()[1].toInt();
-        nomeFile = mes.getParams()[0];
-        acMan->checkPermission(siteId, nomeFile);
-//        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
+        //siteId = mes.getParams()[1].toInt();
+        //nomeFile = mes.getParams()[0];
+        //acMan->checkPermission(siteId, nomeFile);
+        //this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
         //Restituisci il file
         break;
 
@@ -147,7 +147,7 @@ void Server::processMessage( Message mes) {
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
-        acMan->checkPermission(siteId, nomeFile);
+        //acMan->checkPermission(siteId, nomeFile);
         break;
 
     case 'X' :
@@ -197,7 +197,7 @@ void Server::processMessage( Message mes) {
 
         }
         else {
-            m.setError(true)
+            m.setError(true);
         }
 
         socketMan->messageToUser(m, mes.getSender());

@@ -17,11 +17,6 @@ AccountManager::AccountManager(QObject *parent) : QObject(parent)
     
 }
 
-void AccountManager::checkPermission(QString username, QString documentId)
-{
-
-
-}
 
 void AccountManager::closeDocumentByUser(QString username, QString documentId)
 {
