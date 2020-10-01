@@ -25,12 +25,13 @@ private:
 
 
 public:
-    Message(QString sender, QChar action);
-    Message(QChar action): action(action) {}
+    Message(int sender, QChar action): sender(sender), action(action) {};
+    Message(QChar action): action(action) {};
     Message();
 
     void debugPrint();
-
+    static Message fromJson(QJsonDocument json);
+    QJsonDocument toJson();
 
     QChar getAction() const;
     void setAction(const QChar &value);

@@ -43,19 +43,10 @@ Server::Server(QObject *parent) : QObject(parent)
 
     /*****************************/
 
-    QObject::connect(this->socketMan.get(),
-                     &SocketManager::newMessage,
-                     this,
-                     &Server::processMessage
-                     );
+    QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage );
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
-    QObject::connect(this->socketMan.get(),
-                     &SocketManager::newAccountOnline,
-                     this->acMan.get(),
-                     &AccountManager::updateOnlineAccounts
-                     );
-//                     &AccountManager::updateOnlineAccounts
-//                     );
+    QObject::connect(this->socketMan.get(), &SocketManager::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
+
 
     //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
 
@@ -111,6 +102,9 @@ void Server::processMessage( Message mes) {
     QString uri;
     QString documentId;
     SharedDocument doc;
+    Account acc;
+    Message m;
+    QVector<QString> params;
 
     switch (first){
     case 'I':
@@ -194,6 +188,14 @@ void Server::processMessage( Message mes) {
 
     case 'L' :
         //Login
+        if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
+            acc = dbMan->getAccount(mes.getParams()[0]);
+        }
+        m.setAction('L');
+        params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+        params.append(acc.getDocumentUris().toVector());
+        m.setParams(params);
+        socketMan->messageToUser(m, mes.getSender());
 
         break;
 

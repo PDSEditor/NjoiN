@@ -6,8 +6,6 @@
 #include "server.h"
 #include "iostream"
 
-#include <QJsonObject>
-
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -32,19 +30,6 @@ int main(int argc, char *argv[])
 //        Server* server = new Server();
         Server server;
         QObject::connect(&server, &Server::closed, &a, &QCoreApplication::quit);
-
-
-        QString stringa ="test";
-        int number = 3;
-        QJsonObject json;
-
-        json["stringa"] = stringa;
-        json["number"] = number;
-
-        qDebug()<<json;
-
-
-
 
     return a.exec();
 }
