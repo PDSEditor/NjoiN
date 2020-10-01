@@ -17,7 +17,8 @@ public:
     ~LoginWindow();
     int getIsLogin() const;
 
-
+signals:
+    void sendMessage(Message* mex);
 private slots:
     void on_pushButton_login_clicked();
 

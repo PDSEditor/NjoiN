@@ -43,6 +43,7 @@ public:
 
     int getSender() const;
     void setSender(const int &value);
+
 };
 
 #endif // MESSAGE_H

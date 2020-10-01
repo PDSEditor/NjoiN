@@ -90,12 +90,10 @@ void Server::processMessage( Message mes) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
-     * giovedì alle 19 clinica, venerdì 11 neuromarketing
     */
 
     QChar action = mes.getAction();
     char first =  action.toLatin1();
-
     QString nomeFile;
     int siteId;
     if (first == 'R'){
@@ -105,16 +103,21 @@ void Server::processMessage( Message mes) {
         nomeFile.right(index);*/
     }
 
-//    QList<Symbol> document;
+    QList<Symbol> document;
 //    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
 //    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+    QString uri;
+    QString documentId;
+    SharedDocument doc;
+
     switch (first){
     case 'I':
 //        mes.setParams(prova);
-//        dbMan->createDocument(sharedDocument);
+//        dbMan->insertDocument(sharedDocument); //attenzione se già presente eccezionare
 //        dbMan->insertSymbol(mes);
 //        dbMan->deleteSymbol(mes);
-//        document = dbMan->retrieveSymbolsOfDocument(prova.first()); //di test
+//        sharedDocument = dbMan->getDocument(QString::fromStdString("documento1_0"));
+//        document = dbMan->retrieveSymbolsOfDocument(sharedDocument.getUri()); //di test
 //        for(auto i : document){
 //            qDebug() << i.getValue();
 //        }
@@ -149,6 +152,8 @@ void Server::processMessage( Message mes) {
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
         acMan->checkUserPerFile(siteId, nomeFile);
+        doc.setName(nomeFile);
+        dbMan->insertDocument(doc);
         break;
 
     case 'X' :
@@ -160,17 +165,24 @@ void Server::processMessage( Message mes) {
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
 
-        /*QString uri = mes.getParams()[0];
-        QString documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
-        SharedDocument doc;
+        uri = mes.getParams()[0];
+        documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+
+
         try {
             doc = this->dbMan->getDocument(documentId);
-            //mes.
+            int siteId = mes.getSender();
+            auto account = this->acMan->getOnlineAccounts().find(siteId).value();
+            account.get()->getDocumentUris().push_back(uri);
+
+            this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
+
+
         }
         catch(...) {
             qDebug() << "Documento non esistente";
         }
-*/
+
         break;
 
     default:

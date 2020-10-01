@@ -11,11 +11,11 @@ Client::Client()
 
 
 
-
-
+    connect(&lw,&LoginWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
 
      lw.exec();
-         mw = new MainWindow();
+     mw = new MainWindow();
+
      if(lw.getIsLogin()==1){
          mw->show();
      }

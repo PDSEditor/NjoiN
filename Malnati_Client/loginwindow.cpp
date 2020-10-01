@@ -23,8 +23,10 @@ void LoginWindow::on_pushButton_login_clicked()
 {
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
-
-
+    Message m;
+    m.setAction('L');
+    m.setParams({username,password});
+    emit(sendMessage(&m));
 
     if(username == "test" && password == "test"){
         QMessageBox::information(this,"Login","Username e password corretti");

@@ -40,7 +40,9 @@ int Message::getSender() const
     return sender;
 }
 
+
 void Message::setSender(const int &value)
+
 {
     sender = value;
 }
