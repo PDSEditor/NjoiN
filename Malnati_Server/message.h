@@ -19,6 +19,7 @@ private:
     Symbol symbol;
     QChar action;
     QVector<QString> params;
+    bool error;
 
     QString family;
     bool bold;
@@ -29,12 +30,13 @@ private:
 
 
 public:
-    Message(QString sender, QChar action);
-    Message(QChar action): action(action) {}
+    Message(int sender, QChar action): sender(sender), action(action) {};
+    Message(QChar action): action(action) {};
     Message();
 
     void debugPrint();
-
+    static Message fromJson(QJsonDocument json);
+    QJsonDocument toJson();
 
     QChar getAction() const;
     void setAction(const QChar &value);
@@ -57,6 +59,8 @@ public:
 
     int getSender() const;
     void setSender(int value);
+    bool getError() const;
+    void setError(bool value);
 };
 
 #endif // MESSAGE_H

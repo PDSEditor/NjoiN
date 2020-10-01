@@ -32,7 +32,7 @@ SOURCES += \
         account.cpp \
         accountManager.cpp \
         databaseManager.cpp \
-        filemanager.cpp \
+        documentManager.cpp \
         main.cpp \
         message.cpp \
         server.cpp \
@@ -49,7 +49,7 @@ HEADERS += \
     account.h \
     accountManager.h \
     databaseManager.h \
-    filemanager.h \
+    documentManager.h \
     message.h \
     server.h \
     sharedDocument.h \

@@ -1,11 +1,11 @@
-#include "filemanager.h"
+#include "documentManager.h"
 
-FileManager::FileManager()
+DocumentManager::DocumentManager(QObject *parent) : QObject(parent)
 {
 
 }
 
-bool FileManager::saveToServer(SharedDocument &document)
+bool DocumentManager::saveToServer(SharedDocument &document)
 {
     QFile file(document.getUri()); //uri? o name? o id?
     if (!file.open(QFile::WriteOnly)) return false;

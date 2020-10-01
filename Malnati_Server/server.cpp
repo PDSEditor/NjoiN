@@ -8,8 +8,8 @@ Server::Server(QObject *parent) : QObject(parent)
     std::unique_ptr<DatabaseManager> dbMan(new DatabaseManager);
     this->dbMan = std::move(dbMan);
 //    this->dbMan = new DatabaseManager();
-    std::unique_ptr<FileManager> fileMan(new FileManager);
-    this->fileMan = std::move(fileMan);
+    std::unique_ptr<DocumentManager> fileMan(new DocumentManager);
+    this->docMan = std::move(fileMan);
 
 //    this->acMan = new AccountManager();
     std::unique_ptr<AccountManager> acMan(new AccountManager);
@@ -43,19 +43,10 @@ Server::Server(QObject *parent) : QObject(parent)
 
     /*****************************/
 
-    QObject::connect(this->socketMan.get(),
-                     &SocketManager::newMessage,
-                     this,
-                     &Server::processMessage
-                     );
+    QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage );
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
-    QObject::connect(this->socketMan.get(),
-                     &SocketManager::newAccountOnline,
-                     this->acMan.get(),
-                     &AccountManager::updateOnlineAccounts
-                     );
-//                     &AccountManager::updateOnlineAccounts
-//                     );
+    QObject::connect(this->socketMan.get(), &SocketManager::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
+
 
     //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
 
@@ -90,6 +81,8 @@ void Server::processMessage( Message mes) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
+     * REGISTER user (Sign up)  -> S
+     * LOG-IN -> L
     */
 
     QChar action = mes.getAction();
@@ -110,6 +103,9 @@ void Server::processMessage( Message mes) {
     QString uri;
     QString documentId;
     SharedDocument doc;
+    Account acc;
+    Message m;
+    QVector<QString> params;
 
     switch (first){
     case 'I':
@@ -133,12 +129,11 @@ void Server::processMessage( Message mes) {
 //        remoteDelete(mes.getSymbol());
         break;
     case 'R' :
-        //dbMan->retrieveFile(nomeFile);
 
         //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
         siteId = mes.getParams()[1].toInt();
         nomeFile = mes.getParams()[0];
-        acMan->checkUserPerFile(siteId, nomeFile);
+        acMan->checkPermission(siteId, nomeFile);
 //        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
         //Restituisci il file
         break;
@@ -152,11 +147,13 @@ void Server::processMessage( Message mes) {
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
-        acMan->checkUserPerFile(siteId, nomeFile);
+        acMan->checkPermission(siteId, nomeFile);
         break;
 
     case 'X' :
         //gestire chiusura del file
+        //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
+
         break;
 
     case 'U' :
@@ -179,6 +176,31 @@ void Server::processMessage( Message mes) {
         catch(...) {
             qDebug() << "Documento non esistente";
         }
+
+        break;
+
+    case 'S' :
+        //Signup
+
+        break;
+
+    case 'L' :
+        //Login
+        m.setAction('L');
+
+        if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
+            acc = dbMan->getAccount(mes.getParams()[0]);
+            params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+            params.append(acc.getDocumentUris().toVector());
+            m.setParams(params);
+            m.setError(false);
+
+        }
+        else {
+            m.setError(true);
+        }
+
+        socketMan->messageToUser(m, mes.getSender());
 
         break;
 
