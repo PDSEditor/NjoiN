@@ -18,7 +18,7 @@ AccountManager::AccountManager(QObject *parent) : QObject(parent)
 }
 
 
-void AccountManager::closeDocumentByUser(QString username, QString documentId)
+bool AccountManager::closeDocumentByUser(QString username, QString documentId)
 {
     if(this->accountsPerFile.contains(documentId)){
         auto list = this->accountsPerFile[documentId];
