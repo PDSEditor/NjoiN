@@ -17,11 +17,25 @@ AccountManager::AccountManager(QObject *parent) : QObject(parent)
     
 }
 
-void AccountManager::checkUserPerFile(int siteId, QString fileName)
+void AccountManager::checkPermission(QString username, QString documentId)
 {
-    if(!this->accountsPerFile[fileName].contains(siteId)) {     //primo accesso a un file creato da altri
-        this->accountsPerFile[fileName].append(siteId);
+
+
+}
+
+void AccountManager::closeDocumentByUser(QString username, QString documentId)
+{
+    if(this->accountsPerFile.contains(documentId)){
+        auto list = this->accountsPerFile[documentId];
+        if(list.contains(username)){
+            list.removeOne(username);
+
+            if(list.count()==0) {
+                //bisogna salvare il documento
+            }
+        }
     }
+
 }
 
 void AccountManager::updateOnlineAccounts(int siteId)

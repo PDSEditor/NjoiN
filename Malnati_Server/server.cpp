@@ -129,12 +129,11 @@ void Server::processMessage( Message mes) {
 //        remoteDelete(mes.getSymbol());
         break;
     case 'R' :
-        //dbMan->retrieveFile(nomeFile);
 
         //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
         siteId = mes.getParams()[1].toInt();
         nomeFile = mes.getParams()[0];
-        acMan->checkUserPerFile(siteId, nomeFile);
+        acMan->checkPermission(siteId, nomeFile);
 //        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
         //Restituisci il file
         break;
@@ -148,11 +147,13 @@ void Server::processMessage( Message mes) {
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
-        acMan->checkUserPerFile(siteId, nomeFile);
+        acMan->checkPermission(siteId, nomeFile);
         break;
 
     case 'X' :
         //gestire chiusura del file
+        //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
+
         break;
 
     case 'U' :
@@ -185,13 +186,20 @@ void Server::processMessage( Message mes) {
 
     case 'L' :
         //Login
+        m.setAction('L');
+
         if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
             acc = dbMan->getAccount(mes.getParams()[0]);
+            params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+            params.append(acc.getDocumentUris().toVector());
+            m.setParams(params);
+            m.setError(false);
+
         }
-        m.setAction('L');
-        params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
-        params.append(acc.getDocumentUris().toVector());
-        m.setParams(params);
+        else {
+            m.setError(true)
+        }
+
         socketMan->messageToUser(m, mes.getSender());
 
         break;

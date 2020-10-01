@@ -19,6 +19,7 @@ private:
     Symbol symbol;
     QChar action;
     QVector<QString> params;
+    bool error;
 
     QString family;
     bool bold;
@@ -58,6 +59,8 @@ public:
 
     int getSender() const;
     void setSender(int value);
+    bool getError() const;
+    void setError(bool value);
 };
 
 #endif // MESSAGE_H
