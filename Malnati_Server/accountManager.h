@@ -17,7 +17,6 @@ private:
 
 public:
     explicit AccountManager(QObject *parent = nullptr);
-    void checkPermission(QString username, QString documentId);       //controlla se l'account può accedere al file
     void closeDocumentByUser(QString username, QString documentId);    //togli l'account dalla lista di accountsPerFile, se è l'ultimo bisogna salvarlo
 
 
