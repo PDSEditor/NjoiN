@@ -36,7 +36,13 @@ void SocketManager::messageToUser( Message &m, int siteId) {
             qDebug()<<"Invio site id al client n "<< siteId;
         }
         QWebSocket *user = it.value();
-        binaryMessageToUser(m, siteId);
+        if(m.getAction()=='I' || m.getAction()=='D') {
+            binaryMessageToUser(m, siteId);
+        }
+        else {
+            user->sendTextMessage(m.toJson().toJson(QJsonDocument::Compact));
+        }
+
     }
 }
 
@@ -141,11 +147,14 @@ void SocketManager::fileToUser(std::vector<Symbol> file, int user)
 
 void SocketManager::processTextMessage(QString message)
 {
-    //deserialize JSON
+
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
+
     qDebug()<<message;
-//    Message *m = new Message();         //crea il messaggio
-    Message m;
+
+    //deserialize JSON
+    Message m = Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
+
     emit newMessage(m);
 
 }
@@ -172,116 +181,6 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
      *      stampa semplicemente output
      */
 
-    //enum Actions { I, D, R, C, L, T};
-
-    /*
-    QString dataStr = QString::fromStdString(data.toStdString());
-
-    QChar action = dataStr[0];
-
-    ushort act = action.unicode();
-
-    Message *m = new Message(action);
-
-    switch(act){
-    case (73| 68):
-    {
-        //Prima costruisco il vettore posizione
-        std::vector<int> posizione;
-        int n;
-        int i =1;
-        if (dataStr[i].unicode() == '[') {
-            i++;
-            while(dataStr[i].unicode() != ']') {
-                if (dataStr[i].unicode() == ',') {
-                    posizione.push_back(n);
-                    n=0;
-                }
-                else {
-                    n = (n*10) + dataStr[i].unicode()-48;
-                }
-                i++;
-            }
-        }
-        else {
-            sendError ("Errore di formattazione nel messaggio");
-        }
-
-        i +=2 ; //sono passato dalla parentesi quadra all'elemento dopo il "-"
-        //prendo il siteId
-        int siteId=0;
-        while (dataStr[i].unicode() != '-') {
-            siteId = siteId*10 + dataStr[i].unicode()-48;
-            i++;
-        }
-        i++;
-        //prendo il counter
-        int counter = 0;
-        auto it = dataStr.begin() + i;
-        while (it != dataStr.end()){
-            counter = counter *10 + it->unicode()-48;
-        }
-
-        Symbol *symbol = new Symbol(posizione, siteId, counter);
-
-        m->setSymbol(symbol);
-
-        break;
-    }
-
-    case (82|67) :
-    {
-        QString nomeFile;
-        int lungNome = dataStr[1].unicode()-48;
-        for (int i = 2; i < lungNome+2; i++) {
-            QChar l = dataStr[i];
-            nomeFile.push_back(l);
-        }
-
-
-        QVector<QString> params;
-        params.push_back(nomeFile);
-        m->setParams(params);
-        break;
-    }
-
-    case (76) :
-    {
-        QString user;
-        int lungUser = dataStr[1].unicode()-48;
-        for (int i = 2; i < lungUser+2; i++) {
-            QChar l = dataStr[i];
-            user.push_back(l);
-        }
-
-        QString pw;
-        int lungPw = dataStr[lungUser+2].unicode()-48;
-        for (int i = 2; i < lungPw+2; i++) {
-            QChar l = dataStr[i];
-            pw.push_back(l);
-        }
-
-
-        QVector<QString> params;
-        params.push_back(user);
-        params.push_back(pw);
-        m->setParams(params);
-        break;
-    }
-
-    case (84): {
-        qDebug()<<dataStr;
-        break;
-    }
-
-    default:
-        sendError("Generic Error");
-    }
-
-
-
-    emit newMessage(m);
-    */
     bool it,un,bo;
     QString family;
     QByteArray c;

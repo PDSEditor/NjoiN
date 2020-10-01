@@ -31,25 +31,5 @@ int main(int argc, char *argv[])
         Server server;
         QObject::connect(&server, &Server::closed, &a, &QCoreApplication::quit);
 
-        /*int n = 5;
-        qDebug()<< (n<<1);
-
-        QByteArray bytemex;
-        for(int tmp =1; tmp<8; tmp = tmp+2) {
-            for(int p=0;p<4;p++){
-                bytemex.append(tmp >> (p * 8));
-            }
-        }
-
-        qDebug()<<bytemex;
-
-        QByteArray b;
-        QDataStream stream(&b, QIODevice::WriteOnly);
-        int i = 1357;
-        stream<<i;
-        qDebug()<<b; */
-
-
-
     return a.exec();
 }
