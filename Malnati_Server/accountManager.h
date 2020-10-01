@@ -17,7 +17,7 @@ private:
 
 public:
     explicit AccountManager(QObject *parent = nullptr);
-    void closeDocumentByUser(QString username, QString documentId);    //togli l'account dalla lista di accountsPerFile, se è l'ultimo bisogna salvarlo
+    bool closeDocumentByUser(QString username, QString documentId);    //togli l'account dalla lista di accountsPerFile, se è l'ultimo bisogna salvarlo
 
 
 

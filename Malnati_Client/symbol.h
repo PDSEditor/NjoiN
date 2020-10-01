@@ -2,6 +2,7 @@
 #define SYMBOL_H
 #include <vector>
 #include <QChar>
+#include <QString>
 
 class Symbol
 {
@@ -10,7 +11,25 @@ private:
     std::vector<int> posizione;
     int siteId;
     int counter;
+    //informazioni del testo
+    QString family;
+    bool bold;
+    bool italic;
+    bool underln;
+    qreal size;
 public:
+
+    QString getFamily();
+    bool getBold();
+    bool getItalic();
+    bool getUnderln();
+    qreal getSize();
+
+    void setFamily(QString f);
+    void setBold(bool b);
+    void setItalic(bool i);
+    void setUnderln(bool u);
+    void setSize(qreal s);
     Symbol(QChar value, std::vector<int> posizione, int siteId, int counter);
     Symbol();
         QChar getValue() const;

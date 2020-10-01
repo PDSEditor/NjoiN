@@ -87,7 +87,6 @@ void Server::processMessage( Message mes) {
 
     QChar action = mes.getAction();
     char first =  action.toLatin1();
-
     QString nomeFile;
     int siteId;
     if (first == 'R'){
@@ -98,14 +97,13 @@ void Server::processMessage( Message mes) {
     }
 
     QList<Symbol> document;
-//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
-//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
     QString uri;
     QString documentId;
     SharedDocument doc;
     Account acc;
     Message m;
     QVector<QString> params;
+    QString username;
 
     switch (first){
     case 'I':
@@ -131,28 +129,35 @@ void Server::processMessage( Message mes) {
     case 'R' :
 
         //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
-        //siteId = mes.getParams()[1].toInt();
-        //nomeFile = mes.getParams()[0];
-        //acMan->checkPermission(siteId, nomeFile);
-        //this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
+
+        nomeFile = mes.getParams()[0];
+        username = mes.getParams()[1];
+
+        docMan->checkPermission(username, nomeFile);
+        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
         //Restituisci il file
+
         break;
 
     case 'C' :
         nomeFile = mes.getParams()[0];
         //controllo db se esiste un file con lo stesso nome
 
-        siteId = mes.getParams()[1].toInt();
-        //creo file e lo salvo nel db con creatore = siteId
+         username = mes.getParams()[1];
+        //creo file e lo salvo nel db con creatore = username
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
-        //acMan->checkPermission(siteId, nomeFile);
         break;
 
     case 'X' :
         //gestire chiusura del file
         //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
+        username = mes.getParams()[0];
+        documentId = mes.getParams()[1];
+        if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
+            this->docMan->saveToServer(documentId);
+        }
 
         break;
 
@@ -160,8 +165,10 @@ void Server::processMessage( Message mes) {
         // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
+
         uri = mes.getParams()[0];
         documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+
 
         try {
             doc = this->dbMan->getDocument(documentId);
