@@ -17,8 +17,8 @@ private:
 
 public:
     Account();
-    Account(QString username, int siteId, QByteArray image);
-    Account(QString username, int siteId, QByteArray image, QList<QString> &documentUris);
+    Account(QString username, int siteId, QByteArray& image);
+    Account(QString username, int siteId, QByteArray& image, QList<QString> &documentUris);
     Account(const Account &other);
 
     QString getUsername() const;

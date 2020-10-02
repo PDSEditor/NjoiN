@@ -1,9 +1,17 @@
 #include "account.h"
 
-Account::Account(QString username, int siteId, QByteArray image, QList<QString> &documentUris): username(username), siteId(siteId), image(image)
+Account::Account(){
+
+}
+
+Account::Account(QString username, int siteId, QByteArray& image, QList<QString> &documentUris): username(username), siteId(siteId), image(image)
 {
     this->documentUris = documentUris;
 }
+
+Account::Account(QString username, int siteId, QByteArray& image): username(username), siteId(siteId), image(image)
+{}
+
 
 QList<QString> Account::getDocumentUris() const
 {
@@ -48,10 +56,6 @@ int Account::getSiteId() const
 void Account::setSiteId(int value)
 {
     siteId = value;
-}
-
-Account::Account(){
-
 }
 
 Account::Account(const Account &other){

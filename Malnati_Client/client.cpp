@@ -3,24 +3,18 @@
 Client::Client()
 {
     LoginWindow lw;
-    sockm=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
+    sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
+    mw = new MainWindow();
+    connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::binaryMessageToServer);
+    connect(sockm, &socketManager::receivedLogin, &lw, &LoginWindow::receivedLogin);
+    connect(sockm, &socketManager::receivedInfoAccount, mw, &MainWindow::receivedInfoAccount);
 
+    lw.exec();
 
-
-
-
-
-
-    connect(&lw,&LoginWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
-    connect(sockm,&socketManager::receivedLogin,&lw,&LoginWindow::receivedLogin);
-    connect(sockm,&socketManager::receivedInfoAccount,mw,&MainWindow::receivedInfoAccount);
-
-     lw.exec();
-     mw = new MainWindow();
-
-     if(lw.getIsLogin()==1){
+    if(lw.getIsLogin()==1){
          mw->show();
-     }
+    }
+
     crdt=new Crdt();
     //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
     connect(mw, &MainWindow::newTextEdit, this, &Client::receive_textEdit);
