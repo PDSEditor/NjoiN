@@ -30,6 +30,9 @@ public:
     QString getUsername();
     QList<QString> getList();
     void setList(QList<QString> l);
+    int getSiteId() const;
+    void setSiteId(int value);
+
 public slots:
     void receivedInfoAccount(Message& m);
 signals:
@@ -37,6 +40,7 @@ signals:
     // prova
     void sendImage(QByteArray& image);
     void sendMessage(Message* mex);
+    void sendTextMessage(Message* mex);
 
 
 private slots:

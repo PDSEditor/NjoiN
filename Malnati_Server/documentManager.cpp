@@ -43,3 +43,8 @@ bool DocumentManager::checkPermission(QString username, QString documentId)
     }
     return false;
 }
+
+void DocumentManager::openDocument(SharedDocument &doc)
+{
+    this->openDocuments.push_back(doc);
+}

@@ -40,6 +40,7 @@ void SocketManager::messageToUser( Message &m, int siteId) {
             binaryMessageToUser(m, siteId);
         }
         else {
+
             user->sendTextMessage(m.toJson().toJson(QJsonDocument::Compact));
         }
 

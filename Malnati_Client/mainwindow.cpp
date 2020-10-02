@@ -38,11 +38,22 @@ void MainWindow::newFile(){
     Message m;
     m.setAction('C');
     m.setParams({"newfile", this->getUsername()});
-    emit(sendMessage(&m));
+    //emit(sendMessage(&m));
+    emit(sendTextMessage(&m));
     emit(newTextEdit(te));
     te->show();
     // This is available in all editors.
 
+}
+
+int MainWindow::getSiteId() const
+{
+    return siteId;
+}
+
+void MainWindow::setSiteId(int value)
+{
+    siteId = value;
 }
 
 void MainWindow::receiveimage(QPixmap& q){
@@ -76,7 +87,8 @@ void MainWindow::setList(QList<QString> l){
 
 void MainWindow::receivedInfoAccount(Message& m){
    setUsername(m.getParams().at(0));
-   setImage(m.getParams().at(2));
+   setSiteId(m.getParams().at(1).toInt());
+   //setImage(m.getParams().at(2));
    QList<QString> tmp;
    for(int i=3;i<m.getParams().size();i++){
        documents.append(m.getParams().at(i));
