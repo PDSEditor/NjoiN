@@ -197,6 +197,7 @@ void Server::processMessage( Message mes) {
 
         if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
             acc = dbMan->getAccount(mes.getParams()[0]);
+            m.setSender(acc.getSiteId());
             params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
             params.append(acc.getDocumentUris().toVector());
             m.setParams(params);

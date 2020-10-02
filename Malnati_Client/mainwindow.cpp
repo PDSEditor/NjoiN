@@ -37,7 +37,7 @@ void MainWindow::newFile(){
     te->fileNew();
     Message m;
     m.setAction('C');
-    m.setParams({"newfile"});
+    m.setParams({"newfile", this->getUsername()});
     emit(sendMessage(&m));
     emit(newTextEdit(te));
     te->show();
@@ -61,11 +61,11 @@ void MainWindow::setImage(QPixmap im){
 QPixmap MainWindow::getImage(){
     return image;
 }
-void MainWindow::setName(QString name){
-    MainWindow::name=name;
+void MainWindow::setUsername(QString username){
+    MainWindow::username=username;
 }
-QString MainWindow::getName(){
-    return name;
+QString MainWindow::getUsername(){
+    return username;
 }
 QList<QString> MainWindow::getList(){
     return documents;
@@ -75,7 +75,7 @@ void MainWindow::setList(QList<QString> l){
 }
 
 void MainWindow::receivedInfoAccount(Message& m){
-   setName(m.getParams().at(0));
+   setUsername(m.getParams().at(0));
    setImage(m.getParams().at(2));
    QList<QString> tmp;
    for(int i=3;i<m.getParams().size();i++){
