@@ -6,14 +6,9 @@ Client::Client()
     sockm=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 
 
-
-
-
-
-
-    connect(&lw,&LoginWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
-    connect(sockm,&socketManager::receivedLogin,&lw,&LoginWindow::receivedLogin);
-    connect(sockm,&socketManager::receivedInfoAccount,mw,&MainWindow::receivedInfoAccount);
+    connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::binaryMessageToServer);
+    connect(sockm, &socketManager::receivedLogin, &lw, &LoginWindow::receivedLogin);
+    connect(sockm, &socketManager::receivedInfoAccount, mw, &MainWindow::receivedInfoAccount);
 
      lw.exec();
      mw = new MainWindow();

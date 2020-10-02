@@ -4,14 +4,13 @@ Server::Server(QObject *parent) : QObject(parent)
 {
     std::unique_ptr<SocketManager> socketMan(new SocketManager);
     this->socketMan = std::move(socketMan);
-//    this->socketMan = new SocketManager();
+
     std::unique_ptr<DatabaseManager> dbMan(new DatabaseManager);
     this->dbMan = std::move(dbMan);
-//    this->dbMan = new DatabaseManager();
+
     std::unique_ptr<DocumentManager> fileMan(new DocumentManager);
     this->docMan = std::move(fileMan);
 
-//    this->acMan = new AccountManager();
     std::unique_ptr<AccountManager> acMan(new AccountManager);
     this->acMan = std::move(acMan);
 
@@ -19,15 +18,16 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-//    QString name = "angelo";
-//    QString pass = "ciao";
+//    QString name = "test";
+//    QString pass = "test";
 
 //    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
 //    QByteArray image = img.readAll();
 
 //    Account account(name, 0, image);
-////    account.setUsername(name);
-////    account.setSiteId(0);
+////    Account account(name, 0, image);
+//////    account.setUsername(name);
+//////    account.setSiteId(0);
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
 //        qDebug() << "inserted?" ;
 
