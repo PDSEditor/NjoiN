@@ -9,7 +9,7 @@
 #include "socketManager.h"
 #include "databaseManager.h"
 #include "accountManager.h"
-#include "filemanager.h"
+#include "documentManager.h"
 #include "account.h"
 #include "message.h"
 
@@ -25,10 +25,8 @@ private:
     //std::map<std::string, std::vector<Symbol>> documents;     in questo caso il file andrebbe aggiornato anche lato server (ottimizzazione futura = OF)
     //std::map<int, Account> onlineAccounts;
     std::unique_ptr<SocketManager> socketMan;
-//    SocketManager *socketMan;
     std::unique_ptr<DatabaseManager> dbMan;
-//    DatabaseManager *dbMan;
-    std::unique_ptr<FileManager> fileMan;
+    std::unique_ptr<DocumentManager> docMan;
     std::unique_ptr<AccountManager> acMan;
 
     int remoteInsert(Symbol symbol);

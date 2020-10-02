@@ -36,7 +36,13 @@ void SocketManager::messageToUser( Message &m, int siteId) {
             qDebug()<<"Invio site id al client n "<< siteId;
         }
         QWebSocket *user = it.value();
-        binaryMessageToUser(m, siteId);
+        if(m.getAction()=='I' || m.getAction()=='D') {
+            binaryMessageToUser(m, siteId);
+        }
+        else {
+            user->sendTextMessage(m.toJson().toJson(QJsonDocument::Compact));
+        }
+
     }
 }
 
@@ -82,14 +88,18 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         bytemex.append(tmpc.cell());
         bytemex.append(tmpc.row());
 
-        bytemex.append(m.getBold());
-        bytemex.append(m.getUnderln());
-        bytemex.append(m.getItalic());
-        tmp=m.getSize();
+        bytemex.append(symbol.getBold());
+        bytemex.append(symbol.getUnderln());
+        bytemex.append(symbol.getItalic());
+        tmp=symbol.getSize();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(m.getFamily());
+        tmp=m.getSender();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(symbol.getFamily());
 
     }
     else if(action==('C')||action==('R')){
@@ -99,11 +109,19 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         else{
             bytemex.append('R');
         }
+        tmp=siteId;
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
         bytemex.append(params.at(0));
 
     }
     else if(action=='L'){
         bytemex.append('L');
+        tmp=siteId;
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
         tmp=params.at(0).length();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
@@ -117,6 +135,10 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
     }
     else if (action == 'S') {
         bytemex.append('S');
+        tmp=siteId;
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
         tmp=params.at(0).length();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
@@ -141,11 +163,14 @@ void SocketManager::fileToUser(std::vector<Symbol> file, int user)
 
 void SocketManager::processTextMessage(QString message)
 {
-    //deserialize JSON
+
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
+
     qDebug()<<message;
-//    Message *m = new Message();         //crea il messaggio
-    Message m;
+
+    //deserialize JSON
+    Message m = Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
+
     emit newMessage(m);
 
 }
@@ -172,120 +197,10 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
      *      stampa semplicemente output
      */
 
-    //enum Actions { I, D, R, C, L, T};
-
-    /*
-    QString dataStr = QString::fromStdString(data.toStdString());
-
-    QChar action = dataStr[0];
-
-    ushort act = action.unicode();
-
-    Message *m = new Message(action);
-
-    switch(act){
-    case (73| 68):
-    {
-        //Prima costruisco il vettore posizione
-        std::vector<int> posizione;
-        int n;
-        int i =1;
-        if (dataStr[i].unicode() == '[') {
-            i++;
-            while(dataStr[i].unicode() != ']') {
-                if (dataStr[i].unicode() == ',') {
-                    posizione.push_back(n);
-                    n=0;
-                }
-                else {
-                    n = (n*10) + dataStr[i].unicode()-48;
-                }
-                i++;
-            }
-        }
-        else {
-            sendError ("Errore di formattazione nel messaggio");
-        }
-
-        i +=2 ; //sono passato dalla parentesi quadra all'elemento dopo il "-"
-        //prendo il siteId
-        int siteId=0;
-        while (dataStr[i].unicode() != '-') {
-            siteId = siteId*10 + dataStr[i].unicode()-48;
-            i++;
-        }
-        i++;
-        //prendo il counter
-        int counter = 0;
-        auto it = dataStr.begin() + i;
-        while (it != dataStr.end()){
-            counter = counter *10 + it->unicode()-48;
-        }
-
-        Symbol *symbol = new Symbol(posizione, siteId, counter);
-
-        m->setSymbol(symbol);
-
-        break;
-    }
-
-    case (82|67) :
-    {
-        QString nomeFile;
-        int lungNome = dataStr[1].unicode()-48;
-        for (int i = 2; i < lungNome+2; i++) {
-            QChar l = dataStr[i];
-            nomeFile.push_back(l);
-        }
-
-
-        QVector<QString> params;
-        params.push_back(nomeFile);
-        m->setParams(params);
-        break;
-    }
-
-    case (76) :
-    {
-        QString user;
-        int lungUser = dataStr[1].unicode()-48;
-        for (int i = 2; i < lungUser+2; i++) {
-            QChar l = dataStr[i];
-            user.push_back(l);
-        }
-
-        QString pw;
-        int lungPw = dataStr[lungUser+2].unicode()-48;
-        for (int i = 2; i < lungPw+2; i++) {
-            QChar l = dataStr[i];
-            pw.push_back(l);
-        }
-
-
-        QVector<QString> params;
-        params.push_back(user);
-        params.push_back(pw);
-        m->setParams(params);
-        break;
-    }
-
-    case (84): {
-        qDebug()<<dataStr;
-        break;
-    }
-
-    default:
-        sendError("Generic Error");
-    }
-
-
-
-    emit newMessage(m);
-    */
     bool it,un,bo;
     QString family;
     QByteArray c;
-    int tmp,d;
+    int tmp,d,sender;
     QChar tmpc;
     QChar action;
     Symbol symbol;
@@ -330,6 +245,11 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
         memcpy(&tmp,c,4);
         d=tmp;
         i+=4;
+        c.clear();
+        c.append(bytemex.mid(i,4));
+        memcpy(&tmp,c,4);
+        sender=tmp;
+        i+=4;
         family=bytemex.right(bytemex.length()-i);
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
@@ -337,16 +257,24 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             action='C';
         else
             action='R';
-        params.push_back(bytemex.right(bytemex.length()-1));
+        c.clear();
+        c.append(bytemex.mid(1,4));
+        memcpy(&tmp,c,4);
+        sender=tmp;
+        params.push_back(bytemex.right(bytemex.length()-5));
     }
     else if(bytemex.at(0)=='L'){
         action='L';
         c.clear();
         c.append(bytemex.mid(1,4));
         memcpy(&tmp,c,4);
-        params.push_back(bytemex.mid(5,tmp));
+        sender=tmp;
         c.clear();
-        c.append(bytemex.mid(tmp+5,4));
+        c.append(bytemex.mid(5,4));
+        memcpy(&tmp,c,4);
+        params.push_back(bytemex.mid(9,tmp));
+        c.clear();
+        c.append(bytemex.mid(tmp+9,4));
         memcpy(&tmp,c,4);
         params.push_back(bytemex.right(tmp));
     }
@@ -354,16 +282,18 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     Message m;
     m.setAction(action);
     m.setParams(params);
+    symbol.setBold(bo);
+    symbol.setSize(d);
+    symbol.setItalic(it);
+    symbol.setUnderln(un);
+    symbol.setFamily(family);
     m.setSymbol(symbol);
-    m.setBold(bo);
-    m.setSize(d);
-    m.setItalic(it);
-    m.setUnderln(un);
-    m.setFamily(family);
+
 
     m.debugPrint();
     //
-    this->binaryMessageToUser(m,0);
+//    this->binaryMessageToUser(m,0);
+
     emit newMessage(m);
 
 }

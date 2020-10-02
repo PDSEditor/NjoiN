@@ -8,8 +8,8 @@ Server::Server(QObject *parent) : QObject(parent)
     std::unique_ptr<DatabaseManager> dbMan(new DatabaseManager);
     this->dbMan = std::move(dbMan);
 //    this->dbMan = new DatabaseManager();
-    std::unique_ptr<FileManager> fileMan(new FileManager);
-    this->fileMan = std::move(fileMan);
+    std::unique_ptr<DocumentManager> fileMan(new DocumentManager);
+    this->docMan = std::move(fileMan);
 
 //    this->acMan = new AccountManager();
     std::unique_ptr<AccountManager> acMan(new AccountManager);
@@ -43,19 +43,10 @@ Server::Server(QObject *parent) : QObject(parent)
 
     /*****************************/
 
-    QObject::connect(this->socketMan.get(),
-                     &SocketManager::newMessage,
-                     this,
-                     &Server::processMessage
-                     );
+    QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage );
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
-    QObject::connect(this->socketMan.get(),
-                     &SocketManager::newAccountOnline,
-                     this->acMan.get(),
-                     &AccountManager::updateOnlineAccounts
-                     );
-//                     &AccountManager::updateOnlineAccounts
-//                     );
+    QObject::connect(this->socketMan.get(), &SocketManager::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
+
 
     //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
 
@@ -89,11 +80,13 @@ void Server::processMessage( Message mes) {
      * RETRIEVE file-> R
      * CREATE file -> C
      * CLOSE file -> X
+     * Collaborate by URI -> U
+     * REGISTER user (Sign up)  -> S
+     * LOG-IN -> L
     */
 
     QChar action = mes.getAction();
     char first =  action.toLatin1();
-
     QString nomeFile;
     int siteId;
     if (first == 'R'){
@@ -103,16 +96,23 @@ void Server::processMessage( Message mes) {
         nomeFile.right(index);*/
     }
 
-//    QList<Symbol> document;
-//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
-//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
+    QList<Symbol> document;
+    QString uri;
+    QString documentId;
+    SharedDocument doc;
+    Account acc;
+    Message m;
+    QVector<QString> params;
+    QString username;
+
     switch (first){
     case 'I':
 //        mes.setParams(prova);
-//        dbMan->createDocument(sharedDocument);
+//        dbMan->insertDocument(sharedDocument); //attenzione se già presente eccezionare
 //        dbMan->insertSymbol(mes);
 //        dbMan->deleteSymbol(mes);
-//        document = dbMan->retrieveSymbolsOfDocument(prova.first()); //di test
+//        sharedDocument = dbMan->getDocument(QString::fromStdString("documento1_0"));
+//        document = dbMan->retrieveSymbolsOfDocument(sharedDocument.getUri()); //di test
 //        for(auto i : document){
 //            qDebug() << i.getValue();
 //        }
@@ -127,30 +127,88 @@ void Server::processMessage( Message mes) {
 //        remoteDelete(mes.getSymbol());
         break;
     case 'R' :
-        //dbMan->retrieveFile(nomeFile);
 
         //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
-        siteId = mes.getParams()[1].toInt();
+
         nomeFile = mes.getParams()[0];
-        acMan->checkUserPerFile(siteId, nomeFile);
-//        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
+        username = mes.getParams()[1];
+
+        docMan->checkPermission(username, nomeFile);
+        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
         //Restituisci il file
+
         break;
 
     case 'C' :
         nomeFile = mes.getParams()[0];
         //controllo db se esiste un file con lo stesso nome
 
-        siteId = mes.getParams()[1].toInt();
-        //creo file e lo salvo nel db con creatore = siteId
+         username = mes.getParams()[1];
+        //creo file e lo salvo nel db con creatore = username
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
-        acMan->checkUserPerFile(siteId, nomeFile);
         break;
 
     case 'X' :
         //gestire chiusura del file
+        //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
+        username = mes.getParams()[0];
+        documentId = mes.getParams()[1];
+        if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
+            this->docMan->saveToServer(documentId);
+        }
+
+        break;
+
+    case 'U' :
+        // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
+        //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
+        // nella pagina di scelta
+
+        uri = mes.getParams()[0];
+        documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+
+
+        try {
+            doc = this->dbMan->getDocument(documentId);
+            int siteId = mes.getSender();
+            auto account = this->acMan->getOnlineAccounts().find(siteId).value();
+            account.get()->getDocumentUris().push_back(uri);
+
+            this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
+
+
+        }
+        catch(...) {
+            qDebug() << "Documento non esistente";
+        }
+
+        break;
+
+    case 'S' :
+        //Signup
+
+        break;
+
+    case 'L' :
+        //Login
+        m.setAction('L');
+
+        if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
+            acc = dbMan->getAccount(mes.getParams()[0]);
+            params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+            params.append(acc.getDocumentUris().toVector());
+            m.setParams(params);
+            m.setError(false);
+
+        }
+        else {
+            m.setError(true);
+        }
+
+        socketMan->messageToUser(m, mes.getSender());
+
         break;
 
     default:

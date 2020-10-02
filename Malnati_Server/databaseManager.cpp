@@ -14,25 +14,6 @@ DatabaseManager::DatabaseManager()
     this->db =          mongocxx::database(this->client["mydb"]);
 }
 
-/*    mongocxx::collection countersCollection = db["counter"];
-
-    auto elementBuilder = bsoncxx::builder::stream::document{};
-           QString nameDocument="Federico";
-           bsoncxx::document::value elemToInsert =
-               elementBuilder << "_id"                 << nameDocument.toUtf8().constData()
-                              << "sequentialCounter"   << 1
-                              << bsoncxx::builder::stream::finalize;
-           bsoncxx::document::view elemToInsertView = elemToInsert.view();
-
-           try {
-               countersCollection.insert_one(elemToInsertView);
-           } catch (mongocxx::operation_exception e) {
-               qDebug() << "[ERROR][DatabaseManager::insertNewElemInCounterCollection] insert_one error, connection to db failed. Server should shutdown.";
-               throw;
-           }
-}*/
-
-/** FORSE IMAGE SI PUÒ TOGLIERE COME PARAMETRO PERCHÉ GIÀ DENTRO ACCOUNT! **/
 bool DatabaseManager::registerAccount(Account account, QString password, QByteArray &image){
 
     auto userCollection = (this->db)["user"];
@@ -47,7 +28,6 @@ bool DatabaseManager::registerAccount(Account account, QString password, QByteAr
                                  };
 
     auto userToInsert = builder
-//            << "_id" << account.getUsername().toUtf8().constData()
             << "_id" << account.getUsername().toUtf8().constData()
             << "password" << hashpsw.toUtf8().toStdString()
             << "siteId" << account.getSiteId()
@@ -59,6 +39,8 @@ bool DatabaseManager::registerAccount(Account account, QString password, QByteAr
     try {
         userCollection.insert_one(view);
     } catch (mongocxx::bulk_write_exception& e) {
+        qDebug() << e.what();
+        qDebug() << "maybe duplicated?";
         return false;
     }
 
@@ -78,12 +60,20 @@ Account DatabaseManager::getAccount(QString username){
         result = userCollection.find_one(accountToRetrieve.view());
     }catch (mongocxx::query_exception &e){
         qDebug() << "[ERROR][DatabaseManager::getAccount] find_one error, connection to db failed. Server should shutdown.";
+        qDebug() << e.what();
         throw;
     }
 
+    QList<QString> documentUris;
+    QString string = QString::fromStdString(bsoncxx::to_json(result->view()));
+    QJsonDocument documentJ = QJsonDocument::fromJson(string.toUtf8());
+
+    for (auto i : documentJ["documentUris"].toArray()){
+        documentUris.push_back(i.toString());
+    }
     QString accountString = QString::fromStdString(bsoncxx::to_json(result->view()));
     QJsonDocument document = QJsonDocument::fromJson(accountString.toUtf8());
-    Account account(document["_id"].toString(), document["siteId"].toInt(), document["image"].toString().toLatin1());
+    Account account(document["_id"].toString(), document["siteId"].toInt(), document["image"].toString().toLatin1(), documentUris);
     return account;
 }
 
@@ -95,6 +85,7 @@ bool DatabaseManager::deleteAccount(QString _id){
                     << "_id" << _id.toStdString()
                     << bsoncxx::builder::stream::finalize);
     } catch (mongocxx::bulk_write_exception& e) {
+        qDebug() << e.what();
         return false;
     }
 
@@ -159,6 +150,11 @@ bool DatabaseManager::changePassword(QString _id, QString old_password, QString 
     } catch (const mongocxx::bulk_write_exception &e) {
         qDebug() << "Error changing password, throws: ";
         qDebug() << e.what();
+        return false;
+    } catch (const mongocxx::logic_error &e) {
+        qDebug() << "Error changing password, throws: ";
+        qDebug() << e.what();
+        return false;
     }
     return true;
 }
@@ -191,7 +187,13 @@ bool DatabaseManager::changeImage(QString _id, QByteArray &image){
     } catch (const mongocxx::bulk_write_exception &e) {
         qDebug() << "Error changing image, throws: ";
         qDebug() << e.what();
+        return false;
+    } catch (const mongocxx::logic_error &e) {
+        qDebug() << "Error changing image, throws: ";
+        qDebug() << e.what();
+        return false;
     }
+
     return true;
 }
 
@@ -254,55 +256,78 @@ bool DatabaseManager::deleteSymbol(Message mes)
     return true;
 }
 
-bool DatabaseManager::createDocument(SharedDocument document)
+bool DatabaseManager::insertDocument(SharedDocument document)
 {
     mongocxx::collection documentCollection = (this->db)["document"];
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     auto builder = bsoncxx::builder::stream::document{};
     auto array_builder = bsoncxx::builder::basic::array{};
 
-    for (int i : document.getUserAllowed()){
-        array_builder.append(i);
+    for (QString i : document.getUserAllowed()){
+        array_builder.append(i.toUtf8().constData());
     }
 
     bsoncxx::document::value documentToInsert = builder
-            << "_id" << (document.getName() + '_' + QString::number(document.getCreator())).toUtf8().constData()
+            << "_id" << (document.getName() + '_' + document.getCreator()).toUtf8().constData()
             << "documentName" << document.getName().toUtf8().constData()
-            << "creator" << document.getCreator()
-            << "isOpen" << document.getOpen()
+            << "creator" << document.getCreator().toUtf8().constData()
+//            << "isOpen" << document.getOpen() //da salvare nel db? NO
             << "userAllowed" << array_builder
             << bsoncxx::builder::stream::finalize;
-
     bsoncxx::document::view view = documentToInsert.view();
+
     try {
         documentCollection.insert_one(view);
     } catch (mongocxx::bulk_write_exception& e) {
-        qDebug() << "[ERROR][DatabaseManager::insertDocument] insert_one error, connection to db failed. Server should shutdown.";
+        qDebug() << "[ERROR][DatabaseManager::insertDocument] insert_one error, maybe duplicated?";
         return false;
     }
     return true;
 }
 
-QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentName)
+SharedDocument DatabaseManager::getDocument(QString documentId){
+    mongocxx::collection documents = this->db["document"];
+    auto documentToRetrieve =
+            bsoncxx::builder::stream::document{}
+            << "_id" << documentId.toUtf8().constData()
+            << bsoncxx::builder::stream::finalize;
+    bsoncxx::stdx::optional<bsoncxx::document::value> result;
+    try {
+        result = documents.find_one(documentToRetrieve.view());
+    } catch (mongocxx::query_exception &e) {
+        qDebug() << e.what();
+        throw;
+    }
+
+    if(result){
+        QString string = QString::fromStdString(bsoncxx::to_json(result->view()));
+        QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
+        QList<QString> userAllowed;
+        for (auto i : document["userAllowed"].toArray()){
+            userAllowed.push_back(i.toString());
+        }
+        SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
+        return shared;
+    }
+    else throw;
+}
+
+QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
 {
     QList<Symbol> orderedSymbols;
     mongocxx::collection symbols = (this->db)["symbol"];
 
     auto elementBuilder = bsoncxx::builder::stream::document{};
     bsoncxx::document::value symbolsToRetrieve =
-        elementBuilder << "documentName" << documentName.toUtf8().constData()
+        elementBuilder << "document_id" << documentId.toUtf8().constData()
                        << bsoncxx::builder::stream::finalize;
     bsoncxx::document::view symbolsToRetrieveView = symbolsToRetrieve.view();
 
-    // notice that the only instruction that should be included in try-catch
-    // is insertCollection.find, but we do in this way because of scope problems.
-    // Despite everything, we are sure that this is the only method that can raise
-    // the below type of exception in catch().
     try{
         mongocxx::cursor resultIterator = symbols.find(symbolsToRetrieveView);
-        //(.1)Save them in local before ordering
         for (auto elem : resultIterator) {
-            QString symbol = QString::fromStdString(bsoncxx::to_json(elem));
+            QString symbol = QString::fromStdString(
+                        bsoncxx::to_json(elem));
             QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());
             QJsonObject symbolObjJson = stringDocJSON.object();
             Symbol symbolToInsert = Symbol::fromJson(symbolObjJson);
@@ -322,7 +347,31 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentName)
        return orderedSymbols;
 }
 
+bool DatabaseManager::addAccountToDocument(QString documentId, QString username){
+    mongocxx::collection documentCollection = this->db["document"];
 
+    bsoncxx::document::value document =
+            bsoncxx::builder::stream::document{}
+            << "_id" << documentId.toUtf8().constData()
+            << bsoncxx::builder::stream::finalize;
+
+    bsoncxx::document::value newDocument =
+            bsoncxx::builder::stream::document{}
+            << "userAllowed"
+            << bsoncxx::builder::stream::open_array << username.toUtf8().constData()
+            << bsoncxx::builder::stream::close_array
+            << bsoncxx::builder::stream::finalize;
+    try {
+        documentCollection.update_one(document.view(), newDocument.view());
+        return true;
+    } catch (mongocxx::bulk_write_exception &e) {
+        qDebug() << e.what();
+        return false;
+    } catch (mongocxx::logic_error &e){
+        qDebug() << e.what();
+        return false;
+    }
+}
 
 DatabaseManager::~DatabaseManager(){
     this->db.~database();

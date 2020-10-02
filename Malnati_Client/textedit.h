@@ -85,6 +85,11 @@ private:
     std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
     int contcolor=0;
 
+    //local format
+    bool localb,locall,localu;
+    QString localFamily;
+    qreal localsize;
+
     QAction *actionSave;
     QAction *actionTextBold;
     QAction *actionTextUnderline;

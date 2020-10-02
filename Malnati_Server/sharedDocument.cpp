@@ -1,17 +1,13 @@
 #include "sharedDocument.h"
 
-SharedDocument::SharedDocument()
+QString SharedDocument::getUri() const
 {
-
+    return uri;
 }
 
-SharedDocument::SharedDocument(QString name, int creator)
+void SharedDocument::setUri(const QString &value)
 {
-    this->creator = creator;
-    this->userAllowed = QList<int>() << creator;
-    this->open = false;
-    this->name = name;
-    this->symbols = QList<Symbol>();
+    uri = value;
 }
 
 QString SharedDocument::getName() const
@@ -24,19 +20,24 @@ void SharedDocument::setName(const QString &value)
     name = value;
 }
 
-QList<int> SharedDocument::getUserAllowed() const
+QList<QString> SharedDocument::getUserAllowed() const
 {
     return userAllowed;
 }
 
-void SharedDocument::setUserAllowed(const QList<int> &value)
+void SharedDocument::setUserAllowed(const QList<QString> &value)
 {
     userAllowed = value;
 }
 
-int SharedDocument::getCreator() const
+QString SharedDocument::getCreator() const
 {
     return creator;
+}
+
+void SharedDocument::setCreator(const QString &value)
+{
+    creator = value;
 }
 
 bool SharedDocument::getOpen() const
@@ -46,7 +47,6 @@ bool SharedDocument::getOpen() const
 
 void SharedDocument::setOpen(bool value)
 {
-    // todo: una volta chiuso, bisogna salvarlo sul disco!
     open = value;
 }
 
@@ -58,6 +58,25 @@ QList<Symbol> SharedDocument::getSymbols() const
 void SharedDocument::setSymbols(const QList<Symbol> &value)
 {
     symbols = value;
+}
+
+SharedDocument::SharedDocument()
+{
+    
+}
+
+SharedDocument::SharedDocument(QString name, QString creator)
+{
+    this->creator = creator;
+    this->userAllowed = QList<QString>() << creator;
+    this->open = false;
+    this->name = name;
+    this->symbols = QList<Symbol>();
+}
+
+SharedDocument::SharedDocument(QString name, QString creator, bool open, QList<QString> &userAllowed): name(name), creator(creator), open(open), userAllowed(userAllowed)
+{
+    this->uri = name + '_' + creator;
 }
 
 

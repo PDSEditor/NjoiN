@@ -11,11 +11,10 @@
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 #include <mongocxx/instance.hpp>
-
 #include <mongocxx/exception/query_exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
 #include <mongocxx/exception/bulk_write_exception.hpp>
-
+#include <mongocxx/exception/logic_error.hpp>
 #include <memory>
 #include <functional>
 
@@ -33,7 +32,7 @@ private:
     
 public:
     DatabaseManager();
-    /*** USER ****/
+    /*** ACCOUNT ****/
     bool registerAccount(Account account, QString password, QByteArray &image);
     bool deleteAccount  (QString _id);
     bool checkAccountPsw(QString _id, QString password);
@@ -48,14 +47,21 @@ public:
     /************/
 
     /** DOCUMENT **/
-    bool createDocument(SharedDocument document);
-    SharedDocument getDocument(QString documentName); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
-    QList<Symbol> retrieveSymbolsOfDocument(QString documentName);
+    bool insertDocument(SharedDocument document);
+    SharedDocument getDocument(QString documentId); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
+    QList<Symbol> retrieveSymbolsOfDocument(QString documentId);
     QList<SharedDocument> getAllDocuments(); //todo: da fare
-    
-//    bool deleteDocument(SharedDocument document);
+    bool deleteDocument(QString documentId); //da fare
+    QList<Account> getAccounts(QString documentName); //da fare
+    QString getUri(QString documentName); //da fare
     /***********/
 
+    /** URI **/
+    bool addAccountToDocument(QString documentId, QString username);
+
+    /*********/
+    DatabaseManager(const DatabaseManager& other) = delete;
+    DatabaseManager(const DatabaseManager&& other) = delete;
     ~DatabaseManager();
 };
 
