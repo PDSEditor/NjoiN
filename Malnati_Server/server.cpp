@@ -229,6 +229,7 @@ void Server::processMessage( Message mesIn) {
         }
         else {
             mesOut.setError(true);
+            qDebug() << "autenticazione fallita";
         }
 
         socketMan->messageToUser(mesOut, mesOut.getSender());

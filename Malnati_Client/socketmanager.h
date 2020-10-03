@@ -42,7 +42,7 @@ private:
     QWebSocket webSocket;
     QUrl url;
     int i=100;
-    int siteId;
+    //int siteId;
 };
 
 #endif // SOCKETMANAGER_H
