@@ -22,6 +22,17 @@
 #include "account.h"
 #include "sharedDocument.h"
 
+/** PRIMO UTILIZZO **************************************************************************
+ *
+ * eseguire solo una volta:
+ * echo "alias mongostart='sudo systemctl start mongod.service'" >> /home/mongovm/.bashrc
+ * source /home/mongovm/.bashrc
+ *
+ * da ora in poi il db si può fare partire digitando semplicemente
+ * mongostart da terminale e fornendo la pswd di root
+ * ******************************************************************************************/
+
+
 class DatabaseManager
 {
 private:
