@@ -188,9 +188,9 @@ void Server::processMessage( Message mes) {
 
     case 'L' :
         //Login
-        //if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
-          //  acc = dbMan->getAccount(mes.getParams()[0]);
-        //}
+        if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
+            acc = dbMan->getAccount(mes.getParams()[0]);
+        }
         m.setAction('L');
         params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
         params.append(acc.getDocumentUris().toVector());
