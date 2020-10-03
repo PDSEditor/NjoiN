@@ -29,7 +29,8 @@
  * source /home/mongovm/.bashrc
  *
  * da ora in poi il db si può fare partire digitando semplicemente
- * mongostart da terminale e fornendo la pswd di root
+ * 'mongostart' da terminale e fornendo la pswd di root per attivare il db
+ * 'mongo' da terminale per entrare nel db;
  * ******************************************************************************************/
 
 
