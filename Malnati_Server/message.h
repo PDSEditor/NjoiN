@@ -19,8 +19,13 @@ private:
     Symbol symbol;
     QChar action;
     QVector<QString> params;
+    bool error;
 
-
+    QString family;
+    bool bold;
+    bool italic;
+    bool underln;
+    qreal size;
 
 
 
@@ -41,10 +46,21 @@ public:
     QVector<QString> getParams() const;
     void setParams(const QVector<QString> &value);
 
+    QString getFamily();
+    bool getBold();
+    bool getItalic();
+    bool getUnderln();
+    qreal getSize();
+    void setFamily(QString f);
+    void setBold(bool b);
+    void setItalic(bool i);
+    void setUnderln(bool u);
+    void setSize(qreal s);
 
     int getSender() const;
-    void setSender(const int &value);
-
+    void setSender(int value);
+    bool getError() const;
+    void setError(bool value);
 };
 
 #endif // MESSAGE_H

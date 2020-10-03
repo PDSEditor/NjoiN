@@ -40,6 +40,7 @@ void SocketManager::messageToUser( Message &m, int siteId) {
             binaryMessageToUser(m, siteId);
         }
         else {
+
             user->sendTextMessage(m.toJson().toJson(QJsonDocument::Compact));
         }
 
@@ -282,12 +283,14 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     Message m;
     m.setAction(action);
     m.setParams(params);
+
     symbol.setBold(bo);
     symbol.setSize(d);
     symbol.setItalic(it);
     symbol.setUnderln(un);
     symbol.setFamily(family);
     m.setSymbol(symbol);
+    /** necessario settare i decorators? **/
 
 
     m.debugPrint();

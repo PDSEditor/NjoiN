@@ -9,7 +9,7 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     webSocket.open(QUrl(url));
     //qDebug()<<webSocket.isValid();
 
-    siteId = 0;
+
 }
 
 socketManager::~socketManager()
@@ -21,6 +21,8 @@ void socketManager::messageToServer(Message *m)
 {
     //QString tmp = m->getAction();
     //webSocket.sendTextMessage(tmp);
+
+    webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 
     //qDebug()<<"Testo inviato: sia m diu ";
 }
@@ -87,7 +89,7 @@ void socketManager::binaryMessageToServer(Message *m)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        tmp=siteId;
+        tmp=m->getSender();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
@@ -103,17 +105,25 @@ void socketManager::binaryMessageToServer(Message *m)
         else{
             bytemex.append('R');
         }
-        tmp=siteId;
+        tmp=m->getSender();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        tmp=params.at(0).length();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
         bytemex.append(params.at(0));
-
+        tmp=params.at(1).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(1));
     }
     else if(action=='L'){
         QVector<QString> params = m->getParams();
         bytemex.append('L');
-        tmp=siteId;
+        tmp=m->getSender();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
@@ -131,8 +141,6 @@ void socketManager::binaryMessageToServer(Message *m)
 
     //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     webSocket.sendBinaryMessage( bytemex);
-    int i;
-    i=0;
 }
 
 void socketManager::onConnected()
@@ -176,22 +184,27 @@ void socketManager::onConnected()
 
 void socketManager::onTextMessageReceived(QString message)
 {
-Message m=Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
-switch (m.getAction().toLatin1()) {
+    Message m=Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
 
-case 'L':
-    if(m.getError()){
-        QString s="errore";
-        emit(receivedLogin(s));
+    switch (m.getAction().toLatin1()) {
+    case 'L':
+        if(m.getError()){
+            QString s="errore";
+            emit(receivedLogin(s));
+        }
+        else{
+            QString s="accesso";
+            emit(receivedLogin(s));
+            emit(receivedInfoAccount(m));
+        }
+        break;
+    case 'S':
+        break;
+//        emit(setSiteId);
+    default:
+        qDebug() << "default";
+        break;
     }
-    else{
-        QString s="accesso";
-        emit(receivedLogin(s));
-        emit(receivedInfoAccount(m));
-    }
-
-
-}
 }
 
 //Received binary message from server and emit a signal

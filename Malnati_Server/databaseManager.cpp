@@ -73,7 +73,8 @@ Account DatabaseManager::getAccount(QString username){
     }
     QString accountString = QString::fromStdString(bsoncxx::to_json(result->view()));
     QJsonDocument document = QJsonDocument::fromJson(accountString.toUtf8());
-    Account account(document["_id"].toString(), document["siteId"].toInt(), document["image"].toString().toLatin1(), documentUris);
+    auto array = document["image"].toString().toLatin1();
+    Account account(document["_id"].toString(), document["siteId"].toInt(), array, documentUris);
     return account;
 }
 
@@ -108,7 +109,7 @@ bool DatabaseManager::checkAccountPsw(QString _id, QString password){
     try {
         result = userCollection.find_one(userView);
     } catch (mongocxx::query_exception& e) {
-        qDebug() << "[ERROR][DatabaseManager::checkUserPsw] find_one error, connection to db failed. Server should shutdown.";
+        qDebug() << "[ERROR][DatabaseManager::checkAccountPsw] find_one error, connection to db failed";
         return false;
     }
 
@@ -271,7 +272,7 @@ bool DatabaseManager::insertDocument(SharedDocument document)
             << "_id" << (document.getName() + '_' + document.getCreator()).toUtf8().constData()
             << "documentName" << document.getName().toUtf8().constData()
             << "creator" << document.getCreator().toUtf8().constData()
-            << "isOpen" << document.getOpen() //da salvare nel db?
+//            << "isOpen" << document.getOpen() //da salvare nel db? NO
             << "userAllowed" << array_builder
             << bsoncxx::builder::stream::finalize;
     bsoncxx::document::view view = documentToInsert.view();

@@ -33,24 +33,81 @@ void Message::setParams(const QVector<QString> &value)
 }
 
 
+QString Message::getFamily()
+{
+    return family;
+}
 
+bool Message::getBold()
+{
+    return bold;
+}
+
+bool Message::getItalic()
+{
+    return italic;
+}
+
+bool Message::getUnderln()
+{
+    return underln;
+}
+
+qreal Message::getSize()
+{
+    return size;
+}
+
+void Message::setFamily(QString f)
+{
+    family=f;
+}
+
+void Message::setBold(bool b)
+{
+    bold=b;
+}
+
+void Message::setItalic(bool i)
+{
+    italic=i;
+}
+
+void Message::setUnderln(bool u)
+{
+    underln=u;
+}
+
+void Message::setSize(qreal s)
+{
+    size=s;
+}
 
 int Message::getSender() const
 {
     return sender;
 }
 
-
-void Message::setSender(const int &value)
-
+void Message::setSender(int value)
 {
     sender = value;
+}
+
+bool Message::getError() const
+{
+    return error;
+}
+
+void Message::setError(bool value)
+{
+    error = value;
 }
 
 Message::Message()
 {
     Symbol symbol;
     this->symbol=std::move(symbol);
+    this->error = false;
 }
 
 void Message::debugPrint()
@@ -67,6 +124,7 @@ Message Message::fromJson(QJsonDocument json)
     Message m = Message();
     m.setSender(json_obj["sender"].toInt());
     m.setAction(json_obj["action"].toInt());
+    m.setError(json_obj["error"].toBool());
     QVector<QString> vec;
 
     if(json_obj.contains("params") && json_obj["params"].isArray()) {
@@ -86,6 +144,7 @@ QJsonDocument Message::toJson()
     json_obj["sender"] = this->sender;
     //json_obj["symbol"] = this->symbol;    se stiamo inviando il symbol siamo nel caso binario e quindi non usiamo json
     json_obj["action"] = this->action.toLatin1();
+    json_obj["error"] = this->error;
 
     QJsonArray paramsj;
     for(QString param : this->params) {

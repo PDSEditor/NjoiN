@@ -26,10 +26,13 @@ public:
     AccountInterface *getProfilePtr();
     void setImage(QPixmap im);
     QPixmap getImage();
-    void setName(QString name);
-    QString getName();
+    void setUsername(QString username);
+    QString getUsername();
     QList<QString> getList();
     void setList(QList<QString> l);
+    int getSiteId() const;
+    void setSiteId(int value);
+
 public slots:
     void receivedInfoAccount(Message& m);
 signals:
@@ -37,6 +40,7 @@ signals:
     // prova
     void sendImage(QByteArray& image);
     void sendMessage(Message* mex);
+    void sendTextMessage(Message* mex);
 
 
 private slots:
@@ -55,10 +59,13 @@ private:
     TextEdit *te;
     AccountInterface *accountGui = nullptr;
     void newFile();
-    QPixmap image;
-    QString name;
-    QList<QString> documents;
 
+    /** Account **/
+    QPixmap image;
+    QString username;
+    QList<QString> documents;
+    int siteId;
+    /*************/
 
 };
 #endif // MAINWINDOW_H

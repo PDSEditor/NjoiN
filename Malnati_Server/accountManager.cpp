@@ -11,17 +11,36 @@ void AccountManager::setOnlineAccounts(const QMap<int, std::shared_ptr<Account> 
     onlineAccounts = value;
 }
 
+QMap<QString, QList<QString> > AccountManager::getAccountsPerFile() const
+{
+    return accountsPerFile;
+}
+
+void AccountManager::setAccountsPerFile(const QMap<QString, QList<QString> > &value)
+{
+    accountsPerFile = value;
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject(parent)
 {
     
     
 }
 
-void AccountManager::checkUserPerFile(int siteId, QString fileName)
+
+bool AccountManager::closeDocumentByUser(QString username, QString documentId)
 {
-    if(!this->accountsPerFile[fileName].contains(siteId)) {     //primo accesso a un file creato da altri
-        this->accountsPerFile[fileName].append(siteId);
+    if(this->accountsPerFile.contains(documentId)){
+        auto list = this->accountsPerFile[documentId];
+        if(list.contains(username)){
+            list.removeOne(username);
+
+            if(list.count()==0) {
+                //bisogna salvare il documento
+            }
+        }
     }
+
 }
 
 void AccountManager::updateOnlineAccounts(int siteId)

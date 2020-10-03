@@ -4,14 +4,13 @@ Server::Server(QObject *parent) : QObject(parent)
 {
     std::unique_ptr<SocketManager> socketMan(new SocketManager);
     this->socketMan = std::move(socketMan);
-//    this->socketMan = new SocketManager();
+
     std::unique_ptr<DatabaseManager> dbMan(new DatabaseManager);
     this->dbMan = std::move(dbMan);
-//    this->dbMan = new DatabaseManager();
-    std::unique_ptr<FileManager> fileMan(new FileManager);
-    this->fileMan = std::move(fileMan);
 
-//    this->acMan = new AccountManager();
+    std::unique_ptr<DocumentManager> fileMan(new DocumentManager);
+    this->docMan = std::move(fileMan);
+
     std::unique_ptr<AccountManager> acMan(new AccountManager);
     this->acMan = std::move(acMan);
 
@@ -19,15 +18,16 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-//    QString name = "angelo";
-//    QString pass = "ciao";
+//    QString name = "test";
+//    QString pass = "test";
 
 //    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
 //    QByteArray image = img.readAll();
 
 //    Account account(name, 0, image);
-////    account.setUsername(name);
-////    account.setSiteId(0);
+////    Account account(name, 0, image);
+//////    account.setUsername(name);
+//////    account.setSiteId(0);
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
 //        qDebug() << "inserted?" ;
 
@@ -71,7 +71,7 @@ void Server::dispatchMessage(Message &mes) {
     }
 }
 
-void Server::processMessage( Message mes) {
+void Server::processMessage( Message mesIn) {
 
     /* tabella di conversione:
      * Significato -> Lettera nel Messaggio -> int corrispondente
@@ -85,7 +85,7 @@ void Server::processMessage( Message mes) {
      * LOG-IN -> L
     */
 
-    QChar action = mes.getAction();
+    QChar action = mesIn.getAction();
     char first =  action.toLatin1();
     QString nomeFile;
     int siteId;
@@ -97,14 +97,14 @@ void Server::processMessage( Message mes) {
     }
 
     QList<Symbol> document;
-//    SharedDocument sharedDocument = SharedDocument("documento1", mes.getSymbol().getSiteId());
-//    QVector<QString> prova {sharedDocument.getName() + '_' + QString::number((sharedDocument.getCreator()))};
     QString uri;
     QString documentId;
     SharedDocument doc;
     Account acc;
-    Message m;
+    Message mesOut;
     QVector<QString> params;
+    QString username;
+    QList<QString> userAllowed;
 
     switch (first){
     case 'I':
@@ -119,41 +119,68 @@ void Server::processMessage( Message mes) {
 //        }
 
 //        this->dbMan.get()->insertSymbol(mes);
-        this->dispatchMessage(mes);
+        this->dispatchMessage(mesIn);
 //        remoteInsert(mes.getSymbol());
         break;
     case 'D':
 //        this->dbMan.get()->deleteSymbol(mes);
-        this->dispatchMessage(mes);
+        this->dispatchMessage(mesIn);
 //        remoteDelete(mes.getSymbol());
         break;
     case 'R' :
-        //dbMan->retrieveFile(nomeFile);
 
         //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
-        siteId = mes.getParams()[1].toInt();
-        nomeFile = mes.getParams()[0];
-        acMan->checkUserPerFile(siteId, nomeFile);
-//        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
+
+        nomeFile = mesIn.getParams()[0];
+        username = mesIn.getParams()[1];
+
+        docMan->checkPermission(username, nomeFile);
+        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
         //Restituisci il file
+
         break;
 
     case 'C' :
-        nomeFile = mes.getParams()[0];
+    {
+
+        if(mesIn.getParams().size()!=2) {
+            qDebug()<< "NUmero parametri errato nella creazione del file.";
+            break;
+        }
+
+        nomeFile = mesIn.getParams()[0];
         //controllo db se esiste un file con lo stesso nome
 
-        siteId = mes.getSender();
-        //creo file e lo salvo nel db con creatore = siteId
+         username = mesIn.getParams()[1];
+        //creo file e lo salvo nel db con creatore = username
+
+        userAllowed = {username};
+        doc = SharedDocument(nomeFile, username, true, userAllowed);
+
+         if(!this->dbMan->insertDocument(doc)) {
+            qDebug()<< "Errore nella creazione del file.";
+            break;
+        }
+
+        this->docMan->openDocument(doc);
+        auto accPerFile = this->acMan->getAccountsPerFile();
+        accPerFile.insert(doc.getUri(), userAllowed);
+        this->acMan->setAccountsPerFile(accPerFile);
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
-        acMan->checkUserPerFile(siteId, nomeFile);
-        doc.setName(nomeFile);
-        dbMan->insertDocument(doc);
         break;
+    }
 
     case 'X' :
         //gestire chiusura del file
+        //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
+        username = mesIn.getParams()[0];
+        documentId = mesIn.getParams()[1];
+        if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
+            this->docMan->saveToServer(documentId);
+        }
+
         break;
 
     case 'U' :
@@ -161,13 +188,13 @@ void Server::processMessage( Message mes) {
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
 
-        uri = mes.getParams()[0];
+        uri = mesIn.getParams()[0];
         documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
 
 
         try {
             doc = this->dbMan->getDocument(documentId);
-            int siteId = mes.getSender();
+            int siteId = mesIn.getSender();
             auto account = this->acMan->getOnlineAccounts().find(siteId).value();
             account.get()->getDocumentUris().push_back(uri);
 
@@ -188,14 +215,23 @@ void Server::processMessage( Message mes) {
 
     case 'L' :
         //Login
-        if(dbMan->checkAccountPsw(mes.getParams()[0], mes.getParams()[1])){
-            acc = dbMan->getAccount(mes.getParams()[0]);
+
+        mesOut.setAction('L');
+
+        if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
+            acc = dbMan->getAccount(mesIn.getParams()[0]);
+            mesOut.setSender(acc.getSiteId());
+            params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+            params.append(acc.getDocumentUris().toVector());
+            mesOut.setParams(params);
+            mesOut.setError(false);
+
         }
-        m.setAction('L');
-        params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
-        params.append(acc.getDocumentUris().toVector());
-        m.setParams(params);
-        socketMan->messageToUser(m, mes.getSender());
+        else {
+            mesOut.setError(true);
+        }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
 
