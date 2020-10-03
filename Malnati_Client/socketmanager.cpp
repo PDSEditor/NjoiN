@@ -208,12 +208,11 @@ void socketManager::onTextMessageReceived(QString message)
     switch (m.getAction().toLatin1()) {
     case 'L':
         if(m.getError()){
-            QString s="errore";
-            emit(receivedLogin(s));
+            emit(receivedLogin(false));
         }
         else{
-            QString s="accesso";
-            emit(receivedLogin(s));
+
+            emit(receivedLogin(true));
             emit(receivedInfoAccount(m));
         }
         break;

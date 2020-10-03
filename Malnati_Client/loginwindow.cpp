@@ -56,8 +56,9 @@ void LoginWindow::on_pushButton_login_clicked()
 //    }
 }
 
-void LoginWindow::receivedLogin(QString& s){
-    if(s.compare("accesso")){
+void LoginWindow::receivedLogin(bool resp){
+
+    if(resp){
         isLogin=true;
         if(isLogin){                               //sostituire con Islogin==1!!!!!!
             QMessageBox::information(this,"Login","Username e password corretti");
@@ -83,7 +84,8 @@ void LoginWindow::receivedLogin(QString& s){
             isLogin=false;
         }
     }
-    else if(s.compare("errore")){
+    else {
+        QMessageBox::warning(this,"Login","Username e password non sono corretti");
         isLogin=false;
     }
 

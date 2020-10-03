@@ -20,7 +20,7 @@ public:
 
 signals:
     void newMessage(Message *m);
-    void receivedLogin(QString&);
+    void receivedLogin(bool resp);
     void receivedInfoAccount(Message&);
 
 public slots:
