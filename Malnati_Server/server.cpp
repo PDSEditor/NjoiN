@@ -88,7 +88,7 @@ void Server::processMessage( Message mesIn) {
     QChar action = mesIn.getAction();
     char first =  action.toLatin1();
     QString nomeFile;
-    int siteId;
+//    int siteId;
     if (first == 'R'){
         /*QString delimiter = "-";
         int index = action.indexOf(delimiter);

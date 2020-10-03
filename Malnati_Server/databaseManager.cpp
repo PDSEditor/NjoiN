@@ -5,8 +5,6 @@
 
 DatabaseManager::DatabaseManager()
 {
-//    std::unique_ptr<mongocxx::instance> instance(new mongocxx::instance);
-//    this->_instance = std::move(instance);
     this->_instance =   std::make_unique<mongocxx::instance>();
     this->uri =         mongocxx::uri("mongodb://172.17.0.3:27017");
     this->uri =         mongocxx::uri("mongodb://localhost:27017");

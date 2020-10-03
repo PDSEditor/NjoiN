@@ -10,7 +10,7 @@ LoginWindow::LoginWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginWindow)
 {
-    isLogin = 0;
+    isLogin = false;
     ui->setupUi(this);
 }
 
@@ -27,11 +27,11 @@ void LoginWindow::on_pushButton_login_clicked()
     m.setAction('L');
     m.setParams({username,password});
     emit(sendMessage(&m));
-
-    if(username == "test" && password == "test"){//sostituire con Islogin==1!!!!!!
+    //qui bisogna attendere che il server ritorni il siteId
+    if(isLogin){                               //sostituire con Islogin==1!!!!!!
         QMessageBox::information(this,"Login","Username e password corretti");
        // mw = new MainWindow(this);
-        setIsLogin(1);
+        setIsLogin(true);
        // TextEdit te;
       //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
       /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
@@ -49,23 +49,33 @@ void LoginWindow::on_pushButton_login_clicked()
     }
     else{
         QMessageBox::warning(this,"Login","Username e password non sono corretti");
-        isLogin=0;
+        isLogin=false;
     }
 }
 
 void LoginWindow::receivedLogin(QString& s){
     if(s.compare("accesso")){
-        isLogin=1;
+        isLogin=true;
     }
     else if(s.compare("errore")){
-        isLogin=0;
+        isLogin=false;
     }
 
 }
-int LoginWindow::getIsLogin() const{
+bool LoginWindow::getIsLogin() const{
     return isLogin;
 }
 void LoginWindow::setIsLogin(int isLogin){
    this->isLogin = isLogin;
+}
+
+void LoginWindow::on_pushButton_signup_clicked(){
+    qDebug() << "Registrazione";
+    //todo: fare la registrationWindow
+
+
+
+
+
 }
 

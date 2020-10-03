@@ -41,6 +41,7 @@ void socketManager::binaryMessageToServer(Message *m)
     QChar tmpc;
     QByteArray bytemex;
     QChar action = m->getAction();
+    QVector<QString> params;
 
 
 
@@ -138,6 +139,24 @@ void socketManager::binaryMessageToServer(Message *m)
         }
         bytemex.append(params.at(1));
     }
+    else if(action == 'P'){ //signUP
+        params = m->getParams();
+        bytemex.append('P');
+        tmp=m->getSender();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        tmp=params.at(0).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(0));
+        tmp=params.at(1).length();
+        for(int p=0;p<4;p++){
+            bytemex.append(tmp >> (p * 8));
+        }
+        bytemex.append(params.at(1));
+    }
 
     //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     webSocket.sendBinaryMessage( bytemex);
@@ -198,7 +217,7 @@ void socketManager::onTextMessageReceived(QString message)
             emit(receivedInfoAccount(m));
         }
         break;
-    case 'S':
+    case 'S': //per settare il siteId
         break;
 //        emit(setSiteId);
     default:
@@ -291,7 +310,7 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         params.push_back(bytemex.right(tmp));
     }
-    else if(bytemex.at(0)=='S'){
+    else if(bytemex.at(0)=='S'){ //a che cosa corrisponde???
         action='S';
         c.clear();
         c.append(bytemex.mid(1,4));

@@ -22,14 +22,22 @@
   <property name="toolTip">
    <string/>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="centralwidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>411</width>
+     <height>831</height>
+    </rect>
+   </property>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>330</y>
+      <y>300</y>
       <width>271</width>
-      <height>171</height>
+      <height>211</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -85,6 +93,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_signup">
+       <property name="text">
+        <string>Registrati</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -98,7 +113,16 @@
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>3</width>
+     <height>27</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
