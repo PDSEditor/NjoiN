@@ -42,7 +42,7 @@ void socketManager::binaryMessageToServer(Message *m)
     QByteArray bytemex;
     QChar action = m->getAction();
     QVector<QString> params;
-
+    m->setSender(this->siteId);
 
 
 
@@ -211,7 +211,7 @@ void socketManager::onTextMessageReceived(QString message)
             emit(receivedLogin(false));
         }
         else{
-
+            this->siteId = m.getSender();
             emit(receivedLogin(true));
             emit(receivedInfoAccount(m));
         }
