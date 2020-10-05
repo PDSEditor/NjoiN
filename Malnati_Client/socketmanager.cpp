@@ -211,7 +211,7 @@ void socketManager::onTextMessageReceived(QString message)
             emit(receivedLogin(false));
         }
         else{
-
+            this->siteId = m.getSender();
             emit(receivedLogin(true));
             emit(receivedInfoAccount(m));
         }
