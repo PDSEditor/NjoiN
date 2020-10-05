@@ -47,7 +47,7 @@ void socketManager::binaryMessageToServer(Message *m)
 
 
     Symbol symbol = m->getSymbol();
-    symbol.setSiteId(socketManager::siteId);
+  //  symbol.setSiteId(socketManager::siteId);
 
 
 
@@ -208,12 +208,11 @@ void socketManager::onTextMessageReceived(QString message)
     switch (m.getAction().toLatin1()) {
     case 'L':
         if(m.getError()){
-            QString s="errore";
-            emit(receivedLogin(s));
+            emit(receivedLogin(false));
         }
         else{
-            QString s="accesso";
-            emit(receivedLogin(s));
+
+            emit(receivedLogin(true));
             emit(receivedInfoAccount(m));
         }
         break;
@@ -322,9 +321,9 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         params.push_back(bytemex.mid(9,tmp));
 
         emitS = false;
-        socketManager::siteId = params.at(0).toInt();
+        //socketManager::siteId = params.at(0).toInt();
 
-        qDebug() << "siteId received = " <<siteId;
+       // qDebug() << "siteId received = " <<siteId;
     }
 
     if (emitS) {

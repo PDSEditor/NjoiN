@@ -215,6 +215,7 @@ void Server::processMessage( Message mesIn) {
 
     case 'L' :
         //Login
+
         mesOut.setAction('L');
 
         if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
@@ -228,6 +229,7 @@ void Server::processMessage( Message mesIn) {
         }
         else {
             mesOut.setError(true);
+            qDebug() << "autenticazione fallita";
         }
 
         socketMan->messageToUser(mesOut, mesOut.getSender());

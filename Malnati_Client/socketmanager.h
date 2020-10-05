@@ -20,7 +20,7 @@ public:
 
 signals:
     void newMessage(Message *m);
-    void receivedLogin(QString&);
+    void receivedLogin(bool resp);
     void receivedInfoAccount(Message&);
 
 public slots:
@@ -42,7 +42,7 @@ private:
     QWebSocket webSocket;
     QUrl url;
     int i=100;
-    int siteId;
+    //int siteId;
 };
 
 #endif // SOCKETMANAGER_H
