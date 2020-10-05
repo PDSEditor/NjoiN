@@ -266,10 +266,10 @@ bool DatabaseManager::insertDocument(SharedDocument document)
         array_builder.append(i.toUtf8().constData());
     }
 
-    QString id = (document.getName() + '_' + document.getCreator()).toUtf8().constData();
+    QString id = (document.getName() + '_' + document.getCreator());
 
     bsoncxx::document::value documentToInsert = builder
-            << "_id" << id
+            << "_id" << id.toUtf8().constData()
             << "documentName" << document.getName().toUtf8().constData()
             << "creator" << document.getCreator().toUtf8().constData()
 //            << "isOpen" << document.getOpen() //da salvare nel db? NO
@@ -349,14 +349,29 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
         return orderedSymbols;
 }
 
-//QList<SharedDocument> DatabaseManager::getAllMyDocuments(QString username)
-//{
-//    mongocxx::collection documentCollection = this->db["document"];
-//    auto elementBuilder = bsoncxx::builder::stream::document{};
-//    bsoncxx::document::value documentsToRetrieve =
-//            elementBuilder << "userAllowed" << siteId
-//                           << bsoncxx::builder::stream::finalize;
-//}
+QList<SharedDocument> DatabaseManager::getAllMyDocuments(QString username)
+{
+    QList<SharedDocument> documentsToReturn;
+    mongocxx::collection documentCollection = this->db["document"];
+    auto filterBuilder = bsoncxx::builder::stream::document{};
+    filterBuilder << "userAllowed" << username.toUtf8().constData();
+
+    auto cursor = documentCollection.find(filterBuilder.view());
+    for(auto &&doc : cursor){
+        QString string = QString::fromStdString(bsoncxx::to_json(doc));
+        QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
+        QList<QString> userAllowed;
+        for (auto i : document["userAllowed"].toArray()){
+            userAllowed.push_back(i.toString());
+        }
+        SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
+        documentsToReturn.push_back(shared);/*
+
+        auto a = bsoncxx::to_json(doc);
+        documentsToReturn.push_back(SharedDocument::fromJson(bsoncxx::to_json(doc)));*/
+    }
+    return documentsToReturn;
+}
 
 bool DatabaseManager::addAccountToDocument(QString documentId, QString username){
     mongocxx::collection documentCollection = this->db["document"];
@@ -389,13 +404,13 @@ void DatabaseManager::changeDocumentName(QString documentId, QString newName){
 
     bsoncxx::document::value document =
             bsoncxx::builder::stream::document{}
-            << "_id" << documentId
+            << "_id" << documentId.toUtf8().constData()
             << bsoncxx::builder::stream::finalize;
 
     bsoncxx::document::value newDocument =
             bsoncxx::builder::stream::document{}
             << "$set" << bsoncxx::builder::stream::open_document
-            << "documentName" << newName
+            << "documentName" << newName.toUtf8().constData()
             << bsoncxx::builder::stream::close_document
             << bsoncxx::builder::stream::finalize;
 
