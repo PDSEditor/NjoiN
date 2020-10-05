@@ -13,9 +13,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->label->setStyleSheet("QLabel { background-color : green; color : black; }");
-    for(int i=0;i<10;i++){
-        addElementforUser("Documento " + QString::number(i));
-    }
+//    for(int i=0;i<10;i++){
+//        addElementforUser("Documento " + QString::number(i));
+//    }
 //sock=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 }
 
@@ -87,11 +87,12 @@ void MainWindow::setList(QList<QString> l){
 
 void MainWindow::receivedInfoAccount(Message& m){
    setUsername(m.getParams().at(0));
-   setSiteId(m.getParams().at(1).toInt());
+   setSiteId(m.getSender());
    //setImage(m.getParams().at(2));
    QList<QString> tmp;
    for(int i=3;i<m.getParams().size();i++){
        documents.append(m.getParams().at(i));
+       addElementforUser(documents.at(i));
    }
 
 }

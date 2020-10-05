@@ -103,49 +103,49 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         bytemex.append(symbol.getFamily());
 
     }
-    else if(action==('C')||action==('R')){
-        if(action==('C')){
-            bytemex.append('C');
-        }
-        else{
-            bytemex.append('R');
-        }
-        tmp=siteId;
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        bytemex.append(params.at(0));
+//    else if(action==('C')||action==('R')){
+//        if(action==('C')){
+//            bytemex.append('C');
+//        }
+//        else{
+//            bytemex.append('R');
+//        }
+//        tmp=siteId;
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(0));
 
-    }
-    else if(action=='L'){
-        bytemex.append('L');
-        tmp=siteId;
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        tmp=params.at(0).length();
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        bytemex.append(params.at(0));
-        tmp=params.at(1).length();
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        bytemex.append(params.at(1));
-    }
-    else if (action == 'S') {
-        bytemex.append('S');
-        tmp=siteId;
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        tmp=params.at(0).length();
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        bytemex.append(params.at(0));
-    }
+//    }
+//    else if(action=='L'){
+//        bytemex.append('L');
+//        tmp=siteId;
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        tmp=params.at(0).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(0));
+//        tmp=params.at(1).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(1));
+//    }
+//    else if (action == 'S') {
+//        bytemex.append('S');
+//        tmp=siteId;
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        tmp=params.at(0).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(0));
+//    }
 
     //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     //webSocket.sendBinaryMessage( bytemex);
@@ -332,6 +332,7 @@ void SocketManager::onNewConnection()
     m.setAction('S');
     QString s = QString::number(SocketManager::siteId);
     m.setParams({s});
+    m.setSender(SocketManager::siteId);
     messageToUser(m,SocketManager::siteId);
 
     emit newAccountOnline(SocketManager::siteId);
