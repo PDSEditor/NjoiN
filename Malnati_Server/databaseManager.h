@@ -6,6 +6,8 @@
 #include <sstream>
 #include <vector>
 #include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/stdx.hpp>
@@ -17,6 +19,8 @@
 #include <mongocxx/exception/logic_error.hpp>
 #include <memory>
 #include <functional>
+
+#include <bsoncxx/json.hpp>
 
 #include "message.h"
 #include "account.h"
@@ -72,6 +76,7 @@ public:
 
     /** URI **/
     bool addAccountToDocument(QString documentId, QString username);
+    bool addDocumentToAccount(QString documentId, QString username);
 
     /*********/
     DatabaseManager(const DatabaseManager& other) = delete;
