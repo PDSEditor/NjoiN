@@ -13,10 +13,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->label->setStyleSheet("QLabel { background-color : green; color : black; }");
-    for(int i=0;i<10;i++){
-        addElementforUser("Documento " + QString::number(i));
-        //addElementforUser(documents.at(i));
-    }
+//    for(int i=0;i<10;i++){
+//        addElementforUser("Documento " + QString::number(i));
+//    }
 //sock=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 }
 
