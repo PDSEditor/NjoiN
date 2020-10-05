@@ -217,10 +217,9 @@ void Server::processMessage( Message mesIn) {
         //Login
 
         mesOut.setAction('L');
-
+        mesOut.setSender(mesIn.getSender());
         if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
             acc = dbMan->getAccount(mesIn.getParams()[0]);
-            mesOut.setSender(acc.getSiteId());
             params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
             params.append(acc.getDocumentUris().toVector());
             mesOut.setParams(params);
