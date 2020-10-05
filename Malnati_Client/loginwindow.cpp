@@ -27,7 +27,7 @@ void LoginWindow::on_pushButton_login_clicked()
     m.setAction('L');
     m.setParams({username,password});
     //da cancellare assolutamente!!!!
-    m.setSender(0);
+    m.setSender(siteId);
     //
     emit(sendMessage(&m));
     //qui bisogna attendere che il server ritorni il siteId
@@ -59,8 +59,7 @@ void LoginWindow::on_pushButton_login_clicked()
 void LoginWindow::receivedLogin(bool resp){
 
     if(resp){
-        isLogin=true;
-        if(isLogin){                               //sostituire con Islogin==1!!!!!!
+        isLogin=true;                              //sostituire con Islogin==1!!!!!!
             QMessageBox::information(this,"Login","Username e password corretti");
            // mw = new MainWindow(this);
             setIsLogin(true);
@@ -78,16 +77,17 @@ void LoginWindow::receivedLogin(bool resp){
             //te.fileNew();
            // mw->show();
            // hide();
-        }
-        else{
-            QMessageBox::warning(this,"Login","Username e password non sono corretti");
-            isLogin=false;
-        }
     }
     else {
-        QMessageBox::warning(this,"Login","Username e password non sono corretti");
+        QMessageBox::information(this,"Login","Username e password non sono corretti");
+        qDebug() << "errore login";
         isLogin=false;
     }
+
+}
+
+void LoginWindow::receivedSiteId(int siteid){
+    siteId=siteid;
 
 }
 bool LoginWindow::getIsLogin() const{

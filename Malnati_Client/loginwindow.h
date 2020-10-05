@@ -22,6 +22,7 @@ signals:
     void sendMessage(Message* mex);
  public slots:
      void receivedLogin(bool resp);
+     void receivedSiteId(int siteid);
 private slots:
     void on_pushButton_login_clicked();
     void on_pushButton_signup_clicked();
@@ -30,6 +31,7 @@ private:
     Ui::LoginWindow *ui;
     MainWindow *mw;
     bool isLogin;
+    int siteId;
     void setIsLogin(int isLogin);
 };
 

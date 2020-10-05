@@ -22,6 +22,7 @@ signals:
     void newMessage(Message *m);
     void receivedLogin(bool resp);
     void receivedInfoAccount(Message&);
+    void setSiteId(int);
 
 public slots:
     void receiveImage(QByteArray im);
