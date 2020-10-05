@@ -290,6 +290,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     symbol.setUnderln(un);
     symbol.setFamily(family);
     m.setSymbol(symbol);
+    m.setSender(sender);
     /** necessario settare i decorators? **/
 
 
