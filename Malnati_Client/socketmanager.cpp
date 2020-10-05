@@ -42,7 +42,7 @@ void socketManager::binaryMessageToServer(Message *m)
     QByteArray bytemex;
     QChar action = m->getAction();
     QVector<QString> params;
-
+    m->setSender(this->siteId);
 
 
 
