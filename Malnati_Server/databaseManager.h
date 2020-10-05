@@ -63,7 +63,7 @@ public:
     SharedDocument getDocument(QString documentId); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
     QList<Symbol> retrieveSymbolsOfDocument(QString documentId);
     QList<SharedDocument> getAllDocuments(); //todo: da fare
-    QList<SharedDocument> getAllMyDocuments(QString username); //la devo fare ora
+    QList<SharedDocument> getAllMyDocuments(QString username); //to test
     bool deleteDocument(QString documentId); //da fare
     QList<Account> getAccounts(QString documentName); //da fare
     QString getUri(QString documentName); //da fare
