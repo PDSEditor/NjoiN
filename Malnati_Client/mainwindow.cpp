@@ -88,7 +88,7 @@ void MainWindow::setList(QList<QString> l){
 
 void MainWindow::receivedInfoAccount(Message& m){
    setUsername(m.getParams().at(0));
-   setSiteId(m.getParams().at(1).toInt());
+   setSiteId(m.getSender());
    //setImage(m.getParams().at(2));
    QList<QString> tmp;
    for(int i=3;i<m.getParams().size();i++){
