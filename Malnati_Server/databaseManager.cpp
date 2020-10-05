@@ -266,8 +266,10 @@ bool DatabaseManager::insertDocument(SharedDocument document)
         array_builder.append(i.toUtf8().constData());
     }
 
+    QString id = (document.getName() + '_' + document.getCreator()).toUtf8().constData();
+
     bsoncxx::document::value documentToInsert = builder
-            << "_id" << (document.getName() + '_' + document.getCreator()).toUtf8().constData()
+            << "_id" << id
             << "documentName" << document.getName().toUtf8().constData()
             << "creator" << document.getCreator().toUtf8().constData()
 //            << "isOpen" << document.getOpen() //da salvare nel db? NO
@@ -281,6 +283,7 @@ bool DatabaseManager::insertDocument(SharedDocument document)
         qDebug() << "[ERROR][DatabaseManager::insertDocument] insert_one error, maybe duplicated?";
         return false;
     }
+    addAccountToDocument(id, document.getUserAllowed().at(0));
     return true;
 }
 
@@ -343,8 +346,17 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
     //so will be returned a vector in fractionalPosition ascending order
         std::sort(orderedSymbols.begin(), orderedSymbols.end());
 
-       return orderedSymbols;
+        return orderedSymbols;
 }
+
+//QList<SharedDocument> DatabaseManager::getAllMyDocuments(QString username)
+//{
+//    mongocxx::collection documentCollection = this->db["document"];
+//    auto elementBuilder = bsoncxx::builder::stream::document{};
+//    bsoncxx::document::value documentsToRetrieve =
+//            elementBuilder << "userAllowed" << siteId
+//                           << bsoncxx::builder::stream::finalize;
+//}
 
 bool DatabaseManager::addAccountToDocument(QString documentId, QString username){
     mongocxx::collection documentCollection = this->db["document"];
@@ -369,6 +381,32 @@ bool DatabaseManager::addAccountToDocument(QString documentId, QString username)
     } catch (mongocxx::logic_error &e){
         qDebug() << e.what();
         return false;
+    }
+}
+
+void DatabaseManager::changeDocumentName(QString documentId, QString newName){
+    mongocxx::collection documentCollection = this->db["document"];
+
+    bsoncxx::document::value document =
+            bsoncxx::builder::stream::document{}
+            << "_id" << documentId
+            << bsoncxx::builder::stream::finalize;
+
+    bsoncxx::document::value newDocument =
+            bsoncxx::builder::stream::document{}
+            << "$set" << bsoncxx::builder::stream::open_document
+            << "documentName" << newName
+            << bsoncxx::builder::stream::close_document
+            << bsoncxx::builder::stream::finalize;
+
+    try {
+        documentCollection.update_one(document.view(), newDocument.view());
+    } catch (const mongocxx::bulk_write_exception &e) {
+        qDebug() << "Error changing document name in DB";
+        throw;
+    } catch (const mongocxx::logic_error &e){
+        qDebug() << "Logic error changing document name in DB";
+        throw;
     }
 }
 

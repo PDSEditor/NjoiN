@@ -144,7 +144,7 @@ void Server::processMessage( Message mesIn) {
     {
 
         if(mesIn.getParams().size()!=2) {
-            qDebug()<< "NUmero parametri errato nella creazione del file.";
+            qDebug()<< "Numero parametri errato nella creazione del file.";
             break;
         }
 
