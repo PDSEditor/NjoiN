@@ -27,8 +27,9 @@ void socketManager::messageToServer(Message *m)
     //qDebug()<<"Testo inviato: sia m diu ";
 }
 
-void socketManager::receiveImage(QByteArray im){
-    int i=0;
+void socketManager::receiveImage(QByteArray image){
+//    int i=0;
+    image=0;
 }
 
 

@@ -118,7 +118,7 @@ void Server::processMessage(Message &mesIn) {
 //            qDebug() << i.getValue();
 //        }
 
-//        this->dbMan.get()->insertSymbol(mes);
+//        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
         this->dispatchMessage(mesIn);
 //        remoteInsert(mes.getSymbol());
         break;
@@ -198,7 +198,9 @@ void Server::processMessage(Message &mesIn) {
             auto account = this->acMan->getOnlineAccounts().find(siteId).value();
             account.get()->getDocumentUris().push_back(uri);
 
+            /** aggiorniamo entrambe le liste **/
             this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
+            this->dbMan->addDocumentToAccount(documentId, account.get()->getUsername());
 
 
         }
@@ -275,7 +277,7 @@ int Server::remoteInsert(Symbol symbol){
     int min=0;
     int max = this->symbols.size()-1;
     int middle=(max+min)/2 , pos;
-    std::vector<int> index=symbol.getPosition().toStdVector();
+    std::vector<int> index(symbol.getPosition().begin(), symbol.getPosition().end());//=symbol.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     //controllo se è ultimo
@@ -316,7 +318,7 @@ int Server::remoteInsert(Symbol symbol){
 
 int Server::remoteDelete(Symbol s){
     int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index=s.getPosition().toStdVector();
+    std::vector<int> index(s.getPosition().begin(), s.getPosition().end());//=s.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     it=symbols.begin();
