@@ -10,7 +10,7 @@ LoginWindow::LoginWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginWindow)
 {
-    isLogin = 0;
+    isLogin = false;
     ui->setupUi(this);
 }
 
@@ -26,46 +26,84 @@ void LoginWindow::on_pushButton_login_clicked()
     Message m;
     m.setAction('L');
     m.setParams({username,password});
+    //da cancellare assolutamente!!!!
+    m.setSender(siteId);
+    //
     emit(sendMessage(&m));
+    //qui bisogna attendere che il server ritorni il siteId
+//    if(isLogin){                               //sostituire con Islogin==1!!!!!!
+//        QMessageBox::information(this,"Login","Username e password corretti");
+//       // mw = new MainWindow(this);
+//        setIsLogin(true);
+//       // TextEdit te;
+//      //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
+//      /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
+//                (availableGeometryMw.height() - mw->height()) / 2);*/
 
-    if(username == "test" && password == "test"){//sostituire con Islogin==1!!!!!!
-        QMessageBox::information(this,"Login","Username e password corretti");
-       // mw = new MainWindow(this);
-        setIsLogin(1);
-       // TextEdit te;
-      //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
-      /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
-                (availableGeometryMw.height() - mw->height()) / 2);*/
 
+//        this->accept();
 
-        this->accept();
+//        //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
+//       // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
 
-        //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-       // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
-
-        //te.fileNew();
-       // mw->show();
-       // hide();
-    }
-    else{
-        QMessageBox::warning(this,"Login","Username e password non sono corretti");
-        isLogin=0;
-    }
+//        //te.fileNew();
+//       // mw->show();
+//       // hide();
+//    }
+//    else{
+//        QMessageBox::warning(this,"Login","Username e password non sono corretti");
+//        isLogin=false;
+//    }
 }
 
-void LoginWindow::receivedLogin(QString& s){
-    if(s.compare("accesso")){
-        isLogin=1;
+void LoginWindow::receivedLogin(bool resp){
+
+    if(resp){
+        isLogin=true;                              //sostituire con Islogin==1!!!!!!
+            QMessageBox::information(this,"Login","Username e password corretti");
+           // mw = new MainWindow(this);
+            setIsLogin(true);
+           // TextEdit te;
+          //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
+          /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
+                    (availableGeometryMw.height() - mw->height()) / 2);*/
+
+
+            this->accept();
+
+            //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
+           // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
+
+            //te.fileNew();
+           // mw->show();
+           // hide();
     }
-    else if(s.compare("errore")){
-        isLogin=0;
+    else {
+        QMessageBox::information(this,"Login","Username e password non sono corretti");
+        qDebug() << "errore login";
+        isLogin=false;
     }
 
 }
-int LoginWindow::getIsLogin() const{
+
+void LoginWindow::receivedSiteId(int siteid){
+    siteId=siteid;
+
+}
+bool LoginWindow::getIsLogin() const{
     return isLogin;
 }
 void LoginWindow::setIsLogin(int isLogin){
    this->isLogin = isLogin;
+}
+
+void LoginWindow::on_pushButton_signup_clicked(){
+    qDebug() << "Registrazione";
+    //todo: fare la registrationWindow
+
+
+
+
+
 }
 

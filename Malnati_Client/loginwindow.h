@@ -2,6 +2,7 @@
 #define LOGINWINDOW_H
 
 #include <QDialog>
+#include <QObject>
 #include "mainwindow.h"
 
 namespace Ui {
@@ -15,20 +16,23 @@ class LoginWindow : public QDialog
 public:
     explicit LoginWindow(QWidget *parent = nullptr);
     ~LoginWindow();
-    int getIsLogin() const;
+    bool getIsLogin() const;
 
 signals:
     void sendMessage(Message* mex);
  public slots:
-     void receivedLogin(QString& s);
+     void receivedLogin(bool resp);
+     void receivedSiteId(int siteid);
 private slots:
     void on_pushButton_login_clicked();
+    void on_pushButton_signup_clicked();
 
 private:
     Ui::LoginWindow *ui;
     MainWindow *mw;
-     int isLogin;
-     void setIsLogin(int isLogin);
+    bool isLogin;
+    int siteId;
+    void setIsLogin(int isLogin);
 };
 
 #endif // LOGINWINDOW_H

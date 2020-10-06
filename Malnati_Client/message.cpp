@@ -76,6 +76,7 @@ Message Message::fromJson(QJsonDocument json)
         }
     }
     m.setParams(vec);
+    m.setError(json_obj["error"].toBool());
     return m;
 
 }
@@ -92,6 +93,7 @@ QJsonDocument Message::toJson()
         paramsj.append(param);
     }
     json_obj["params"] = paramsj;
+    json_obj["error"] = this->error;
     return QJsonDocument(json_obj);
 }
 

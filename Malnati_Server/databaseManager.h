@@ -6,6 +6,8 @@
 #include <sstream>
 #include <vector>
 #include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/builder/basic/document.hpp>
+#include <bsoncxx/builder/basic/kvp.hpp>
 #include <bsoncxx/json.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/stdx.hpp>
@@ -18,9 +20,24 @@
 #include <memory>
 #include <functional>
 
+#include <bsoncxx/json.hpp>
+
+
 #include "message.h"
 #include "account.h"
 #include "sharedDocument.h"
+
+/** PRIMO UTILIZZO **************************************************************************
+ *
+ * eseguire solo una volta:
+ * echo "alias mongostart='sudo systemctl start mongod.service'" >> /home/mongovm/.bashrc
+ * source /home/mongovm/.bashrc
+ *
+ * da ora in poi il db si può fare partire digitando semplicemente
+ * 'mongostart' da terminale e fornendo la pswd di root per attivare il db
+ * 'mongo' da terminale per entrare nel db;
+ * ******************************************************************************************/
+
 
 class DatabaseManager
 {
@@ -33,7 +50,7 @@ private:
 public:
     DatabaseManager();
     /*** ACCOUNT ****/
-    bool registerAccount(Account account, QString password, QByteArray &image);
+    bool registerAccount(Account &account, QString password, QByteArray &image);
     bool deleteAccount  (QString _id);
     bool checkAccountPsw(QString _id, QString password);
     bool changePassword(QString _id, QString old_password, QString new_password);
@@ -42,22 +59,25 @@ public:
     /************/
 
     /** SYMBOL **/
-    bool insertSymbol(Message mes);
-    bool deleteSymbol(Message mes);
+    bool insertSymbol(Message &mes);
+    bool deleteSymbol(Message &mes);
     /************/
 
     /** DOCUMENT **/
-    bool insertDocument(SharedDocument document);
+    bool insertDocument(SharedDocument &document);
     SharedDocument getDocument(QString documentId); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
     QList<Symbol> retrieveSymbolsOfDocument(QString documentId);
     QList<SharedDocument> getAllDocuments(); //todo: da fare
+    QList<SharedDocument> getAllMyDocuments(QString username); //to test
     bool deleteDocument(QString documentId); //da fare
     QList<Account> getAccounts(QString documentName); //da fare
     QString getUri(QString documentName); //da fare
+    void changeDocumentName(QString documentId, QString newName); //ricordarsi di catchare le exception se si usa
     /***********/
 
     /** URI **/
     bool addAccountToDocument(QString documentId, QString username);
+    bool addDocumentToAccount(QString documentId, QString username);
 
     /*********/
     DatabaseManager(const DatabaseManager& other) = delete;

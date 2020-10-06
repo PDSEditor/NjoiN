@@ -9,7 +9,7 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     webSocket.open(QUrl(url));
     //qDebug()<<webSocket.isValid();
 
-    siteId = 0;
+
 }
 
 socketManager::~socketManager()
@@ -21,6 +21,8 @@ void socketManager::messageToServer(Message *m)
 {
     //QString tmp = m->getAction();
     //webSocket.sendTextMessage(tmp);
+
+    webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 
     //qDebug()<<"Testo inviato: sia m diu ";
 }
@@ -39,12 +41,13 @@ void socketManager::binaryMessageToServer(Message *m)
     QChar tmpc;
     QByteArray bytemex;
     QChar action = m->getAction();
-
+    QVector<QString> params;
+    m->setSender(this->siteId);
 
 
 
     Symbol symbol = m->getSymbol();
-    symbol.setSiteId(socketManager::siteId);
+  //  symbol.setSiteId(socketManager::siteId);
 
 
 
@@ -66,7 +69,7 @@ void socketManager::binaryMessageToServer(Message *m)
         }
 
         bytemex.append('}');
-        bytemex.append(symbol.getSiteId());//dimensione massima
+        bytemex.append(m->getSender());//dimensione massima
         tmp=(symbol.getCounter());
 
         for(int p=0;p<4;p++){
@@ -87,7 +90,7 @@ void socketManager::binaryMessageToServer(Message *m)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        tmp=siteId;
+        tmp=m->getSender();
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
@@ -95,44 +98,68 @@ void socketManager::binaryMessageToServer(Message *m)
 
 
     }
-    else if(action==('C')||action==('R')){
-        QVector<QString> params = m->getParams();
-        if(action==('C')){
-            bytemex.append('C');
-        }
-        else{
-            bytemex.append('R');
-        }
-        tmp=siteId;
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        bytemex.append(params.at(0));
-
-    }
-    else if(action=='L'){
-        QVector<QString> params = m->getParams();
-        bytemex.append('L');
-        tmp=siteId;
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        tmp=params.at(0).length();
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        bytemex.append(params.at(0));
-        tmp=params.at(1).length();
-        for(int p=0;p<4;p++){
-            bytemex.append(tmp >> (p * 8));
-        }
-        bytemex.append(params.at(1));
-    }
+//    else if(action==('C')||action==('R')){
+//        QVector<QString> params = m->getParams();
+//        if(action==('C')){
+//            bytemex.append('C');
+//        }
+//        else{
+//            bytemex.append('R');
+//        }
+//        tmp=m->getSender();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        tmp=params.at(0).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(0));
+//        tmp=params.at(1).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(1));
+//    }
+//    else if(action=='L'){
+//        QVector<QString> params = m->getParams();
+//        bytemex.append('L');
+//        tmp=m->getSender();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        tmp=params.at(0).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(0));
+//        tmp=params.at(1).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(1));
+//    }
+//    else if(action == 'P'){ //signUP
+//        params = m->getParams();
+//        bytemex.append('P');
+//        tmp=m->getSender();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        tmp=params.at(0).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(0));
+//        tmp=params.at(1).length();
+//        for(int p=0;p<4;p++){
+//            bytemex.append(tmp >> (p * 8));
+//        }
+//        bytemex.append(params.at(1));
+//    }
 
     //qDebug()<<'lunghezza array di byte'<<bytemex.size();
     webSocket.sendBinaryMessage( bytemex);
-    int i;
-    i=0;
 }
 
 void socketManager::onConnected()
@@ -176,22 +203,28 @@ void socketManager::onConnected()
 
 void socketManager::onTextMessageReceived(QString message)
 {
-Message m=Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
-switch (m.getAction().toLatin1()) {
+    Message m=Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
 
-case 'L':
-    if(m.getError()){
-        QString s="errore";
-        emit(receivedLogin(s));
+    switch (m.getAction().toLatin1()) {
+    case 'L':
+        if(m.getError()){
+            emit(receivedLogin(false));
+        }
+        else{
+            this->siteId = m.getSender();
+            emit(receivedLogin(true));
+            emit(receivedInfoAccount(m));
+        }
+        break;
+    case 'S': //per settare il siteId
+
+        emit(setSiteId(m.getSender()));
+        break;
+//
+    default:
+        qDebug() << "default";
+        break;
     }
-    else{
-        QString s="accesso";
-        emit(receivedLogin(s));
-        emit(receivedInfoAccount(m));
-    }
-
-
-}
 }
 
 //Received binary message from server and emit a signal
@@ -252,48 +285,48 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         i+=4;
         family=bytemex.right(bytemex.length()-i);
     }
-    else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
-        if(bytemex.at(0)=='C')
-            action='C';
-        else
-            action='R';
-        c.clear();
-        c.append(bytemex.mid(1,4));
-        memcpy(&tmp,c,4);
-        sender=tmp;
-        params.push_back(bytemex.right(bytemex.length()-5));
-    }
-    else if(bytemex.at(0)=='L'){
-        action='L';
-        c.clear();
-        c.append(bytemex.mid(1,4));
-        memcpy(&tmp,c,4);
-        sender=tmp;
-        c.clear();
-        c.append(bytemex.mid(5,4));
-        memcpy(&tmp,c,4);
-        params.push_back(bytemex.mid(9,tmp));
-        c.clear();
-        c.append(bytemex.mid(tmp+9,4));
-        memcpy(&tmp,c,4);
-        params.push_back(bytemex.right(tmp));
-    }
-    else if(bytemex.at(0)=='S'){
-        action='S';
-        c.clear();
-        c.append(bytemex.mid(1,4));
-        memcpy(&tmp,c,4);
-        sender=tmp;
-        c.clear();
-        c.append(bytemex.mid(5,4));
-        memcpy(&tmp,c,4);
-        params.push_back(bytemex.mid(9,tmp));
+//    else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
+//        if(bytemex.at(0)=='C')
+//            action='C';
+//        else
+//            action='R';
+//        c.clear();
+//        c.append(bytemex.mid(1,4));
+//        memcpy(&tmp,c,4);
+//        sender=tmp;
+//        params.push_back(bytemex.right(bytemex.length()-5));
+//    }
+//    else if(bytemex.at(0)=='L'){
+//        action='L';
+//        c.clear();
+//        c.append(bytemex.mid(1,4));
+//        memcpy(&tmp,c,4);
+//        sender=tmp;
+//        c.clear();
+//        c.append(bytemex.mid(5,4));
+//        memcpy(&tmp,c,4);
+//        params.push_back(bytemex.mid(9,tmp));
+//        c.clear();
+//        c.append(bytemex.mid(tmp+9,4));
+//        memcpy(&tmp,c,4);
+//        params.push_back(bytemex.right(tmp));
+//    }
+//    else if(bytemex.at(0)=='S'){ //a che cosa corrisponde???
+//        action='S';
+//        c.clear();
+//        c.append(bytemex.mid(1,4));
+//        memcpy(&tmp,c,4);
+//        sender=tmp;
+//        c.clear();
+//        c.append(bytemex.mid(5,4));
+//        memcpy(&tmp,c,4);
+//        params.push_back(bytemex.mid(9,tmp));
 
-        emitS = false;
-        socketManager::siteId = params.at(0).toInt();
+//        emitS = false;
+//        //socketManager::siteId = params.at(0).toInt();
 
-        qDebug() << "siteId received = " <<siteId;
-    }
+//       // qDebug() << "siteId received = " <<siteId;
+//    }
 
     if (emitS) {
         Message *m = new Message;

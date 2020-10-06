@@ -17,7 +17,7 @@ Symbol Message::getSymbol() const
     return symbol;
 }
 
-void Message::setSymbol(Symbol value)
+void Message::setSymbol(Symbol &value)
 {
     symbol = value;
 }
@@ -118,7 +118,7 @@ void Message::debugPrint()
           <<"counter="<<this->getSymbol().getCounter();
 }
 
-Message Message::fromJson(QJsonDocument json)
+Message Message::fromJson(QJsonDocument &json)
 {
     QJsonObject json_obj = json.object();
     Message m = Message();

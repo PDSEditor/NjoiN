@@ -11,6 +11,16 @@ void AccountManager::setOnlineAccounts(const QMap<int, std::shared_ptr<Account> 
     onlineAccounts = value;
 }
 
+QMap<QString, QList<QString> > AccountManager::getAccountsPerFile() const
+{
+    return accountsPerFile;
+}
+
+void AccountManager::setAccountsPerFile(const QMap<QString, QList<QString> > &value)
+{
+    accountsPerFile = value;
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject(parent)
 {
     

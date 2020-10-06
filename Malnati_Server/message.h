@@ -35,14 +35,14 @@ public:
     Message();
 
     void debugPrint();
-    static Message fromJson(QJsonDocument json);
+    static Message fromJson(QJsonDocument &json);
     QJsonDocument toJson();
 
     QChar getAction() const;
     void setAction(const QChar &value);
 
     Symbol getSymbol() const;
-    void setSymbol(Symbol value);
+    void setSymbol(Symbol &value);
     QVector<QString> getParams() const;
     void setParams(const QVector<QString> &value);
 

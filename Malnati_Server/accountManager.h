@@ -24,6 +24,9 @@ public:
     QMap<int, std::shared_ptr<Account> > getOnlineAccounts() const;
     void setOnlineAccounts(const QMap<int, std::shared_ptr<Account> > &value);
 
+    QMap<QString, QList<QString> > getAccountsPerFile() const;
+    void setAccountsPerFile(const QMap<QString, QList<QString> > &value);
+
 public slots:
     void updateOnlineAccounts (int siteId);
     void removeOnlineAccounts (int siteId);

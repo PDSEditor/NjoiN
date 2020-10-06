@@ -20,8 +20,9 @@ public:
 
 signals:
     void newMessage(Message *m);
-    void receivedLogin(QString&);
+    void receivedLogin(bool resp);
     void receivedInfoAccount(Message&);
+    void setSiteId(int);
 
 public slots:
     void receiveImage(QByteArray im);
@@ -29,13 +30,14 @@ public slots:
     void onTextMessageReceived(QString message);
     void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal
     void binaryMessageToServer (Message* m);
+    void messageToServer (Message* m);
     //
 
 
 //
 public:
 
-     void messageToServer (Message* m);
+
 
 private:
     QWebSocket webSocket;

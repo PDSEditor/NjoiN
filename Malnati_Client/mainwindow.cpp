@@ -13,9 +13,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->label->setStyleSheet("QLabel { background-color : green; color : black; }");
-    for(int i=0;i<10;i++){
-        addElementforUser("Documento " + QString::number(i));
-    }
+//    for(int i=0;i<10;i++){
+//        addElementforUser("Documento " + QString::number(i));
+//    }
 //sock=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 }
 
@@ -39,12 +39,23 @@ void MainWindow::newFile(){
 
     Message m;
     m.setAction('C');
-    m.setParams({"newfile"});
-    emit(sendMessage(&m));
+    m.setParams({"newfile", this->getUsername()});
+    //emit(sendMessage(&m));
+    emit(sendTextMessage(&m));
     emit(newTextEdit(te));
     te->show();
     // This is available in all editors.
 
+}
+
+int MainWindow::getSiteId() const
+{
+    return siteId;
+}
+
+void MainWindow::setSiteId(int value)
+{
+    siteId = value;
 }
 
 void MainWindow::receiveimage(QPixmap& q){
@@ -63,11 +74,11 @@ void MainWindow::setImage(QPixmap im){
 QPixmap MainWindow::getImage(){
     return image;
 }
-void MainWindow::setName(QString name){
-    MainWindow::name=name;
+void MainWindow::setUsername(QString username){
+    MainWindow::username=username;
 }
-QString MainWindow::getName(){
-    return name;
+QString MainWindow::getUsername(){
+    return username;
 }
 QList<QString> MainWindow::getList(){
     return documents;
@@ -77,11 +88,13 @@ void MainWindow::setList(QList<QString> l){
 }
 
 void MainWindow::receivedInfoAccount(Message& m){
-   setName(m.getParams().at(0));
-   setImage(m.getParams().at(2));
+   setUsername(m.getParams().at(0));
+   setSiteId(m.getSender());
+   //setImage(m.getParams().at(2));
    QList<QString> tmp;
-   for(int i=3;i<m.getParams().size();i++){
+   for(int i=2;i<m.getParams().size();i++){
        documents.append(m.getParams().at(i));
+       addElementforUser(documents.at(i-2));
    }
 
 }
