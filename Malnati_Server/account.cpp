@@ -18,7 +18,7 @@ QList<QString> Account::getDocumentUris() const
     return documentUris;
 }
 
-void Account::setDocumentUris(const QList<QString> &value)
+void Account::setDocumentUris(const QList<QString> value)
 {
     documentUris = value;
 }
