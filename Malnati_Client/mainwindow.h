@@ -6,6 +6,7 @@
 #include "accountinterface.h"
 #include "socketmanager.h"
 #include "QBuffer"
+#include <QListWidgetItem>
 
 
 
@@ -35,6 +36,7 @@ public:
 
 public slots:
     void receivedInfoAccount(Message& m);
+    void receivedFile();
 signals:
     void newTextEdit(TextEdit* t);
     // prova
@@ -47,12 +49,10 @@ private slots:
     void receiveimage(QPixmap& im);
     void on_pushButton_clicked();
     void addElementforUser(QString);
-
     void on_actionNew_triggered();
-
     void on_actionAccount_triggered();
-
     void on_actionClose_triggered();
+    void open_file_on_server(QListWidgetItem*);
 
 private:
     Ui::MainWindow *ui;

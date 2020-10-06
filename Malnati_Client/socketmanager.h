@@ -23,6 +23,7 @@ signals:
     void receivedLogin(bool resp);
     void receivedInfoAccount(Message&);
     void setSiteId(int);
+    void receivedFile();
 
 public slots:
     void receiveImage(QByteArray im);
