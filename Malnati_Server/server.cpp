@@ -25,16 +25,9 @@ Server::Server(QObject *parent) : QObject(parent)
     QByteArray image = img.readAll();
 
 //    Account account(name, 0, image);
-<<<<<<< HEAD
-////    account.setUsername(name);
-////    account.setSiteId(0);
-    if(this->dbMan.get()->registerAccount(account, pass, image))
-        qDebug() << "inserted?" ;
-=======
 //    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
 //        qDebug() << "inserted?" ;
->>>>>>> origin/Angelo
 
 
 
