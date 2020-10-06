@@ -25,11 +25,18 @@ bool DatabaseManager::registerAccount(Account account, QString password, QByteAr
                                  vector.data()
                                  };
 
+    auto array_builder = bsoncxx::builder::basic::array{};
+
+    for (QString i : account.getDocumentUris()){
+        array_builder.append(i.toUtf8().constData());
+    }
+
     auto userToInsert = builder
             << "_id" << account.getUsername().toUtf8().constData()
             << "password" << hashpsw.toUtf8().toStdString()
             << "siteId" << account.getSiteId()
             << "image" << img
+            << "documentUris" << array_builder
             << bsoncxx::builder::stream::finalize;
 
     auto view = userToInsert.view();
@@ -283,7 +290,7 @@ bool DatabaseManager::insertDocument(SharedDocument document)
         qDebug() << "[ERROR][DatabaseManager::insertDocument] insert_one error, maybe duplicated?";
         return false;
     }
-    addAccountToDocument(id, document.getUserAllowed().at(0));
+    addDocumentToAccount(id, document.getUserAllowed().at(0));
     return true;
 }
 
@@ -383,8 +390,8 @@ bool DatabaseManager::addAccountToDocument(QString documentId, QString username)
 
     bsoncxx::document::value newDocument =
             bsoncxx::builder::stream::document{}
-            << "userAllowed"
-            << bsoncxx::builder::stream::open_array << username.toUtf8().constData()
+            << "$mod" << bsoncxx::builder::stream::open_array
+            << "userAllowed" << username.toUtf8().constData()
             << bsoncxx::builder::stream::close_array
             << bsoncxx::builder::stream::finalize;
     try {
@@ -399,6 +406,41 @@ bool DatabaseManager::addAccountToDocument(QString documentId, QString username)
     }
 }
 
+bool DatabaseManager::addDocumentToAccount(QString documentId, QString username){
+    mongocxx::collection userCollection = this->db["user"];
+
+//    bsoncxx::document::value user =
+//            bsoncxx::builder::stream::document{}
+//            << "_id" << username.toUtf8().constData()
+//            << bsoncxx::builder::stream::finalize;
+
+//    bsoncxx::document::value newUser =
+//            bsoncxx::builder::stream::document{}
+//            << "$mod" << bsoncxx::builder::stream::open_array
+//            << "documentUris" << documentId.toUtf8().constData()
+//            << bsoncxx::builder::stream::close_array
+//            << bsoncxx::builder::stream::finalize;
+
+//    try {
+//        userCollection.update_one(user.view(), newUser.view());
+//        return true;
+//    } catch (mongocxx::bulk_write_exception &e) {
+//        qDebug() << e.what();
+//        return false;
+//    } catch (mongocxx::logic_error &e){
+//        qDebug() << e.what();
+//        return false;
+//    }
+//    this->db["user"].update_one(
+//                make_document(
+//                    bsoncxx::builder::basic::kpv("_id", username),
+//                    ),
+//                make_document(
+//                    ));
+
+
+
+}
 void DatabaseManager::changeDocumentName(QString documentId, QString newName){
     mongocxx::collection documentCollection = this->db["document"];
 

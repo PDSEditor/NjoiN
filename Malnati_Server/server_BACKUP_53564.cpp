@@ -18,17 +18,15 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-    QString name = "test";
-    QString pass = "test";
+//    QString name = "test";
+//    QString pass = "test";
 
-    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-    QByteArray image = img.readAll();
+//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img.readAll();
 
 //    Account account(name, 0, image);
-////    account.setUsername(name);
-////    account.setSiteId(0);
-    if(this->dbMan.get()->registerAccount(account, pass, image))
-        qDebug() << "inserted?" ;
+//    if(this->dbMan.get()->registerAccount(account, pass, image))
+//        qDebug() << "inserted?" ;
 
 
 

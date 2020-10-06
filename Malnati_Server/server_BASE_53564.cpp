@@ -18,19 +18,18 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-    QString name = "test";
-    QString pass = "test";
+//    QString name = "test";
+//    QString pass = "test";
 
-    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-    QByteArray image = img.readAll();
+//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img.readAll();
 
 //    Account account(name, 0, image);
-////    account.setUsername(name);
-////    account.setSiteId(0);
-    if(this->dbMan.get()->registerAccount(account, pass, image))
-        qDebug() << "inserted?" ;
-
-
+////    Account account(name, 0, image);
+//////    account.setUsername(name);
+//////    account.setSiteId(0);
+//    if(this->dbMan.get()->registerAccount(account, pass, image))
+//        qDebug() << "inserted?" ;
 
 //    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
 //    qDebug() << account2.toString();
@@ -63,7 +62,7 @@ void Server::dispatchMessage(Message &mes) {
     QMap<int, QWebSocket*> clients = this->socketMan->getClients();
     QMap<int, QWebSocket *>::iterator it;
 
-    int sender = mes.getSender();
+    int sender = mes.getSymbol().getSiteId();
 
     for(it=clients.begin(); it!= clients.end(); it++) {
         if(it.key() != sender)
@@ -218,12 +217,10 @@ void Server::processMessage( Message mesIn) {
         //Login
 
         mesOut.setAction('L');
-        mesOut.setSender(mesIn.getSender());
-        if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
-//          acc = dbMan->getAccount(mesIn.getParams()[0]);
-            Account acc(dbMan->getAccount(mesIn.getParams()[0]));
-            mesOut.setSender(acc.getSiteId());
 
+        if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
+            acc = dbMan->getAccount(mesIn.getParams()[0]);
+            mesOut.setSender(acc.getSiteId());
             params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
             params.append(acc.getDocumentUris().toVector());
             mesOut.setParams(params);
