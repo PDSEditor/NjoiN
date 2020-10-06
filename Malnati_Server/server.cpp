@@ -27,7 +27,7 @@ Server::Server(QObject *parent) : QObject(parent)
 //    Account account(name, 0, image);
 //    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
-//        qDebug() << "inserted?" ;
+//        qDebug() << "inseted?" ;
 
 
 
@@ -43,7 +43,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
     /*****************************/
 
-    QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage );
+    QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage);
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
     QObject::connect(this->socketMan.get(), &SocketManager::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
 
@@ -71,7 +71,7 @@ void Server::dispatchMessage(Message &mes) {
     }
 }
 
-void Server::processMessage( Message mesIn) {
+void Server::processMessage(Message &mesIn) {
 
     /* tabella di conversione:
      * Significato -> Lettera nel Messaggio -> int corrispondente
@@ -275,7 +275,7 @@ int Server::remoteInsert(Symbol symbol){
     int min=0;
     int max = this->symbols.size()-1;
     int middle=(max+min)/2 , pos;
-    std::vector<int> index=symbol.getPosition();
+    std::vector<int> index=symbol.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     //controllo se è ultimo
@@ -316,7 +316,7 @@ int Server::remoteInsert(Symbol symbol){
 
 int Server::remoteDelete(Symbol s){
     int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index=s.getPosition();
+    std::vector<int> index=s.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     it=symbols.begin();

@@ -66,7 +66,7 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         }
 
         bytemex.append('{');
-        for(unsigned long long i=0;i<symbol.getPosition().size();i++){
+        for(auto i=0; i<symbol.getPosition().size(); i++){
             tmp=(symbol.getPosition().at(i));
 
             for(int p=0;p<4;p++){
@@ -157,7 +157,7 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
 }
 
 
-void SocketManager::fileToUser(std::vector<Symbol> file, int user)
+void SocketManager::fileToUser(std::vector<Symbol> &file, int user)
 {
 
 }
@@ -170,7 +170,9 @@ void SocketManager::processTextMessage(QString message)
     qDebug()<<message;
 
     //deserialize JSON
-    Message m = Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
+//    Message m = Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
+    auto document = QJsonDocument::fromJson(message.toUtf8());
+    Message m = Message::fromJson(document);
 
     emit newMessage(m);
 
@@ -212,7 +214,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             action='I';
         else
             action='D';
-        std::vector<int> vtmp;
+        QVector<int> vtmp;
         int i=2;
         while(bytemex.at(i)!='}'){
             c.clear();
