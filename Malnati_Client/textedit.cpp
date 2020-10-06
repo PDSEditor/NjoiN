@@ -451,7 +451,12 @@ void TextEdit::setCrdt(Crdt *crdtclient)
 void TextEdit::setSocketM(socketManager *sockclient)
 {
     sockm=sockclient;
-     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
+    connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
+}
+
+void TextEdit::setFileName(QString fileName)
+{
+    this->fileName = fileName;
 }
 
 bool TextEdit::maybeSave()
@@ -496,7 +501,7 @@ void TextEdit::fileNew()
 
 }
 
-void TextEdit::reciveSymbol(Message *m)
+void TextEdit::receiveSymbol(Message *m)
 {
     externAction=true;
    QTextCursor curs = textEdit->textCursor(),oldcurs;

@@ -24,6 +24,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::newFile(){
+    this->hide();
     te = new TextEdit(this);
 
     const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
@@ -35,6 +36,7 @@ void MainWindow::newFile(){
    // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
 
     te->fileNew();
+
     Message m;
     m.setAction('C');
     m.setParams({"newfile"});

@@ -30,10 +30,11 @@ public:
     bool load(const QString &f);
     void setCrdt(Crdt *crdtclient);
     void setSocketM(socketManager *sockclient);
+    void setFileName(QString fileName);
 
 public slots:
     void fileNew();
-    void reciveSymbol(Message *m);
+    void receiveSymbol(Message *m);
 
 
 signals:

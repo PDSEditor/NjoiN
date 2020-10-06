@@ -15,6 +15,14 @@ public:
     explicit InsertTitle(QWidget *parent = nullptr);
     ~InsertTitle();
 
+private slots:
+    void on_buttonBox_accepted();
+
+    void on_buttonBox_rejected();
+
+signals:
+    void setTitle(QString& title);
+
 private:
     Ui::InsertTitle *ui;
 };

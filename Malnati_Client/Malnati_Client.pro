@@ -24,6 +24,7 @@ SOURCES += \
     changepwd.cpp \
     client.cpp \
     crdt.cpp \
+    inserttitle.cpp \
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     changepwd.h \
     client.h \
     crdt.h \
+    inserttitle.h \
     loginwindow.h \
     mainwindow.h \
     message.h \
@@ -47,6 +49,7 @@ HEADERS += \
 FORMS += \
     accountinterface.ui \
     changepwd.ui \
+    inserttitle.ui \
     loginwindow.ui \
     mainwindow.ui
 
