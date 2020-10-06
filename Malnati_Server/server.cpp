@@ -18,13 +18,13 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-    QString name = "test";
-    QString pass = "test";
+//    QString name = "test";
+//    QString pass = "test";
 
-    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-    QByteArray image = img.readAll();
+//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img.readAll();
 
-//    Account account(name, 0, image);
+//    Account account(name, 5, image);
 //    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
 //        qDebug() << "inserted?" ;
@@ -46,7 +46,7 @@ Server::Server(QObject *parent) : QObject(parent)
     QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage );
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
     //QObject::connect(this, &Server::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
-
+    QObject::connect(this->socketMan.get(), &SocketManager::accountDisconnected, this->acMan.get(), &AccountManager::removeOnlineAccounts );
 
 
 }
@@ -221,7 +221,7 @@ void Server::processMessage( Message mesIn) {
                 params.append(acc.getDocumentUris().toVector());
                 mesOut.setParams(params);
                 mesOut.setError(false);
-            }
+                mesOut.setSender(acc.getSiteId());           }
             else {                                                                      //utente era già collegato da un altro client
                 mesOut.setError(true);
                 qDebug() << "autenticazione di un utente già online";
@@ -233,7 +233,8 @@ void Server::processMessage( Message mesIn) {
             qDebug() << "autenticazione fallita";
         }
 
-        socketMan->messageToUser(mesOut, mesOut.getSender());
+        socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
+                                                                                    // e dentro il siteId ci metto il sender "ufficiale"
 
         break;
 

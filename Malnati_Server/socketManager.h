@@ -32,7 +32,7 @@ public:
 
 signals:
     void newMessage(Message m);
-
+    void accountDisconnected(int siteId);
 
 public slots:
     void messageToUser (Message &m, int siteId);

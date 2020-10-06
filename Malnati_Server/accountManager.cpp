@@ -45,7 +45,7 @@ bool AccountManager::closeDocumentByUser(QString username, QString documentId)
 
 bool AccountManager::updateOnlineAccounts(int siteId, const Account& acc)
 {
-    //Account acc;
+
     if(!this->onlineAccounts.contains(siteId)) {     //account che si collega per la prima volta
         //implementare l'inserimento anche nel db
         auto acc_p = std::make_shared<Account>(acc);
@@ -60,5 +60,10 @@ bool AccountManager::updateOnlineAccounts(int siteId, const Account& acc)
 
 void AccountManager::removeOnlineAccounts(int siteId)
 {
-
+        if(this->onlineAccounts.contains(siteId)) {
+            this->onlineAccounts.remove(siteId);
+        }
+        else {
+            qDebug("rimozione di un account con siteId ") ;
+        }
 }

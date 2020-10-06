@@ -29,11 +29,11 @@ public:
 
 
     bool updateOnlineAccounts (int siteId, const Account &acc);
-    void removeOnlineAccounts (int siteId);
+
 
 
 public slots:
-
+    void removeOnlineAccounts (int siteId);
 
     //signals:
 };

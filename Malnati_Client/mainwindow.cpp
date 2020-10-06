@@ -38,7 +38,7 @@ void MainWindow::newFile(){
     Message m;
     m.setAction('C');
     m.setParams({"newfile", this->getUsername()});
-    //emit(sendMessage(&m));
+    m.setSender(this->getSiteId());
     emit(sendTextMessage(&m));
     emit(newTextEdit(te));
     te->show();
