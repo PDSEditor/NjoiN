@@ -13,7 +13,7 @@ Client::Client()
 
     lw.exec();
 
-    if(lw.getIsLogin()==1){
+    if(lw.getIsLogin()==true){
          mw->show();
     }
 
