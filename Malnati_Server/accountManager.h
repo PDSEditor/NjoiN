@@ -11,7 +11,7 @@ class AccountManager : public QObject
 {
     Q_OBJECT
 private:
-    QMap<int, std::shared_ptr<Account>> onlineAccounts;         //tutti gli account online in questo momento
+    QMap<int, std::shared_ptr<Account>> onlineAccounts;         //tutti gli account online in questo momento      (siteId, Account)
     QMap<QString, QList<QString>> accountsPerFile;              //tutti gli account che stanno lavorando in questo momento su un file  (documentId, lista user)
     QMap<int, Account> accounts;                                //tutti gli account
 
@@ -27,8 +27,12 @@ public:
     QMap<QString, QList<QString> > getAccountsPerFile() const;
     void setAccountsPerFile(const QMap<QString, QList<QString> > &value);
 
+
+    bool updateOnlineAccounts (int siteId, const Account &acc);
+
+
+
 public slots:
-    void updateOnlineAccounts (int siteId);
     void removeOnlineAccounts (int siteId);
 
     //signals:
