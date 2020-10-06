@@ -10,12 +10,11 @@ socketManager *sock;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+
 {
     ui->setupUi(this);
     ui->label->setStyleSheet("QLabel { background-color : green; color : black; }");
-//    for(int i=0;i<10;i++){
-//        addElementforUser("Documento " + QString::number(i));
-//    }
+     connect(ui->listWidget, &QListWidget::itemClicked, this, &MainWindow::open_file_on_server);
 //sock=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 }
 
@@ -65,6 +64,24 @@ void MainWindow::receiveimage(QPixmap& q){
 
 }
 
+void MainWindow::open_file_on_server(QListWidgetItem* s){
+    Message m;
+    m.setAction('R');
+    m.setParams({s->text(),username});
+    //emit(sendTextMessage(&m));
+    receivedFile();
+
+}
+
+void MainWindow::receivedFile(){
+    QString s="aprire textedit di prova";
+    te = new TextEdit(s,this);
+
+
+    te->show();
+
+}
+
 void MainWindow::setImage(QPixmap im){
     image=im;
 }
@@ -92,7 +109,7 @@ void MainWindow::receivedInfoAccount(Message& m){
    QList<QString> tmp;
    for(int i=2;i<m.getParams().size();i++){
        documents.append(m.getParams().at(i));
-       addElementforUser(documents.at(i-2));
+       addElementforUser(m.getParams().at(i));
    }
 
 }
@@ -115,6 +132,7 @@ void MainWindow::on_actionAccount_triggered()
 {
     AccountInterface ai;
     //
+    ai.setUsername(username);
    connect(&ai,&AccountInterface::changeImage,this,&MainWindow::receiveimage);
     //
     ai.exec();

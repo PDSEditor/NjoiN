@@ -220,6 +220,9 @@ void socketManager::onTextMessageReceived(QString message)
 
         emit(setSiteId(m.getSender()));
         break;
+    case 'R':
+        emit(receivedFile());
+        break;
 //
     default:
         qDebug() << "default";
