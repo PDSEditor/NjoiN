@@ -13,7 +13,7 @@ private:
     QString username;
     int siteId;
     QByteArray image;
-    QList<QString> documentUris = {};
+    QList<QString> documentUris;
 
 public:
     Account();
@@ -27,7 +27,7 @@ public:
     void setSiteId(int value);
     QString toString();
     QList<QString> getDocumentUris() const;
-    void setDocumentUris(const QList<QString> &value);
+    void setDocumentUris(const QList<QString> value);
     void setImage(QPixmap Pix);
     QPixmap getImage() const;
 };

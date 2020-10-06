@@ -90,9 +90,9 @@ void MainWindow::receivedInfoAccount(Message& m){
    setSiteId(m.getSender());
    //setImage(m.getParams().at(2));
    QList<QString> tmp;
-   for(int i=3;i<m.getParams().size();i++){
+   for(int i=2;i<m.getParams().size();i++){
        documents.append(m.getParams().at(i));
-       addElementforUser(documents.at(i));
+       addElementforUser(documents.at(i-2));
    }
 
 }

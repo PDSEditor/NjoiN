@@ -12,7 +12,7 @@ DatabaseManager::DatabaseManager()
     this->db =          mongocxx::database(this->client["mydb"]);
 }
 
-bool DatabaseManager::registerAccount(Account account, QString password, QByteArray &image){
+bool DatabaseManager::registerAccount(Account &account, QString password, QByteArray &image){
 
     auto userCollection = (this->db)["user"];
     auto builder = bsoncxx::builder::stream::document{};
@@ -383,19 +383,18 @@ QList<SharedDocument> DatabaseManager::getAllMyDocuments(QString username)
 bool DatabaseManager::addAccountToDocument(QString documentId, QString username){
     mongocxx::collection documentCollection = this->db["document"];
 
-    bsoncxx::document::value document =
-            bsoncxx::builder::stream::document{}
-            << "_id" << documentId.toUtf8().constData()
-            << bsoncxx::builder::stream::finalize;
-
-    bsoncxx::document::value newDocument =
-            bsoncxx::builder::stream::document{}
-            << "$mod" << bsoncxx::builder::stream::open_array
-            << "userAllowed" << username.toUtf8().constData()
-            << bsoncxx::builder::stream::close_array
-            << bsoncxx::builder::stream::finalize;
+    using bsoncxx::builder::basic::make_document;
+    using bsoncxx::builder::basic::kvp;
+    auto a = make_document(kvp("_id", documentId.toUtf8().constData()));
+    auto b = make_document(
+                kvp("$push", make_document(
+                        kvp("userAllowed", username.toUtf8().constData()
+                            )
+                        )
+                    )
+                );
     try {
-        documentCollection.update_one(document.view(), newDocument.view());
+        documentCollection.update_one(a.view(), b.view());
         return true;
     } catch (mongocxx::bulk_write_exception &e) {
         qDebug() << e.what();
@@ -409,36 +408,26 @@ bool DatabaseManager::addAccountToDocument(QString documentId, QString username)
 bool DatabaseManager::addDocumentToAccount(QString documentId, QString username){
     mongocxx::collection userCollection = this->db["user"];
 
-//    bsoncxx::document::value user =
-//            bsoncxx::builder::stream::document{}
-//            << "_id" << username.toUtf8().constData()
-//            << bsoncxx::builder::stream::finalize;
-
-//    bsoncxx::document::value newUser =
-//            bsoncxx::builder::stream::document{}
-//            << "$mod" << bsoncxx::builder::stream::open_array
-//            << "documentUris" << documentId.toUtf8().constData()
-//            << bsoncxx::builder::stream::close_array
-//            << bsoncxx::builder::stream::finalize;
-
-//    try {
-//        userCollection.update_one(user.view(), newUser.view());
-//        return true;
-//    } catch (mongocxx::bulk_write_exception &e) {
-//        qDebug() << e.what();
-//        return false;
-//    } catch (mongocxx::logic_error &e){
-//        qDebug() << e.what();
-//        return false;
-//    }
-//    this->db["user"].update_one(
-//                make_document(
-//                    bsoncxx::builder::basic::kpv("_id", username),
-//                    ),
-//                make_document(
-//                    ));
-
-
+    using bsoncxx::builder::basic::make_document;
+    using bsoncxx::builder::basic::kvp;
+    auto a = make_document(kvp("_id", username.toUtf8().constData()));
+    auto b = make_document(
+                kvp("$push", make_document(
+                        kvp("documentUris", documentId.toUtf8().constData()
+                            )
+                        )
+                    )
+                );
+    try{
+        userCollection.update_one(a.view(), b.view());
+        return true;
+    }catch (mongocxx::bulk_write_exception &e) {
+        qDebug() << e.what();
+        return false;
+    } catch (mongocxx::logic_error &e){
+        qDebug() << e.what();
+        return false;
+    }
 
 }
 void DatabaseManager::changeDocumentName(QString documentId, QString newName){
