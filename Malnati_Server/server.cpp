@@ -45,15 +45,8 @@ Server::Server(QObject *parent) : QObject(parent)
 
     QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage );
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
-    QObject::connect(this->socketMan.get(), &SocketManager::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
+    //QObject::connect(this, &Server::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
 
-
-    //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
-
-
-    //QObject::connect(this, &Server::sendMessage, socketMan, &SocketManager::messageToUser);
-
-    //QObject::connect(dbMan, &DatabaseManager::sendFile, socketMan, &SocketManager::fileToUser );*/
 
 
 }
@@ -83,6 +76,7 @@ void Server::processMessage( Message mesIn) {
      * Collaborate by URI -> U
      * REGISTER user (Sign up)  -> S
      * LOG-IN -> L
+     * LOGOUT -> O
     */
 
     QChar action = mesIn.getAction();
@@ -219,14 +213,19 @@ void Server::processMessage( Message mesIn) {
         mesOut.setAction('L');
         mesOut.setSender(mesIn.getSender());
         if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
-//          acc = dbMan->getAccount(mesIn.getParams()[0]);
-            Account acc(dbMan->getAccount(mesIn.getParams()[0]));
-            mesOut.setSender(acc.getSiteId());
 
-            params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
-            params.append(acc.getDocumentUris().toVector());
-            mesOut.setParams(params);
-            mesOut.setError(false);
+            Account acc(dbMan->getAccount(mesIn.getParams()[0]));
+
+            if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
+                params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+                params.append(acc.getDocumentUris().toVector());
+                mesOut.setParams(params);
+                mesOut.setError(false);
+            }
+            else {                                                                      //utente era già collegato da un altro client
+                mesOut.setError(true);
+                qDebug() << "autenticazione di un utente già online";
+            }
 
         }
         else {
@@ -235,6 +234,11 @@ void Server::processMessage( Message mesIn) {
         }
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
+
+        break;
+
+    case 'O' :
+        //Signup
 
         break;
 

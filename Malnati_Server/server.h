@@ -40,6 +40,7 @@ signals:
 
     void openFileFromDB (std::string nome);                      // chiedi al DB manager di recuperare il file dal DB
     void closed();  //TODO: decidere quando emettere questo segnale
+    //void newAccountOnline (int siteId, Account &acc);
 
 public slots:
     void processMessage(Message mes);

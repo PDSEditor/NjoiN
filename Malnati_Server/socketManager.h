@@ -10,6 +10,7 @@
 
 
 #include "message.h"
+#include "account.h"
 
 #define N_PORT 1234
 
@@ -31,7 +32,7 @@ public:
 
 signals:
     void newMessage(Message m);
-    void newAccountOnline (int siteId);
+
 
 public slots:
     void messageToUser (Message &m, int siteId);

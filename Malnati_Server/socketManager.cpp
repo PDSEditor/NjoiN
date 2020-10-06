@@ -335,8 +335,8 @@ void SocketManager::onNewConnection()
     m.setParams({s});
     m.setSender(SocketManager::siteId);
     messageToUser(m,SocketManager::siteId);
+    Account acc;
 
-    emit newAccountOnline(SocketManager::siteId);
     SocketManager::siteId++;
 }
 
