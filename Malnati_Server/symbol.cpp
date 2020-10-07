@@ -132,3 +132,28 @@ Symbol Symbol::fromJson(const QJsonObject &charJ){
     Symbol result(value, fractionalPos, siteId, counter);
     return result;
 }
+
+QJsonDocument Symbol::toJson()
+{
+    QJsonObject json_obj;
+    json_obj["value"] = this->value.toLatin1();
+    json_obj["siteId"] = this->siteId;
+    json_obj["counter"] = this->counter;
+    json_obj["family"] = this->family;
+    json_obj["bold"] = this->bold;
+    json_obj["italic"] = this->italic;
+    json_obj["underln"] = this->underln;
+    json_obj["size"] = this->size;
+
+    QJsonArray positionj;
+    for(int pos : this->position) {
+        positionj.append(pos);
+    }
+    json_obj["position"] = positionj;
+    return QJsonDocument(json_obj);
+
+
+
+
+
+}

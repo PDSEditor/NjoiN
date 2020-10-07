@@ -31,6 +31,8 @@ public:
     void setOpen(bool value);
     QList<Symbol> getSymbols() const;
     void setSymbols(const QList<Symbol> &value);
+
+    bool operator==(SharedDocument doc);
 };
 
 #endif // SHAREDDOCUMENT_H

@@ -60,6 +60,11 @@ void SharedDocument::setSymbols(const QList<Symbol> &value)
     symbols = value;
 }
 
+bool SharedDocument::operator==(SharedDocument doc)
+{
+    return this->uri == doc.uri;
+}
+
 SharedDocument::SharedDocument()
 {
     
@@ -72,6 +77,7 @@ SharedDocument::SharedDocument(QString name, QString creator)
     this->open = false;
     this->name = name;
     this->symbols = QList<Symbol>();
+    this->uri = name + '_' + creator;
 }
 
 SharedDocument::SharedDocument(QString name, QString creator, bool open, QList<QString> &userAllowed): name(name), creator(creator), open(open), userAllowed(userAllowed)
