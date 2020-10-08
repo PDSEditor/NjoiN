@@ -113,8 +113,9 @@ void Symbol::setSize(qreal s)
     size=s;
 }
 
-Symbol Symbol::fromJson(const QJsonObject &charJ){
+Symbol Symbol::fromJson(const QJsonDocument &charJD){
 //    ushort value = charJ["value"].toString().at(0).unicode();
+    QJsonObject charJ = charJD.object();
     int value = charJ["value"].toInt();
     int siteId = charJ["siteId"].toInt();
     QJsonArray fractionalPosJ = charJ["position"].toArray();
