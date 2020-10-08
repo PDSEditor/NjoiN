@@ -264,12 +264,14 @@ void Server::processMessage(Message &mesIn) {
             else {                                                                      //utente era già collegato da un altro client
                 mesOut.setError(true);
                 qDebug() << "autenticazione di un utente già online";
+                mesOut.setParams({"2"});
             }
 
         }
         else {
             mesOut.setError(true);
             qDebug() << "autenticazione fallita";
+            mesOut.setParams({"1"});
         }
 
         socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
