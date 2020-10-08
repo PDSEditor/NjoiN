@@ -26,10 +26,10 @@
     <bool>false</bool>
    </property>
    <property name="inputMethodHints">
-    <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhNoPredictiveText|Qt::ImhSensitiveData</set>
+    <set>Qt::ImhNone</set>
    </property>
    <property name="echoMode">
-    <enum>QLineEdit::Password</enum>
+    <enum>QLineEdit::Normal</enum>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
@@ -58,7 +58,7 @@
     <item>
      <widget class="QLabel" name="label">
       <property name="text">
-       <string>Insert document name</string>
+       <string>Insersci il nome del documento</string>
       </property>
      </widget>
     </item>

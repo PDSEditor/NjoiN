@@ -2,12 +2,12 @@
 #include "ui_inserttitle.h"
 #include <QMessageBox>
 
-InsertTitle::InsertTitle(QWidget *parent) :
-    QWidget(parent),
+InsertTitle::InsertTitle(QDialog *parent) :
+    QDialog(parent),
     ui(new Ui::InsertTitle)
 {
     ui->setupUi(this);
-    setWindowTitle("Insert Title");
+    setWindowTitle("Inserisci il titolo");
 }
 
 InsertTitle::~InsertTitle()
@@ -19,7 +19,7 @@ void InsertTitle::on_buttonBox_accepted()
 {
     QString title = ui->lineEdit->text();
     if ( title.size() == 0 ){
-        QMessageBox::warning(this, "Title", "Title not valid");
+        QMessageBox::warning(this, "Titolo", "Titolo non valido");
     } else {
         emit setTitle(title);
         this->hide();
@@ -28,6 +28,7 @@ void InsertTitle::on_buttonBox_accepted()
 
 void InsertTitle::on_buttonBox_rejected()
 {
-    this->hide();
+    emit showMw();
+    this->close();
 }
 

@@ -459,6 +459,8 @@ void TextEdit::setFileName(QString fileName)
     this->fileName = fileName;
 }
 
+
+
 bool TextEdit::maybeSave()
 {
     if (!textEdit->document()->isModified())
@@ -478,14 +480,14 @@ bool TextEdit::maybeSave()
 
 void TextEdit::setCurrentFileName(const QString &fileName)
 {
-    this->fileName = fileName;
-    textEdit->document()->setModified(false);
+    //this->fileName = fileName;
+    //textEdit->document()->setModified(false);
 
     QString shownName;
-    if (fileName.isEmpty())
+    if (this->fileName.isEmpty())
         shownName = "untitled.txt";
     else
-        shownName = QFileInfo(fileName).fileName();
+        shownName = QFileInfo(this->fileName).fileName();
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName, QCoreApplication::applicationName()));
     setWindowModified(false);

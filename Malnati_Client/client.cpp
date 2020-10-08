@@ -10,7 +10,7 @@ Client::Client()
     connect(sockm, &socketManager::receivedLogin, &lw, &LoginWindow::receivedLogin);
     connect(sockm, &socketManager::receivedInfoAccount, mw, &MainWindow::receivedInfoAccount);
     connect(sockm,&socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
-
+    
      lw.exec();
 
 

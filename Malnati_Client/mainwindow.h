@@ -54,6 +54,10 @@ private slots:
 
     void on_actionClose_triggered();
 
+    void receiveTitle(QString title);
+
+    void openMw();
+
 private:
     Ui::MainWindow *ui;
     TextEdit *te;

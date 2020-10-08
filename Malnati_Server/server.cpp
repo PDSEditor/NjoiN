@@ -18,11 +18,11 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-    QString name = "test";
-    QString pass = "test";
+//    QString name = "test";
+//    QString pass = "test";
 
-    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-    QByteArray image = img.readAll();
+//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img.readAll();
 
 //    Account account(name, 0, image);
 //    account.setDocumentUris({"hello", "ciao"});

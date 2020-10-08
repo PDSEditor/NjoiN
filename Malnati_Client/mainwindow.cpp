@@ -5,6 +5,7 @@
 #include <QDesktopWidget>
 #include "loginwindow.h"
 #include "accountinterface.h"
+#include "inserttitle.h"
 
 socketManager *sock;
 MainWindow::MainWindow(QWidget *parent)
@@ -25,25 +26,13 @@ MainWindow::~MainWindow()
 }
 void MainWindow::newFile(){
     this->hide();
-    te = new TextEdit(this);
+    InsertTitle it;
 
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
-    te->resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
-    te->move((availableGeometry.width() - te->width()) / 2,
-           (availableGeometry.height() - te->height()) / 2);
+    connect(&it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
+    connect(&it,&InsertTitle::showMw,this,&MainWindow::openMw);
 
-    //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-   // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
+    it.exec();
 
-    te->fileNew();
-
-    Message m;
-    m.setAction('C');
-    m.setParams({"newfile", this->getUsername()});
-    //emit(sendMessage(&m));
-    emit(sendTextMessage(&m));
-    emit(newTextEdit(te));
-    te->show();
     // This is available in all editors.
 
 }
@@ -126,4 +115,32 @@ void MainWindow::on_actionAccount_triggered()
 void MainWindow::on_actionClose_triggered()
 {
     this->close();
+}
+
+void MainWindow::receiveTitle(QString title)
+{
+    te = new TextEdit(this);
+
+    const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
+    te->resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
+    te->move((availableGeometry.width() - te->width()) / 2,
+           (availableGeometry.height() - te->height()) / 2);
+
+    //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
+   // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
+    te->setFileName(title);
+    te->fileNew();
+
+    Message m;
+    m.setAction('C');
+    m.setParams({title, this->getUsername()});
+    //emit(sendMessage(&m));
+    emit(sendTextMessage(&m));
+    emit(newTextEdit(te));
+    te->show();
+}
+
+void MainWindow::openMw()
+{
+    this->show();
 }

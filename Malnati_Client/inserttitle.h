@@ -1,18 +1,19 @@
 #ifndef INSERTTITLE_H
 #define INSERTTITLE_H
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
 class InsertTitle;
 }
 
-class InsertTitle : public QWidget
+
+class InsertTitle : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit InsertTitle(QWidget *parent = nullptr);
+    explicit InsertTitle(QDialog *parent = nullptr);
     ~InsertTitle();
 
 private slots:
@@ -22,6 +23,8 @@ private slots:
 
 signals:
     void setTitle(QString& title);
+
+    void showMw();
 
 private:
     Ui::InsertTitle *ui;
