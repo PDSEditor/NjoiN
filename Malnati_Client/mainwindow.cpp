@@ -74,10 +74,23 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
 }
 
 void MainWindow::receivedFile(){
-    QString s="aprire textedit di prova";
-    te = new TextEdit(s,this);
-
-
+    QList<Symbol> tmp;
+    Symbol s1,s2,s3,s4;
+    s1.setValue('a');
+    s1.setPosizione({50});
+    s2.setValue('b');
+    s2.setPosizione({75});
+    s3.setValue('c');
+    s3.setPosizione({87});
+    s4.setValue('d');
+    s4.setPosizione({93});
+    tmp.append(s1);
+    tmp.append(s2);
+    tmp.append(s3);
+    tmp.append(s4);
+    te = new TextEdit(this);
+    emit(newTextEdit(te));
+    te->loadFile(tmp);
     te->show();
 
 }
