@@ -41,6 +41,8 @@ Server::Server(QObject *parent) : QObject(parent)
 //    if(this->dbMan.get()->deleteAccount(name))
 //        qDebug() << "deleted" ;
 
+    this->dbMan->getDocument("inesistente");
+
     /*****************************/
 
     QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage);
