@@ -3,6 +3,9 @@
 #include <vector>
 #include <QChar>
 #include <QString>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 class Symbol
 {
@@ -40,6 +43,9 @@ public:
     void setSiteId(int value);
     int getCounter() const;
     void setCounter(int value);
+    static Symbol fromJson(const QJsonDocument &charJD);
+    QJsonDocument toJson();
+    bool operator < (const Symbol &other) const;
     bool operator!=(const Symbol &symbol){
         if(this->siteId!=symbol.siteId || this->value!=symbol.value || this->counter!=symbol.counter)
             return true;

@@ -222,7 +222,12 @@ void socketManager::onTextMessageReceived(QString message)
         emit(setSiteId(m.getSender()));
         break;
     case 'R':
-        emit(receivedFile());
+        QList<Symbol> listtmp;
+        foreach (QString s, m.getParams()) {
+            Symbol stmp=Symbol::fromJson(QJsonDocument::fromJson(s.toUtf8()));
+            listtmp.append(stmp);
+        }
+        emit(receivedFile(listtmp));
         break;
 //
     default:

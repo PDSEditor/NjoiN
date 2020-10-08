@@ -23,7 +23,7 @@ signals:
     void receivedLogin(bool resp);
     void receivedInfoAccount(Message&);
     void setSiteId(int);
-    void receivedFile();
+    void receivedFile(QList<Symbol>);
 
 public slots:
     void receiveImage(QByteArray im);

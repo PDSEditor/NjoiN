@@ -36,7 +36,7 @@ public:
 
 public slots:
     void receivedInfoAccount(Message& m);
-    void receivedFile();
+    void receivedFile(QList<Symbol>);
 signals:
     void newTextEdit(TextEdit* t);
     // prova
