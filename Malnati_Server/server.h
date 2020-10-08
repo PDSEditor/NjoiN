@@ -38,11 +38,12 @@ private:
 
 signals:
 
-    void openFileFromDB (std::string nome);                      // chiedi al DB manager di recuperare il file dal DB
+    void openFileFromDB (QString nome);                      // chiedi al DB manager di recuperare il file dal DB
     void closed();  //TODO: decidere quando emettere questo segnale
+    //void newAccountOnline (int siteId, Account &acc);
 
 public slots:
-    void processMessage(Message mes);
+    void processMessage(Message &mes);
     //void tryInLocal (std::string);              //controlla se il file è tra quelli nella memoria locale del server (in documents) OF
 
 public:

@@ -10,6 +10,7 @@
 
 
 #include "message.h"
+#include "account.h"
 
 #define N_PORT 1234
 
@@ -30,13 +31,14 @@ public:
     void setClients(const QMap<int, QWebSocket *> &value);
 
 signals:
-    void newMessage(Message m);
+    void newMessage(Message &m);
     void newAccountOnline (int siteId);
+    void accountDisconnected(int siteId);
 
 public slots:
     void messageToUser (Message &m, int siteId);
     void binaryMessageToUser(Message &m, int siteId);
-    void fileToUser (std::vector<Symbol> file, int user);
+    void fileToUser (std::vector<Symbol> &file, int user);
     void onNewConnection();
     void processTextMessage(QString message);
     void processBinaryMessage(const QByteArray &data);

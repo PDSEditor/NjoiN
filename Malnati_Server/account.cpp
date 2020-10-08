@@ -1,7 +1,7 @@
 #include "account.h"
 
 Account::Account(){
-
+    //this->username = "Placeholder";                     // per riconoscere un account creato solo temporaneamente
 }
 
 Account::Account(QString username, int siteId, QByteArray& image, QList<QString> &documentUris): username(username), siteId(siteId), image(image)

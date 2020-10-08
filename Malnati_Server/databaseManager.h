@@ -59,12 +59,12 @@ public:
     /************/
 
     /** SYMBOL **/
-    bool insertSymbol(Message mes);
-    bool deleteSymbol(Message mes);
+    bool insertSymbol(Message &mes);
+    bool deleteSymbol(Message &mes);
     /************/
 
     /** DOCUMENT **/
-    bool insertDocument(SharedDocument document);
+    bool insertDocument(SharedDocument &document);
     SharedDocument getDocument(QString documentId); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
     QList<Symbol> retrieveSymbolsOfDocument(QString documentId);
     QList<SharedDocument> getAllDocuments(); //todo: da fare

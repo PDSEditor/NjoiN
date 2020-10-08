@@ -203,7 +203,7 @@ bool DatabaseManager::changeImage(QString _id, QByteArray &image){
     return true;
 }
 
-bool DatabaseManager::insertSymbol(Message mes) {
+bool DatabaseManager::insertSymbol(Message &mes) {
     Symbol symbol = mes.getSymbol();
     QVector<QString> params = mes.getParams();
     QString documentId = params.at(0); //controllare se il documento esiste?
@@ -237,7 +237,7 @@ bool DatabaseManager::insertSymbol(Message mes) {
 
 }
 
-bool DatabaseManager::deleteSymbol(Message mes)
+bool DatabaseManager::deleteSymbol(Message &mes)
 {
     Symbol symbol = mes.getSymbol();
     QVector<QString> params = mes.getParams();
@@ -262,7 +262,7 @@ bool DatabaseManager::deleteSymbol(Message mes)
     return true;
 }
 
-bool DatabaseManager::insertDocument(SharedDocument document)
+bool DatabaseManager::insertDocument(SharedDocument &document)
 {
     mongocxx::collection documentCollection = (this->db)["document"];
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
@@ -286,11 +286,14 @@ bool DatabaseManager::insertDocument(SharedDocument document)
 
     try {
         documentCollection.insert_one(view);
+        addDocumentToAccount(id, document.getUserAllowed().at(0));
     } catch (mongocxx::bulk_write_exception& e) {
         qDebug() << "[ERROR][DatabaseManager::insertDocument] insert_one error, maybe duplicated?";
         return false;
-    }
-    addDocumentToAccount(id, document.getUserAllowed().at(0));
+    }catch (const mongocxx::logic_error &e){
+        qDebug() << "Logic error inserting document name in DB: " << e.what();
+        throw;
+        }
     return true;
 }
 
@@ -430,6 +433,7 @@ bool DatabaseManager::addDocumentToAccount(QString documentId, QString username)
     }
 
 }
+
 void DatabaseManager::changeDocumentName(QString documentId, QString newName){
     mongocxx::collection documentCollection = this->db["document"];
 
@@ -448,10 +452,10 @@ void DatabaseManager::changeDocumentName(QString documentId, QString newName){
     try {
         documentCollection.update_one(document.view(), newDocument.view());
     } catch (const mongocxx::bulk_write_exception &e) {
-        qDebug() << "Error changing document name in DB";
+        qDebug() << "Error changing document name in DB: " << e.what();
         throw;
     } catch (const mongocxx::logic_error &e){
-        qDebug() << "Logic error changing document name in DB";
+        qDebug() << "Logic error changing document name in DB: " << e.what();
         throw;
     }
 }

@@ -18,16 +18,16 @@ Server::Server(QObject *parent) : QObject(parent)
      ****** TEST DB ***********
      *************************/
 
-    QString name = "test";
-    QString pass = "test";
+//    QString name = "test";
+//    QString pass = "test";
 
-    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-    QByteArray image = img.readAll();
+//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img.readAll();
 
-//    Account account(name, 0, image);
+//    Account account(name, 5, image);
 //    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
-//        qDebug() << "inserted?" ;
+//        qDebug() << "inseted?" ;
 
 
 
@@ -43,17 +43,10 @@ Server::Server(QObject *parent) : QObject(parent)
 
     /*****************************/
 
-    QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage );
+    QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage);
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
-    QObject::connect(this->socketMan.get(), &SocketManager::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
-
-
-    //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
-
-
-    //QObject::connect(this, &Server::sendMessage, socketMan, &SocketManager::messageToUser);
-
-    //QObject::connect(dbMan, &DatabaseManager::sendFile, socketMan, &SocketManager::fileToUser );*/
+    //QObject::connect(this, &Server::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
+    QObject::connect(this->socketMan.get(), &SocketManager::accountDisconnected, this->acMan.get(), &AccountManager::removeOnlineAccounts );
 
 
 }
@@ -71,7 +64,7 @@ void Server::dispatchMessage(Message &mes) {
     }
 }
 
-void Server::processMessage( Message mesIn) {
+void Server::processMessage(Message &mesIn) {
 
     /* tabella di conversione:
      * Significato -> Lettera nel Messaggio -> int corrispondente
@@ -83,6 +76,7 @@ void Server::processMessage( Message mesIn) {
      * Collaborate by URI -> U
      * REGISTER user (Sign up)  -> S
      * LOG-IN -> L
+     * LOGOUT -> O
     */
 
     QChar action = mesIn.getAction();
@@ -118,7 +112,7 @@ void Server::processMessage( Message mesIn) {
 //            qDebug() << i.getValue();
 //        }
 
-//        this->dbMan.get()->insertSymbol(mes);
+//        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
         this->dispatchMessage(mesIn);
 //        remoteInsert(mes.getSymbol());
         break;
@@ -198,7 +192,9 @@ void Server::processMessage( Message mesIn) {
             auto account = this->acMan->getOnlineAccounts().find(siteId).value();
             account.get()->getDocumentUris().push_back(uri);
 
+            /** aggiorniamo entrambe le liste **/
             this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
+            this->dbMan->addDocumentToAccount(documentId, account.get()->getUsername());
 
 
         }
@@ -219,13 +215,19 @@ void Server::processMessage( Message mesIn) {
         mesOut.setAction('L');
         mesOut.setSender(mesIn.getSender());
         if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
-//          acc = dbMan->getAccount(mesIn.getParams()[0]);
+
             Account acc(dbMan->getAccount(mesIn.getParams()[0]));
 
-            params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
-            params.append(acc.getDocumentUris().toVector());
-            mesOut.setParams(params);
-            mesOut.setError(false);
+            if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
+                params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+                params.append(acc.getDocumentUris().toVector());
+                mesOut.setParams(params);
+                mesOut.setError(false);
+                mesOut.setSender(acc.getSiteId());           }
+            else {                                                                      //utente era già collegato da un altro client
+                mesOut.setError(true);
+                qDebug() << "autenticazione di un utente già online";
+            }
 
         }
         else {
@@ -233,7 +235,13 @@ void Server::processMessage( Message mesIn) {
             qDebug() << "autenticazione fallita";
         }
 
-        socketMan->messageToUser(mesOut, mesOut.getSender());
+        socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
+                                                                                    // e dentro il siteId ci metto il sender "ufficiale"
+
+        break;
+
+    case 'O' :
+        //Signup
 
         break;
 
@@ -274,7 +282,7 @@ int Server::remoteInsert(Symbol symbol){
     int min=0;
     int max = this->symbols.size()-1;
     int middle=(max+min)/2 , pos;
-    std::vector<int> index=symbol.getPosition();
+    std::vector<int> index(symbol.getPosition().begin(), symbol.getPosition().end());//=symbol.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     //controllo se è ultimo
@@ -315,7 +323,7 @@ int Server::remoteInsert(Symbol symbol){
 
 int Server::remoteDelete(Symbol s){
     int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index=s.getPosition();
+    std::vector<int> index(s.getPosition().begin(), s.getPosition().end());//=s.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     it=symbols.begin();
