@@ -193,6 +193,9 @@ void Server::processMessage(Message &mesIn) {
         documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
 
 
+        mesOut.setAction('U');
+        mesOut.setSender(mesIn.getSender());
+
         try {
             doc = this->dbMan->getDocument(documentId);
             int siteId = mesIn.getSender();
@@ -203,11 +206,21 @@ void Server::processMessage(Message &mesIn) {
             this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
             this->dbMan->addDocumentToAccount(documentId, account.get()->getUsername());
 
+            username = account.get()->getUsername();
+
+            auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
+            for(auto symbol : symbols) {
+                mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+            }
+            mesOut.setError(false);
 
         }
         catch(...) {
             qDebug() << "Documento non esistente";
+            mesOut.setError(true);
         }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
 
