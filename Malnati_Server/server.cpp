@@ -40,7 +40,24 @@ Server::Server(QObject *parent) : QObject(parent)
 //        qDebug() << "passChanged";
 //    if(this->dbMan.get()->deleteAccount(name))
 //        qDebug() << "deleted" ;
-
+//        Message m1,m2;
+//        Symbol s1,s2,s3,s4;
+//        s1.setValue('a');
+//        s1.setPosition({50});
+//        s1.setSiteId(0);
+//        s1.setCounter(1);
+//        s2.setValue('b');
+//        s2.setPosition({75});
+//        s2.setSiteId(0);
+//        s2.setCounter(1);
+//        m1.setParams({"newfile_test"});
+//        m1.setSymbol(s1);
+//        m2.setParams({"newfile_test"});
+//        m2.setSymbol(s2);
+//            if(this->dbMan.get()->insertSymbol(m1))
+//                qDebug() << "symbol inserted" ;
+//            if(this->dbMan.get()->insertSymbol(m2))
+//                qDebug() << "symbol inserted" ;
     /*****************************/
 
     QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage);
@@ -106,12 +123,12 @@ void Server::processMessage(Message &mesIn) {
 
 //        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
         this->dispatchMessage(mesIn);
-//        remoteInsert(mes.getSymbol());
+//        remoteInsert(mesIn.getSymbol());
         break;
     case 'D':
-//        this->dbMan.get()->deleteSymbol(mes);
+//        this->dbMan.get()->deleteSymbol(mesIn);
         this->dispatchMessage(mesIn);
-//        remoteDelete(mes.getSymbol());
+//        remoteDelete(mesIn.getSymbol());
         break;
 
 

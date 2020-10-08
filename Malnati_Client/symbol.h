@@ -11,7 +11,7 @@ class Symbol
 {
 private:
     QChar value;
-    std::vector<int> posizione;
+    std::vector<int> position;
     int siteId;
     int counter;
     //informazioni del testo
@@ -33,7 +33,7 @@ public:
     void setItalic(bool i);
     void setUnderln(bool u);
     void setSize(qreal s);
-    Symbol(QChar value, std::vector<int> posizione, int siteId, int counter);
+    Symbol(QChar value, std::vector<int> position, int siteId, int counter);
     Symbol();
     QChar getValue() const;
     void setValue(QChar value);

@@ -14,7 +14,7 @@ class Symbol
 
 private:
     QChar value;
-    QVector<int> position;
+    std::vector<int> position;
     int siteId;
     int counter;
 
@@ -26,8 +26,8 @@ private:
 
 
 public:
-    Symbol(QVector<int> &position, int siteId, int counter);
-    Symbol(QChar value, QVector<int> &position, int siteId, int counter);
+    Symbol(std::vector<int> &position, int siteId, int counter);
+    Symbol(QChar value, std::vector<int> &position, int siteId, int counter);
     Symbol();
 
     QString getFamily();
@@ -41,8 +41,8 @@ public:
     void setUnderln(bool u);
     void setSize(qreal s);
 
-    QVector<int> getPosition() const;
-    void setPosition(const QVector<int> &value);
+    std::vector<int> getPosition() const;
+    void setPosition(const std::vector<int> &value);
     int getSiteId() const;
     void setSiteId(int value);
     int getCounter() const;

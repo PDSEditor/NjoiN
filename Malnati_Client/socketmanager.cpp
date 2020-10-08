@@ -205,6 +205,7 @@ void socketManager::onConnected()
 void socketManager::onTextMessageReceived(QString message)
 {
     Message m=Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
+    QList<Symbol> listtmp;
 
     switch (m.getAction().toLatin1()) {
     case 'L':
@@ -222,9 +223,9 @@ void socketManager::onTextMessageReceived(QString message)
         emit(setSiteId(m.getSender()));
         break;
     case 'R':
-        QList<Symbol> listtmp;
+
         foreach (QString s, m.getParams()) {
-            Symbol stmp=Symbol::fromJson(QJsonDocument::fromJson(s.toUtf8()));
+            auto stmp=Symbol::fromJson(QJsonDocument::fromJson(s.toUtf8()));
             listtmp.append(stmp);
         }
         emit(receivedFile(listtmp));

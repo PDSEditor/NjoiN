@@ -222,7 +222,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             action='I';
         else
             action='D';
-        QVector<int> vtmp;
+        std::vector<int> vtmp;
         int i=2;
         while(bytemex.at(i)!='}'){
             c.clear();

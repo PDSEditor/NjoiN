@@ -340,9 +340,8 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
         for (auto elem : resultIterator) {
             QString symbol = QString::fromStdString(
                         bsoncxx::to_json(elem));
-            QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());
-            QJsonObject symbolObjJson = stringDocJSON.object();
-            Symbol symbolToInsert = Symbol::fromJson(symbolObjJson);
+            QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());           
+            Symbol symbolToInsert = Symbol::fromJson(stringDocJSON);
             orderedSymbols.push_back(symbolToInsert);
         }
     } catch (mongocxx::query_exception &e) {

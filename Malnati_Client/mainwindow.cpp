@@ -42,7 +42,6 @@ void MainWindow::newFile(){
     emit(newTextEdit(te));
     te->show();
     // This is available in all editors.
-
 }
 
 int MainWindow::getSiteId() const
@@ -68,8 +67,9 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
     Message m;
     m.setAction('R');
     m.setParams({s->text(),username});
-    //emit(sendTextMessage(&m));
-    receivedFile();
+    m.setSender(siteId);
+    emit(sendTextMessage(&m));
+
 
 }
 
@@ -92,6 +92,13 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     emit(newTextEdit(te));
     te->loadFile(tmp);
     te->show();
+
+}
+
+void MainWindow::sendUri(Message m)
+{
+    m.setSender(siteId);
+    emit(sendTextMessage(&m));
 
 }
 
@@ -132,7 +139,7 @@ void MainWindow::on_pushButton_clicked()
 
 }
 
-void MainWindow::addElementforUser(QString string){
+void MainWindow::addElementforUser(QString string){   
     ui->listWidget->addItem(string);
 }
 
@@ -155,4 +162,21 @@ void MainWindow::on_actionAccount_triggered()
 void MainWindow::on_actionClose_triggered()
 {
     this->close();
+}
+
+void MainWindow::on_listView_indexesMoved(const QModelIndexList &indexes)
+{
+
+}
+
+void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
+{
+
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{Inserturi i;
+    connect(&i,&Inserturi::sendUri,this,&MainWindow::sendUri);
+    i.exec();
+
 }

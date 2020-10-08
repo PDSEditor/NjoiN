@@ -2,10 +2,10 @@
 
 #include <qvector.h>
 
-Symbol::Symbol(QChar value, std::vector<int> posizione, int siteId, int counter): value(value), siteId(siteId), counter(counter)
+Symbol::Symbol(QChar value, std::vector<int> position, int siteId, int counter): value(value), siteId(siteId), counter(counter)
 {
     //this->value = value;
-    this->posizione = std::move(posizione);
+    this->position = std::move(position);
     //this->siteId = siteId;
     //this->counter = counter;
 }
@@ -41,12 +41,12 @@ void Symbol::setCounter(int value)
 
 std::vector<int> Symbol::getPosizione() const
 {
-    return posizione;
+    return position;
 }
 
 void Symbol::setPosizione(const std::vector<int> &value)
 {
-    posizione = value;
+    position = value;
 }
 
 QString Symbol::getFamily()
@@ -107,7 +107,8 @@ Symbol Symbol::fromJson(const QJsonDocument &charJD){
     QJsonArray fractionalPosJ = charJ["position"].toArray();
     int counter = charJ["counter"].toInt();
 
-    QVector<int> fractionalPos;
+    //QVector<int> fractionalPos;
+    std::vector<int> fractionalPos;
     for(auto i: fractionalPosJ){
         fractionalPos.push_back(i.toInt());
     }
