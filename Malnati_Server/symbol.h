@@ -49,7 +49,7 @@ public:
     void setCounter(int value);
     QChar getValue() const;
     void setValue(QChar v);
-    static Symbol fromJson(const QJsonObject &JsonObj);
+    static Symbol fromJson(const QJsonDocument &charJD);
     QJsonDocument toJson();
     bool operator < (const Symbol &other) const;
 };
