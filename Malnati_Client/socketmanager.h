@@ -8,6 +8,7 @@
 #include <string>
 #include "string.h"
 #include <QDataStream>
+#include <QMessageBox>
 
 
 class socketManager : public QObject
@@ -24,6 +25,7 @@ signals:
     void receivedInfoAccount(Message&);
     void setSiteId(int);
     void receivedFile(QList<Symbol>);
+    void receivedURIerror();
 
 public slots:
     void receiveImage(QByteArray im);

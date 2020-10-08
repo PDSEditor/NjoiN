@@ -321,7 +321,7 @@ SharedDocument DatabaseManager::getDocument(QString documentId){
         SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
         return shared;
     }
-    else throw;
+
 }
 
 QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)

@@ -2,6 +2,8 @@
 
 #include "ui_inserturi.h"
 
+#include <QCryptographicHash>
+
 Inserturi::Inserturi(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Inserturi)
@@ -18,7 +20,7 @@ void Inserturi::on_buttonBox_clicked(QAbstractButton *button)
 {
     Message m;
     m.setAction('U');
-    m.setParams({ui->label->text()});
+    m.setParams({ui->lineEdit->text()});
     emit(sendUri(m));
 }
 

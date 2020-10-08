@@ -102,6 +102,11 @@ void MainWindow::sendUri(Message m)
 
 }
 
+void MainWindow::receiveURIerror()
+{
+   QMessageBox::information(this,"Login","Username e password corretti");
+}
+
 void MainWindow::setImage(QPixmap im){
     image=im;
 }

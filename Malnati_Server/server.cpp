@@ -207,7 +207,8 @@ void Server::processMessage(Message &mesIn) {
         // nella pagina di scelta
 
         uri = mesIn.getParams()[0];
-        documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+       // documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+        documentId=uri;
 
 
         mesOut.setAction('U');
