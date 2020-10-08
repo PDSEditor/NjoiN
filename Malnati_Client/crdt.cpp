@@ -183,6 +183,11 @@ std::vector<Symbol> Crdt::getSymbols(){
     return this->symbols;
 }
 
+void Crdt::setSymbols(std::vector<Symbol> vect)
+{
+    symbols=vect;
+}
+
 int Crdt::getCounterAndIncrement(){
     return ++Crdt::counter;
 }

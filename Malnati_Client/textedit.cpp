@@ -196,7 +196,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 }
 
-TextEdit::TextEdit(QString string,QWidget *parent)
+TextEdit::TextEdit(QList<Symbol> file,QWidget *parent)
     : QMainWindow(parent)
 {
 #ifdef Q_OS_OSX
@@ -249,7 +249,10 @@ TextEdit::TextEdit(QString string,QWidget *parent)
     localsize=12;
     textEdit->currentCharFormat().setFontItalic(false);
     textEdit->currentCharFormat().setFontUnderline(false);
-    textEdit->setPlainText(string);
+
+
+
+
     //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -549,7 +552,7 @@ void TextEdit::setCrdt(Crdt *crdtclient)
 void TextEdit::setSocketM(socketManager *sockclient)
 {
     sockm=sockclient;
-     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
+    connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
 }
 
 bool TextEdit::maybeSave()
@@ -1096,7 +1099,17 @@ void TextEdit::alignmentChanged(Qt::Alignment a)
         actionAlignJustify->setChecked(true);
 }
 
-QTextEdit& TextEdit::getTextEdit(){
-    return *textEdit;
+
+
+void TextEdit::loadFile(QList<Symbol> file)
+{
+    std::vector<Symbol> vtmp;
+    QTextCursor curs=textEdit->textCursor();
+    foreach(Symbol s,file){
+        externAction=true;
+        curs.insertText(s.getValue());
+        vtmp.push_back(s);
+    }
+    crdt->setSymbols(vtmp);
 }
 

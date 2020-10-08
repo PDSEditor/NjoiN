@@ -43,6 +43,7 @@ public:
     int remotedelete(Symbol s);
 
     std::vector<Symbol> getSymbols();
+    void setSymbols(std::vector<Symbol> vect);
     ~Crdt();
 
 
