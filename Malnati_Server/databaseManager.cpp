@@ -2,6 +2,7 @@
 #include <iostream>
 #include <QDebug>
 #include <QCryptographicHash>
+#include <stdexcept>
 
 DatabaseManager::DatabaseManager()
 {
@@ -306,9 +307,10 @@ SharedDocument DatabaseManager::getDocument(QString documentId){
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     try {
         result = documents.find_one(documentToRetrieve.view());
+
     } catch (mongocxx::query_exception &e) {
         qDebug() << e.what();
-        throw;
+        throw std::exception();
     }
 
     if(result){
@@ -321,6 +323,10 @@ SharedDocument DatabaseManager::getDocument(QString documentId){
         SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
         return shared;
     }
+    else{
+        throw std::exception() ;
+    }
+
 
 }
 

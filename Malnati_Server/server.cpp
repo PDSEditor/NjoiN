@@ -40,9 +40,6 @@ Server::Server(QObject *parent) : QObject(parent)
 //        qDebug() << "passChanged";
 //    if(this->dbMan.get()->deleteAccount(name))
 //        qDebug() << "deleted" ;
-
-    this->dbMan->getDocument("inesistente");
-
 //        Message m1,m2;
 //        Symbol s1,s2,s3,s4;
 //        s1.setValue('a');
@@ -235,7 +232,7 @@ void Server::processMessage(Message &mesIn) {
             mesOut.setError(false);
 
         }
-        catch(...) {
+        catch(std::exception& e){
             qDebug() << "Documento non esistente";
             mesOut.setError(true);
         }
