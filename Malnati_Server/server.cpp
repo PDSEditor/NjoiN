@@ -206,8 +206,6 @@ void Server::processMessage(Message &mesIn) {
             this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
             this->dbMan->addDocumentToAccount(documentId, account.get()->getUsername());
 
-            username = account.get()->getUsername();
-
             auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
             for(auto symbol : symbols) {
                 mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
