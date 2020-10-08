@@ -210,7 +210,10 @@ void socketManager::onTextMessageReceived(QString message)
     switch (m.getAction().toLatin1()) {
     case 'L':
         if(m.getError()){
-            emit(receivedLogin(false));
+            if( m.getParams().length()!=0 && m.getParams().at(0)=="2" )
+                emit(loggedin());
+            else
+                emit(receivedLogin(false));
         }
         else{
             this->siteId = m.getSender();

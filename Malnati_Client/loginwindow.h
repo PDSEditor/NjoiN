@@ -23,6 +23,7 @@ signals:
  public slots:
      void receivedLogin(bool resp);
      void receivedSiteId(int siteid);
+     void loggedin();
 private slots:
     void on_pushButton_login_clicked();
     void on_pushButton_signup_clicked();

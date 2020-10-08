@@ -26,6 +26,7 @@ signals:
     void setSiteId(int);
     void receivedFile(QList<Symbol>);
     void receivedURIerror();
+    void loggedin();
 
 public slots:
     void receiveImage(QByteArray im);

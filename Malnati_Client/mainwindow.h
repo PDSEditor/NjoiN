@@ -40,6 +40,7 @@ public slots:
     void receivedFile(QList<Symbol>);
     void sendUri(Message);
     void receiveURIerror();
+
 signals:
     void newTextEdit(TextEdit* t);
     // prova
