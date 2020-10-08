@@ -32,56 +32,11 @@ void Message::setParams(const QVector<QString> &value)
     params = value;
 }
 
-
-QString Message::getFamily()
+void Message::addParam(QString s)
 {
-    return family;
+    this->params.push_back(s);
 }
 
-bool Message::getBold()
-{
-    return bold;
-}
-
-bool Message::getItalic()
-{
-    return italic;
-}
-
-bool Message::getUnderln()
-{
-    return underln;
-}
-
-qreal Message::getSize()
-{
-    return size;
-}
-
-void Message::setFamily(QString f)
-{
-    family=f;
-}
-
-void Message::setBold(bool b)
-{
-    bold=b;
-}
-
-void Message::setItalic(bool i)
-{
-    italic=i;
-}
-
-void Message::setUnderln(bool u)
-{
-    underln=u;
-}
-
-void Message::setSize(qreal s)
-{
-    size=s;
-}
 
 int Message::getSender() const
 {

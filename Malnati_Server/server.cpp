@@ -82,14 +82,6 @@ void Server::processMessage(Message &mesIn) {
     QChar action = mesIn.getAction();
     char first =  action.toLatin1();
     QString nomeFile;
-//    int siteId;
-    if (first == 'R'){
-        /*QString delimiter = "-";
-        int index = action.indexOf(delimiter);
-        nomeFile = action;
-        nomeFile.right(index);*/
-    }
-
     QList<Symbol> document;
     QString uri;
     QString documentId;
@@ -121,18 +113,33 @@ void Server::processMessage(Message &mesIn) {
         this->dispatchMessage(mesIn);
 //        remoteDelete(mes.getSymbol());
         break;
+
+
+
     case 'R' :
 
-        //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
-
-        nomeFile = mesIn.getParams()[0];
+        documentId = mesIn.getParams()[0];
         username = mesIn.getParams()[1];
+        mesOut.setAction('R');
+        mesOut.setSender(mesIn.getSender());
 
-        docMan->checkPermission(username, nomeFile);
-        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
-        //Restituisci il file
 
+        if(this->dbMan->getDocument(documentId).getUserAllowed().contains(username)){
+            auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
+            for(auto symbol : symbols) {
+                mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+            }
+            mesOut.setError(false);
+
+        }
+        else{
+            mesOut.setError(true);              //Non autorizzato
+        }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
         break;
+
+
 
     case 'C' :
     {
@@ -241,7 +248,8 @@ void Server::processMessage(Message &mesIn) {
         break;
 
     case 'O' :
-        //Signup
+        //Logout
+        this->acMan->removeOnlineAccounts(mesIn.getSender());                       // il metodo si occupa di cancellare l'account da tutte le liste di account online
 
         break;
 
