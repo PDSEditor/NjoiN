@@ -43,6 +43,24 @@ Server::Server(QObject *parent) : QObject(parent)
 //        qDebug() << "passChanged";
 //    if(this->dbMan.get()->deleteAccount(name))
 //        qDebug() << "deleted" ;
+//        Message m1,m2;
+//        Symbol s1,s2,s3,s4;
+//        s1.setValue('a');
+//        s1.setPosition({50});
+//        s1.setSiteId(0);
+//        s1.setCounter(1);
+//        s2.setValue('b');
+//        s2.setPosition({75});
+//        s2.setSiteId(0);
+//        s2.setCounter(1);
+//        m1.setParams({"newfile_test"});
+//        m1.setSymbol(s1);
+//        m2.setParams({"newfile_test"});
+//        m2.setSymbol(s2);
+//            if(this->dbMan.get()->insertSymbol(m1))
+//                qDebug() << "symbol inserted" ;
+//            if(this->dbMan.get()->insertSymbol(m2))
+//                qDebug() << "symbol inserted" ;
 
     /*****************************/
 
@@ -85,14 +103,6 @@ void Server::processMessage(Message &mesIn) {
     QChar action = mesIn.getAction();
     char first =  action.toLatin1();
     QString nomeFile;
-//    int siteId;
-    if (first == 'R'){
-        /*QString delimiter = "-";
-        int index = action.indexOf(delimiter);
-        nomeFile = action;
-        nomeFile.right(index);*/
-    }
-
     QList<Symbol> document;
     QString uri;
     QString documentId;
@@ -117,25 +127,40 @@ void Server::processMessage(Message &mesIn) {
 
 //        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
         this->dispatchMessage(mesIn);
-//        remoteInsert(mes.getSymbol());
+//        remoteInsert(mesIn.getSymbol());
         break;
     case 'D':
-//        this->dbMan.get()->deleteSymbol(mes);
+//        this->dbMan.get()->deleteSymbol(mesIn);
         this->dispatchMessage(mesIn);
-//        remoteDelete(mes.getSymbol());
+//        remoteDelete(mesIn.getSymbol());
         break;
+
+
+
     case 'R' :
 
-        //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
-
-        nomeFile = mesIn.getParams()[0];
+        documentId = mesIn.getParams()[0];
         username = mesIn.getParams()[1];
+        mesOut.setAction('R');
+        mesOut.setSender(mesIn.getSender());
 
-        docMan->checkPermission(username, nomeFile);
-        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
-        //Restituisci il file
 
+        if(this->dbMan->getDocument(documentId).getUserAllowed().contains(username)){
+            auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
+            for(auto symbol : symbols) {
+                mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+            }
+            mesOut.setError(false);
+
+        }
+        else{
+            mesOut.setError(true);              //Non autorizzato
+        }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
         break;
+
+
 
     case 'C' :
     {
@@ -186,8 +211,12 @@ void Server::processMessage(Message &mesIn) {
         // nella pagina di scelta
 
         uri = mesIn.getParams()[0];
-        documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+       // documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+        documentId=uri;
 
+
+        mesOut.setAction('U');
+        mesOut.setSender(mesIn.getSender());
 
         try {
             doc = this->dbMan->getDocument(documentId);
@@ -199,11 +228,19 @@ void Server::processMessage(Message &mesIn) {
             this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
             this->dbMan->addDocumentToAccount(documentId, account.get()->getUsername());
 
+            auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
+            for(auto symbol : symbols) {
+                mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+            }
+            mesOut.setError(false);
 
         }
-        catch(...) {
+        catch(std::exception& e){
             qDebug() << "Documento non esistente";
+            mesOut.setError(true);
         }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
 
@@ -230,12 +267,14 @@ void Server::processMessage(Message &mesIn) {
             else {                                                                      //utente era già collegato da un altro client
                 mesOut.setError(true);
                 qDebug() << "autenticazione di un utente già online";
+                mesOut.setParams({"2"});
             }
 
         }
         else {
             mesOut.setError(true);
             qDebug() << "autenticazione fallita";
+            mesOut.setParams({"1"});
         }
 
         socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
@@ -244,7 +283,8 @@ void Server::processMessage(Message &mesIn) {
         break;
 
     case 'O' :
-        //Signup
+        //Logout
+        this->acMan->removeOnlineAccounts(mesIn.getSender());                       // il metodo si occupa di cancellare l'account da tutte le liste di account online
 
         break;
 

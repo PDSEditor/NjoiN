@@ -3,12 +3,15 @@
 #include <vector>
 #include <QChar>
 #include <QString>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 class Symbol
 {
 private:
     QChar value;
-    std::vector<int> posizione;
+    std::vector<int> position;
     int siteId;
     int counter;
     //informazioni del testo
@@ -30,7 +33,7 @@ public:
     void setItalic(bool i);
     void setUnderln(bool u);
     void setSize(qreal s);
-    Symbol(QChar value, std::vector<int> posizione, int siteId, int counter);
+    Symbol(QChar value, std::vector<int> position, int siteId, int counter);
     Symbol();
     QChar getValue() const;
     void setValue(QChar value);
@@ -40,6 +43,9 @@ public:
     void setSiteId(int value);
     int getCounter() const;
     void setCounter(int value);
+    static Symbol fromJson(const QJsonDocument &charJD);
+    QJsonDocument toJson();
+    bool operator < (const Symbol &other) const;
     bool operator!=(const Symbol &symbol){
         if(this->siteId!=symbol.siteId || this->value!=symbol.value || this->counter!=symbol.counter)
             return true;

@@ -7,6 +7,7 @@
 #include "socketmanager.h"
 #include "QBuffer"
 #include <QListWidgetItem>
+#include <inserturi.h>
 
 
 
@@ -36,7 +37,9 @@ public:
 
 public slots:
     void receivedInfoAccount(Message& m);
-    void receivedFile();
+    void receivedFile(QList<Symbol>);
+    void sendUri(Message);
+    void receiveURIerror();
 signals:
     void newTextEdit(TextEdit* t);
     // prova
@@ -53,6 +56,12 @@ private slots:
     void on_actionAccount_triggered();
     void on_actionClose_triggered();
     void open_file_on_server(QListWidgetItem*);
+
+    void on_listView_indexesMoved(const QModelIndexList &indexes);
+
+    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;

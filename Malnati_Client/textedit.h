@@ -27,11 +27,11 @@ class TextEdit : public QMainWindow
 
 public:
     TextEdit(QWidget *parent = 0);
-    TextEdit(QString string,QWidget *parent = 0);
+    TextEdit(QList<Symbol> file,QWidget *parent = 0);
     bool load(const QString &f);
     void setCrdt(Crdt *crdtclient);
     void setSocketM(socketManager *sockclient);
-    QTextEdit& getTextEdit();
+    void loadFile(QList<Symbol>);
 
 
 public slots:

@@ -1,9 +1,11 @@
 #include "symbol.h"
 
-Symbol::Symbol(QChar value, std::vector<int> posizione, int siteId, int counter): value(value), siteId(siteId), counter(counter)
+#include <qvector.h>
+
+Symbol::Symbol(QChar value, std::vector<int> position, int siteId, int counter): value(value), siteId(siteId), counter(counter)
 {
     //this->value = value;
-    this->posizione = std::move(posizione);
+    this->position = std::move(position);
     //this->siteId = siteId;
     //this->counter = counter;
 }
@@ -39,12 +41,12 @@ void Symbol::setCounter(int value)
 
 std::vector<int> Symbol::getPosizione() const
 {
-    return posizione;
+    return position;
 }
 
 void Symbol::setPosizione(const std::vector<int> &value)
 {
-    posizione = value;
+    position = value;
 }
 
 QString Symbol::getFamily()
@@ -95,4 +97,51 @@ void Symbol::setUnderln(bool u)
 void Symbol::setSize(qreal s)
 {
     size=s;
+}
+
+Symbol Symbol::fromJson(const QJsonDocument &charJD){
+//    ushort value = charJ["value"].toString().at(0).unicode();
+    QJsonObject charJ=charJD.object();
+    int value = charJ["value"].toInt();
+    int siteId = charJ["siteId"].toInt();
+    QJsonArray fractionalPosJ = charJ["position"].toArray();
+    int counter = charJ["counter"].toInt();
+
+    //QVector<int> fractionalPos;
+    std::vector<int> fractionalPos;
+    for(auto i: fractionalPosJ){
+        fractionalPos.push_back(i.toInt());
+    }
+    /** TODO: non ancora implementato lo stile **/
+//    QJsonObject styleJ = charJ["style"].toObject();
+//    tStyle l_style = { styleJSON["fontFamily"].toString(), styleJSON["fontSize"].toInt(),
+//                           styleJSON["bold"].toBool(), styleJSON["italic"].toBool(),
+//                           styleJSON["underline"].toBool(), styleJSON["alignment"].toInt() };
+    Symbol result(value, fractionalPos, siteId, counter);
+    return result;
+}
+
+QJsonDocument Symbol::toJson()
+{
+    QJsonObject json_obj;
+    json_obj["value"] = this->value.toLatin1();
+    json_obj["siteId"] = this->siteId;
+    json_obj["counter"] = this->counter;
+    json_obj["family"] = this->family;
+    json_obj["bold"] = this->bold;
+    json_obj["italic"] = this->italic;
+    json_obj["underln"] = this->underln;
+    json_obj["size"] = this->size;
+
+    QJsonArray positionj;
+    for(int pos : this->position) {
+        positionj.append(pos);
+    }
+    json_obj["position"] = positionj;
+    return QJsonDocument(json_obj);
+
+
+
+
+
 }

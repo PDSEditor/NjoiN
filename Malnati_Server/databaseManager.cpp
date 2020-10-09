@@ -2,6 +2,7 @@
 #include <iostream>
 #include <QDebug>
 #include <QCryptographicHash>
+#include <stdexcept>
 
 DatabaseManager::DatabaseManager()
 {
@@ -306,9 +307,10 @@ SharedDocument DatabaseManager::getDocument(QString documentId){
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     try {
         result = documents.find_one(documentToRetrieve.view());
+
     } catch (mongocxx::query_exception &e) {
         qDebug() << e.what();
-        throw;
+        throw std::exception();
     }
 
     if(result){
@@ -321,7 +323,11 @@ SharedDocument DatabaseManager::getDocument(QString documentId){
         SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
         return shared;
     }
-    else throw;
+    else{
+        throw std::exception() ;
+    }
+
+
 }
 
 QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
@@ -340,9 +346,8 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
         for (auto elem : resultIterator) {
             QString symbol = QString::fromStdString(
                         bsoncxx::to_json(elem));
-            QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());
-            QJsonObject symbolObjJson = stringDocJSON.object();
-            Symbol symbolToInsert = Symbol::fromJson(symbolObjJson);
+            QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());           
+            Symbol symbolToInsert = Symbol::fromJson(stringDocJSON);
             orderedSymbols.push_back(symbolToInsert);
         }
     } catch (mongocxx::query_exception &e) {
