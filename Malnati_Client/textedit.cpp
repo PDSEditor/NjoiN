@@ -787,20 +787,10 @@ void TextEdit::textBold()
 
 void TextEdit::textUnderline()
 {
-    QTextCursor curs=textEdit->textCursor();
-    /*
     QTextCharFormat fmt;
     fmt.setFontUnderline(actionTextUnderline->isChecked());
     mergeFormatOnWordOrSelection(fmt);
-    */
-    QTextCharFormat qq;
-    qq.setFontUnderline(1);
-    int p=0;
-    int num=3;
-    curs.setPosition(p);
-    curs.movePosition(QTextCursor::NoMove,QTextCursor::KeepAnchor);
-    curs.setPosition(p+num);
-    curs.mergeCharFormat(qq);
+
 }
 
 void TextEdit::textItalic()
@@ -949,17 +939,26 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
         if(charsAdded!= 0){
             if(charsAdded==charsRemoved){
                 //dati da passare
-                int cpos=cursor.selectionStart();
-                int cn=charsAdded;
-                bool cbold=actionTextBold->isChecked();
-                bool citalic=actionTextItalic->isChecked();
-                bool cundl=actionTextUnderline->isChecked();
-                QString cfam=localFamily;
-                qreal csize=localsize;
+                int pos=cursor.selectionStart();
+                for(int i=0;i<charsAdded;i++){
+                    Message mc,mi;
+                    Symbol s=crdt->getSymbols().at(pos+i);
+                    mc.setSymbol(s);
+                    mc.setAction('D');
+                    emit(sendMessage(&mc));
+                    mi.setAction('I');
+                    s.setBold(actionTextBold->isChecked());
+                    s.setItalic(actionTextItalic->isChecked());
+                    s.setUnderln(actionTextUnderline->isChecked());
+                    s.setFamily(localFamily);
+                    s.setSize(localsize);
+                    mi.setSymbol(s);
+                    emit(sendMessage(&mi));
+                }
                 //
 
             }
-            else
+            else{
                 if(charsRemoved>0)
                 charsAdded--;
             for(int i=0; i<charsAdded; i++){
@@ -974,6 +973,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 m.setSymbol(s);
                 position+=1;
                 emit(sendMessage(&m));
+            }
             }
         }
    }
