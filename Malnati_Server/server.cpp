@@ -76,9 +76,17 @@ void Server::dispatchMessage(Message &mes) {
     int sender = mes.getSender();
 
     for(it=clients.begin(); it!= clients.end(); it++) {
-        if(it.key() != sender)
+        if(it.key() != sender) {
+
             //qDebug()<< "Mando la remote insert al client n" << it.key();
-            this->socketMan->messageToUser(mes, it.key());
+
+            QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
+
+            if(this->acMan->getAccountsPerFile().contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
+                                                                                       // lavorando al documento, in quel caso invia la insert o delete
+                this->socketMan->messageToUser(mes, it.key());
+            }
+        }
     }
 }
 
@@ -122,12 +130,12 @@ void Server::processMessage(Message &mesIn) {
 //            qDebug() << i.getValue();
 //        }
 
-//        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
+        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
         this->dispatchMessage(mesIn);
 //        remoteInsert(mesIn.getSymbol());
         break;
     case 'D':
-//        this->dbMan.get()->deleteSymbol(mesIn);
+        this->dbMan.get()->deleteSymbol(mesIn);
         this->dispatchMessage(mesIn);
 //        remoteDelete(mesIn.getSymbol());
         break;
