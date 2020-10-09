@@ -12,6 +12,9 @@ LoginWindow::LoginWindow(QWidget *parent) :
 {
     isLogin = false;
     ui->setupUi(this);
+    this->ui->logo1->setStyleSheet("background-image: url(/home/mongovm/progetto_malnati/Malnati_Client/images/Icons/logo-icon.png);background-repeat:none;background-position:center;");
+    setWindowTitle("NJoiN");
+
 }
 
 LoginWindow::~LoginWindow()
@@ -23,6 +26,7 @@ void LoginWindow::on_pushButton_login_clicked()
 {
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
+
     Message m;
     m.setAction('L');
     m.setParams({username,password});
@@ -106,4 +110,5 @@ void LoginWindow::on_pushButton_signup_clicked(){
 
 
 }
+
 
