@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -34,6 +34,8 @@ public:
     void setList(QList<QString> l);
     int getSiteId() const;
     void setSiteId(int value);
+    void setURI(QString);
+    QString getURI();
 
 public slots:
     void receivedInfoAccount(Message& m);
@@ -76,7 +78,7 @@ private:
 
     /** Account **/
     QPixmap image;
-    QString username;
+    QString username,openURI;
     QList<QString> documents;
     int siteId;
     /*************/

@@ -33,6 +33,8 @@ public:
     void setSocketM(socketManager *sockclient);
     void loadFile(QList<Symbol>);
     void setFileName(QString fileName);
+    void setURI(QString);
+    QString getURI();
 
 
 public slots:
@@ -42,6 +44,7 @@ public slots:
 
 signals:
     void sendMessage(Message *m);
+    void openMW();
 
 
 protected:
@@ -116,7 +119,7 @@ private:
     QComboBox *comboSize;
 
     QToolBar *tb;
-    QString fileName;
+    QString fileName,URI;
     QTextEdit *textEdit;
     Crdt *crdt;
     socketManager *sockm;

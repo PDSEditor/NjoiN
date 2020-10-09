@@ -46,6 +46,16 @@ void MainWindow::setSiteId(int value)
     siteId = value;
 }
 
+void MainWindow::setURI(QString u)
+{
+    openURI=u;
+}
+
+QString MainWindow::getURI()
+{
+    return openURI;
+}
+
 void MainWindow::receiveimage(QPixmap& q){
     QByteArray bArray;
     QBuffer buffer(&bArray);
@@ -60,6 +70,7 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
     m.setAction('R');
     m.setParams({s->text(),username});
     m.setSender(siteId);
+    openURI=s->text();
     emit(sendTextMessage(&m));
 
 
@@ -82,7 +93,10 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
 //    tmp.append(s4);
     te = new TextEdit(this);
     emit(newTextEdit(te));
+    te->setFileName(openURI.remove(openURI.length()-(username.length()+1),username.length()+1));
     te->loadFile(tmp);
+    te->setURI(openURI);
+    connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
     te->show();
 
 }
@@ -191,8 +205,10 @@ void MainWindow::receiveTitle(QString title)
     //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
    // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
     te->setFileName(title);
+    te->setURI(title+"_"+username);
+    addElementforUser(title+"_"+username);
     te->fileNew();
-
+    connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
     Message m;
     m.setAction('C');
     m.setParams({title, this->getUsername()});

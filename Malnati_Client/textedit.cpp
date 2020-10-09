@@ -300,10 +300,12 @@ TextEdit::TextEdit(QList<Symbol> file,QWidget *parent)
 
 void TextEdit::closeEvent(QCloseEvent *e)
 {
+
     if (maybeSave())
         e->accept();
     else
         e->ignore();
+    emit(openMW());
 }
 
 void TextEdit::setupFileActions()
@@ -558,6 +560,16 @@ void TextEdit::setSocketM(socketManager *sockclient)
 void TextEdit::setFileName(QString fileName)
 {
     this->fileName = fileName;
+}
+
+void TextEdit::setURI(QString u)
+{
+    URI=u;
+}
+
+QString TextEdit::getURI()
+{
+    return URI;
 }
 
 
@@ -1110,6 +1122,7 @@ void TextEdit::alignmentChanged(Qt::Alignment a)
 
 void TextEdit::loadFile(QList<Symbol> file)
 {
+    setCurrentFileName(QString());
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
     foreach(Symbol s,file){
