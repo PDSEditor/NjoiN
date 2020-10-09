@@ -24,7 +24,7 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
 //    QByteArray image = img.readAll();
 
-//    Account account(name, 0, image);
+//    Account account(name, 5, image);
 //    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
 //        qDebug() << "inseted?" ;
@@ -40,20 +40,31 @@ Server::Server(QObject *parent) : QObject(parent)
 //        qDebug() << "passChanged";
 //    if(this->dbMan.get()->deleteAccount(name))
 //        qDebug() << "deleted" ;
+//        Message m1,m2;
+//        Symbol s1,s2,s3,s4;
+//        s1.setValue('a');
+//        s1.setPosition({50});
+//        s1.setSiteId(0);
+//        s1.setCounter(1);
+//        s2.setValue('b');
+//        s2.setPosition({75});
+//        s2.setSiteId(0);
+//        s2.setCounter(1);
+//        m1.setParams({"newfile_test"});
+//        m1.setSymbol(s1);
+//        m2.setParams({"newfile_test"});
+//        m2.setSymbol(s2);
+//            if(this->dbMan.get()->insertSymbol(m1))
+//                qDebug() << "symbol inserted" ;
+//            if(this->dbMan.get()->insertSymbol(m2))
+//                qDebug() << "symbol inserted" ;
 
     /*****************************/
 
     QObject::connect(this->socketMan.get(), &SocketManager::newMessage, this, &Server::processMessage);
     //un nuovo utente si è collegato al server bisogna aggiungerlo a quelli online e reperire le sue informazioni
-    QObject::connect(this->socketMan.get(), &SocketManager::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
-
-
-    //QObject::connect(socketMan, &SocketManager::newMessage, dbMan, &DatabaseManager::updateDB);
-
-
-    //QObject::connect(this, &Server::sendMessage, socketMan, &SocketManager::messageToUser);
-
-    //QObject::connect(dbMan, &DatabaseManager::sendFile, socketMan, &SocketManager::fileToUser );*/
+    //QObject::connect(this, &Server::newAccountOnline, this->acMan.get(), &AccountManager::updateOnlineAccounts );
+    QObject::connect(this->socketMan.get(), &SocketManager::accountDisconnected, this->acMan.get(), &AccountManager::removeOnlineAccounts );
 
 
 }
@@ -65,9 +76,17 @@ void Server::dispatchMessage(Message &mes) {
     int sender = mes.getSender();
 
     for(it=clients.begin(); it!= clients.end(); it++) {
-        if(it.key() != sender)
+        if(it.key() != sender) {
+
             //qDebug()<< "Mando la remote insert al client n" << it.key();
-            this->socketMan->messageToUser(mes, it.key());
+
+            QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
+
+            if(this->acMan->getAccountsPerFile().contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
+                                                                                       // lavorando al documento, in quel caso invia la insert o delete
+                this->socketMan->messageToUser(mes, it.key());
+            }
+        }
     }
 }
 
@@ -83,19 +102,12 @@ void Server::processMessage(Message &mesIn) {
      * Collaborate by URI -> U
      * REGISTER user (Sign up)  -> S
      * LOG-IN -> L
+     * LOGOUT -> O
     */
 
     QChar action = mesIn.getAction();
     char first =  action.toLatin1();
     QString nomeFile;
-//    int siteId;
-    if (first == 'R'){
-        /*QString delimiter = "-";
-        int index = action.indexOf(delimiter);
-        nomeFile = action;
-        nomeFile.right(index);*/
-    }
-
     QList<Symbol> document;
     QString uri;
     QString documentId;
@@ -118,27 +130,42 @@ void Server::processMessage(Message &mesIn) {
 //            qDebug() << i.getValue();
 //        }
 
-//        this->dbMan.get()->insertSymbol(mes);
+        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
         this->dispatchMessage(mesIn);
-//        remoteInsert(mes.getSymbol());
+//        remoteInsert(mesIn.getSymbol());
         break;
     case 'D':
-//        this->dbMan.get()->deleteSymbol(mes);
+        this->dbMan.get()->deleteSymbol(mesIn);
         this->dispatchMessage(mesIn);
-//        remoteDelete(mes.getSymbol());
+//        remoteDelete(mesIn.getSymbol());
         break;
+
+
+
     case 'R' :
 
-        //aggiungere il siteId tra i parametri del messaggio o assicurarsi che venga preso in altro modo
-
-        nomeFile = mesIn.getParams()[0];
+        documentId = mesIn.getParams()[0];
         username = mesIn.getParams()[1];
+        mesOut.setAction('R');
+        mesOut.setSender(mesIn.getSender());
 
-        docMan->checkPermission(username, nomeFile);
-        this->dbMan.get()->retrieveSymbolsOfDocument(nomeFile);
-        //Restituisci il file
 
+        if(this->dbMan->getDocument(documentId).getUserAllowed().contains(username)){
+            auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
+            for(auto symbol : symbols) {
+                mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+            }
+            mesOut.setError(false);
+
+        }
+        else{
+            mesOut.setError(true);              //Non autorizzato
+        }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
         break;
+
+
 
     case 'C' :
     {
@@ -189,8 +216,12 @@ void Server::processMessage(Message &mesIn) {
         // nella pagina di scelta
 
         uri = mesIn.getParams()[0];
-        documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+       // documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+        documentId=uri;
 
+
+        mesOut.setAction('U');
+        mesOut.setSender(mesIn.getSender());
 
         try {
             doc = this->dbMan->getDocument(documentId);
@@ -198,13 +229,23 @@ void Server::processMessage(Message &mesIn) {
             auto account = this->acMan->getOnlineAccounts().find(siteId).value();
             account.get()->getDocumentUris().push_back(uri);
 
+            /** aggiorniamo entrambe le liste **/
             this->dbMan->addAccountToDocument(documentId, account.get()->getUsername());
+            this->dbMan->addDocumentToAccount(documentId, account.get()->getUsername());
 
+            auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
+            for(auto symbol : symbols) {
+                mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+            }
+            mesOut.setError(false);
 
         }
-        catch(...) {
+        catch(std::exception& e){
             qDebug() << "Documento non esistente";
+            mesOut.setError(true);
         }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
 
@@ -219,22 +260,36 @@ void Server::processMessage(Message &mesIn) {
         mesOut.setAction('L');
         mesOut.setSender(mesIn.getSender());
         if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
-//          acc = dbMan->getAccount(mesIn.getParams()[0]);
-            Account acc(dbMan->getAccount(mesIn.getParams()[0]));
-            mesOut.setSender(acc.getSiteId());
 
-            params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
-            params.append(acc.getDocumentUris().toVector());
-            mesOut.setParams(params);
-            mesOut.setError(false);
+            Account acc(dbMan->getAccount(mesIn.getParams()[0]));
+
+            if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
+                params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+                params.append(acc.getDocumentUris().toVector());
+                mesOut.setParams(params);
+                mesOut.setError(false);
+                mesOut.setSender(acc.getSiteId());           }
+            else {                                                                      //utente era già collegato da un altro client
+                mesOut.setError(true);
+                qDebug() << "autenticazione di un utente già online";
+                mesOut.setParams({"2"});
+            }
 
         }
         else {
             mesOut.setError(true);
             qDebug() << "autenticazione fallita";
+            mesOut.setParams({"1"});
         }
 
-        socketMan->messageToUser(mesOut, mesOut.getSender());
+        socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
+                                                                                    // e dentro il siteId ci metto il sender "ufficiale"
+
+        break;
+
+    case 'O' :
+        //Logout
+        this->acMan->removeOnlineAccounts(mesIn.getSender());                       // il metodo si occupa di cancellare l'account da tutte le liste di account online
 
         break;
 
@@ -275,7 +330,7 @@ int Server::remoteInsert(Symbol symbol){
     int min=0;
     int max = this->symbols.size()-1;
     int middle=(max+min)/2 , pos;
-    std::vector<int> index=symbol.getPosition().toStdVector();
+    std::vector<int> index(symbol.getPosition().begin(), symbol.getPosition().end());//=symbol.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     //controllo se è ultimo
@@ -316,7 +371,7 @@ int Server::remoteInsert(Symbol symbol){
 
 int Server::remoteDelete(Symbol s){
     int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index=s.getPosition().toStdVector();
+    std::vector<int> index(s.getPosition().begin(), s.getPosition().end());//=s.getPosition().toStdVector();
     std::vector<int> tmp;
     std::vector<Symbol>::iterator it;
     it=symbols.begin();

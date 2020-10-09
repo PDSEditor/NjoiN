@@ -43,20 +43,42 @@ bool AccountManager::closeDocumentByUser(QString username, QString documentId)
 
 }
 
-void AccountManager::updateOnlineAccounts(int siteId)
+bool AccountManager::updateOnlineAccounts(int siteId, const Account& acc)
 {
-    Account acc;
-    if(!this->accounts.contains(siteId)) {     //account che si collega per la prima volta
-        //implementare l'inserimento anche nel db
-        this->accounts.insert(siteId, acc);
 
+    if(!this->onlineAccounts.contains(siteId)) {     //account che si collega per la prima volta
+        //implementare l'inserimento anche nel db
+        auto acc_p = std::make_shared<Account>(acc);
+        this->onlineAccounts.insert(siteId,acc_p);
+        return true;
+    }
+    else{
+        return false;
     }
 
-//    acc = &accounts[siteId];
-//    this->onlineAccounts.insert(siteId, acc);
 }
 
 void AccountManager::removeOnlineAccounts(int siteId)
 {
+        QString username;
+
+        if(this->onlineAccounts.contains(siteId)) {
+            username = this->onlineAccounts.value(siteId).get()->getUsername();
+            this->onlineAccounts.remove(siteId);
+
+// rimuovo anche l'utente dalla lista che tiene conto degli utenti online sui file attualmente aperti
+
+            for(auto iter = this->accountsPerFile.begin(); iter != accountsPerFile.end(); ++iter) {
+
+                if(iter.value().contains(username)){
+                    iter.value().removeOne(username);
+                }
+
+            }
+        }
+        else {
+            qDebug("rimozione di un account con siteId non presente tra quelli accesi") ;
+        }
+
 
 }

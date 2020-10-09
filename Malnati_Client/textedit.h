@@ -27,10 +27,15 @@ class TextEdit : public QMainWindow
 
 public:
     TextEdit(QWidget *parent = 0);
+    TextEdit(QList<Symbol> file,QWidget *parent = 0);
     bool load(const QString &f);
     void setCrdt(Crdt *crdtclient);
     void setSocketM(socketManager *sockclient);
+    void loadFile(QList<Symbol>);
     void setFileName(QString fileName);
+    void setURI(QString);
+    QString getURI();
+
 
 public slots:
     void fileNew();
@@ -39,6 +44,7 @@ public slots:
 
 signals:
     void sendMessage(Message *m);
+    void openMW();
 
 
 protected:
@@ -115,7 +121,7 @@ private:
     QComboBox *comboSize;
 
     QToolBar *tb;
-    QString fileName;
+    QString fileName,URI;
     QTextEdit *textEdit;
     Crdt *crdt;
     socketManager *sockm;

@@ -27,8 +27,9 @@ void socketManager::messageToServer(Message *m)
     //qDebug()<<"Testo inviato: sia m diu ";
 }
 
-void socketManager::receiveImage(QByteArray im){
-    int i=0;
+void socketManager::receiveImage(QByteArray image){
+//    int i=0;
+    image=0;
 }
 
 
@@ -204,11 +205,15 @@ void socketManager::onConnected()
 void socketManager::onTextMessageReceived(QString message)
 {
     Message m=Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
+    QList<Symbol> listtmp;
 
     switch (m.getAction().toLatin1()) {
     case 'L':
         if(m.getError()){
-            emit(receivedLogin(false));
+            if( m.getParams().length()!=0 && m.getParams().at(0)=="2" )
+                emit(loggedin());
+            else
+                emit(receivedLogin(false));
         }
         else{
             this->siteId = m.getSender();
@@ -220,6 +225,25 @@ void socketManager::onTextMessageReceived(QString message)
 
         emit(setSiteId(m.getSender()));
         break;
+    case 'R':
+
+        foreach (QString s, m.getParams()) {
+            auto stmp=Symbol::fromJson(QJsonDocument::fromJson(s.toUtf8()));
+            listtmp.append(stmp);
+        }
+        emit(receivedFile(listtmp));
+        break;
+    case 'U':
+        if(!m.getError()){
+        foreach (QString s, m.getParams()) {
+            auto stmp=Symbol::fromJson(QJsonDocument::fromJson(s.toUtf8()));
+            listtmp.append(stmp);
+        }
+        emit(receivedFile(listtmp));
+        }
+        else{
+            emit(receivedURIerror());
+        }
 //
     default:
         qDebug() << "default";

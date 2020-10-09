@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -6,6 +6,8 @@
 #include "accountinterface.h"
 #include "socketmanager.h"
 #include "QBuffer"
+#include <QListWidgetItem>
+#include <inserturi.h>
 
 
 
@@ -32,9 +34,15 @@ public:
     void setList(QList<QString> l);
     int getSiteId() const;
     void setSiteId(int value);
+    void setURI(QString);
+    QString getURI();
 
 public slots:
     void receivedInfoAccount(Message& m);
+    void receivedFile(QList<Symbol>);
+    void sendUri(Message);
+    void receiveURIerror();
+
 signals:
     void newTextEdit(TextEdit* t);
     // prova
@@ -47,12 +55,16 @@ private slots:
     void receiveimage(QPixmap& im);
     void on_pushButton_clicked();
     void addElementforUser(QString);
-
     void on_actionNew_triggered();
-
     void on_actionAccount_triggered();
-
     void on_actionClose_triggered();
+    void open_file_on_server(QListWidgetItem*);
+
+    void on_listView_indexesMoved(const QModelIndexList &indexes);
+
+    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_pushButton_2_clicked();
 
     void receiveTitle(QString title);
 
@@ -63,10 +75,10 @@ private:
     TextEdit *te;
     AccountInterface *accountGui = nullptr;
     void newFile();
-
+    bool flaglocal=0;
     /** Account **/
     QPixmap image;
-    QString username;
+    QString username,openURI;
     QList<QString> documents;
     int siteId;
     /*************/

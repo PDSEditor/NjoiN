@@ -12,8 +12,9 @@ LoginWindow::LoginWindow(QWidget *parent) :
 {
     isLogin = false;
     ui->setupUi(this);
+
     this->ui->logo1->setStyleSheet("background-image: url(/home/mongovm/progetto_malnati/Malnati_Client/images/Icons/logo-icon.png);background-repeat:none;background-position:center;");
-    setWindowTitle("NJoiN");
+    setWindowTitle("Login");
 
 }
 
@@ -27,37 +28,42 @@ void LoginWindow::on_pushButton_login_clicked()
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
 
-    Message m;
-    m.setAction('L');
-    m.setParams({username,password});
-    //da cancellare assolutamente!!!!
-    m.setSender(siteId);
-    //
-    emit(sendMessage(&m));
-    //qui bisogna attendere che il server ritorni il siteId
-//    if(isLogin){                               //sostituire con Islogin==1!!!!!!
-//        QMessageBox::information(this,"Login","Username e password corretti");
-//       // mw = new MainWindow(this);
-//        setIsLogin(true);
-//       // TextEdit te;
-//      //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
-//      /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
-//                (availableGeometryMw.height() - mw->height()) / 2);*/
+    if ( username.size() == 0 || password.size() == 0 ) {
+            QMessageBox::warning(this, "Login Error", "Username and password cannot be empty");
+    } else {
+        Message m;
+        m.setAction('L');
+        m.setParams({username,password});
+        //da cancellare assolutamente!!!!
+        m.setSender(siteId);
+        //
+        emit(sendMessage(&m));
+        //qui bisogna attendere che il server ritorni il siteId
+        //    if(isLogin){                               //sostituire con Islogin==1!!!!!!
+        //        QMessageBox::information(this,"Login","Username e password corretti");
+        //       // mw = new MainWindow(this);
+        //        setIsLogin(true);
+        //       // TextEdit te;
+        //      //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
+        //      /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
+        //                (availableGeometryMw.height() - mw->height()) / 2);*/
 
 
-//        this->accept();
+        //        this->accept();
 
-//        //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-//       // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
+        //        //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
+        //       // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
 
-//        //te.fileNew();
-//       // mw->show();
-//       // hide();
-//    }
-//    else{
-//        QMessageBox::warning(this,"Login","Username e password non sono corretti");
-//        isLogin=false;
-//    }
+        //        //te.fileNew();
+        //       // mw->show();
+        //       // hide();
+        //    }
+        //    else{
+        //        QMessageBox::warning(this,"Login","Username e password non sono corretti");
+        //        isLogin=false;
+        //    }
+    }
+
 }
 
 void LoginWindow::receivedLogin(bool resp){
@@ -93,6 +99,11 @@ void LoginWindow::receivedLogin(bool resp){
 void LoginWindow::receivedSiteId(int siteid){
     siteId=siteid;
 
+}
+
+void LoginWindow::loggedin()
+{
+    QMessageBox::information(this,"Login","Utente già loggato");
 }
 bool LoginWindow::getIsLogin() const{
     return isLogin;

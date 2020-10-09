@@ -8,14 +8,17 @@ Client::Client()
     //connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::binaryMessageToServer);
     connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::messageToServer);
     connect(sockm, &socketManager::receivedLogin, &lw, &LoginWindow::receivedLogin);
+    connect(sockm, &socketManager::loggedin,&lw, &LoginWindow::loggedin);
     connect(sockm, &socketManager::receivedInfoAccount, mw, &MainWindow::receivedInfoAccount);
+    connect(sockm, &socketManager::receivedFile, mw, &MainWindow::receivedFile);
+    connect(sockm, &socketManager::receivedURIerror, mw, &MainWindow::receiveURIerror);
     connect(sockm,&socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
     
      lw.exec();
 
 
-     if(lw.getIsLogin()){
-         mw = new MainWindow();
+
+    if(lw.getIsLogin()==true){
          mw->show();
          crdt=new Crdt();
          //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);

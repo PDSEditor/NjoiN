@@ -35,6 +35,14 @@ void SocketManager::messageToUser( Message &m, int siteId) {
         if(m.getAction()=='S') {
             qDebug()<<"Invio site id al client n "<< siteId;
         }
+        if(m.getAction() == 'L') {                          //Se sono nel caso del login, devo prendere il siteId a cui viene associato il socket
+                                                            // che è temporaneo e associarlo al vero siteId che ho nel server, in questo modo
+                                                            // da ora in poi userò solo il vero siteId
+
+           auto const elem = std::move(it.value());
+           this->clients.erase(it);
+           this->clients.insert(m.getSender(), std::move(elem));
+        }
         QWebSocket *user = it.value();
         if(m.getAction()=='I' || m.getAction()=='D') {
             binaryMessageToUser(m, siteId);
@@ -214,7 +222,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
             action='I';
         else
             action='D';
-        QVector<int> vtmp;
+        std::vector<int> vtmp;
         int i=2;
         while(bytemex.at(i)!='}'){
             c.clear();
@@ -337,22 +345,24 @@ void SocketManager::onNewConnection()
     m.setParams({s});
     m.setSender(SocketManager::siteId);
     messageToUser(m,SocketManager::siteId);
+    Account acc;
 
-    emit newAccountOnline(SocketManager::siteId);
     SocketManager::siteId++;
 }
 
 void SocketManager::socketDisconnected()
 {
     QWebSocket *client = qobject_cast<QWebSocket *>(sender());
-    //if (m_debug)
-        qDebug() << "socketDisconnected";
+
+    int siteId = 9999;
 
     if (client) {
         auto it = clients.begin();
         while (it!= clients.end()) {
-            if(it.value()==client)
+            if(it.value()==client){
+                siteId = it.key();
                 it = clients.erase(it);
+            }
             else
                 it++;
         }
@@ -360,6 +370,13 @@ void SocketManager::socketDisconnected()
     }
 
     //emetti segnale per rimuovere da onlineAccounts
+    if(siteId != 9999) {
+        emit(accountDisconnected(siteId));
+        qDebug() << "socketDisconnected";
+    }
+    else {
+        qDebug()<<"errore disconnessione socket";
+    }
 
 }
 
