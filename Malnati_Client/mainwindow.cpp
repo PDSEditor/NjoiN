@@ -71,6 +71,7 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
     m.setParams({s->text(),username});
     m.setSender(siteId);
     openURI=s->text();
+    flaglocal=1;
     emit(sendTextMessage(&m));
 
 
@@ -93,7 +94,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
 //    tmp.append(s4);
     te = new TextEdit(this);
     emit(newTextEdit(te));
-    te->setFileName(openURI.remove(openURI.length()-(username.length()+1),username.length()+1));
+    te->setFileName(openURI.left(openURI.lastIndexOf('_')));
     te->loadFile(tmp);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
@@ -104,6 +105,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
 void MainWindow::sendUri(Message m)
 {
     m.setSender(siteId);
+    openURI=m.getParams().at(0);
     emit(sendTextMessage(&m));
 
 }

@@ -75,7 +75,7 @@ private:
     TextEdit *te;
     AccountInterface *accountGui = nullptr;
     void newFile();
-
+    bool flaglocal=0;
     /** Account **/
     QPixmap image;
     QString username,openURI;
