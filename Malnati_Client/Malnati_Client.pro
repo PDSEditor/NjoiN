@@ -24,7 +24,11 @@ SOURCES += \
     changepwd.cpp \
     client.cpp \
     crdt.cpp \
+<<<<<<< HEAD
     inserturi.cpp \
+=======
+    inserttitle.cpp \
+>>>>>>> origin/Simone
     loginwindow.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -38,7 +42,11 @@ HEADERS += \
     changepwd.h \
     client.h \
     crdt.h \
+<<<<<<< HEAD
     inserturi.h \
+=======
+    inserttitle.h \
+>>>>>>> origin/Simone
     loginwindow.h \
     mainwindow.h \
     message.h \
@@ -49,7 +57,11 @@ HEADERS += \
 FORMS += \
     accountinterface.ui \
     changepwd.ui \
+<<<<<<< HEAD
     inserturi.ui \
+=======
+    inserttitle.ui \
+>>>>>>> origin/Simone
     loginwindow.ui \
     mainwindow.ui
 

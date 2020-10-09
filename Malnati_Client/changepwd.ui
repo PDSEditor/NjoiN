@@ -32,7 +32,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Insert your new password</string>
+        <string>Inserisci nuova password</string>
        </property>
       </widget>
      </item>

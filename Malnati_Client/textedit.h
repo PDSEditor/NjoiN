@@ -32,11 +32,12 @@ public:
     void setCrdt(Crdt *crdtclient);
     void setSocketM(socketManager *sockclient);
     void loadFile(QList<Symbol>);
+    void setFileName(QString fileName);
 
 
 public slots:
     void fileNew();
-    void reciveSymbol(Message *m);
+    void receiveSymbol(Message *m);
 
 
 signals:

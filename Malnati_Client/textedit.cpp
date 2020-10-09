@@ -555,6 +555,13 @@ void TextEdit::setSocketM(socketManager *sockclient)
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
 }
 
+void TextEdit::setFileName(QString fileName)
+{
+    this->fileName = fileName;
+}
+
+
+
 bool TextEdit::maybeSave()
 {
     if (!textEdit->document()->isModified())
@@ -574,14 +581,14 @@ bool TextEdit::maybeSave()
 
 void TextEdit::setCurrentFileName(const QString &fileName)
 {
-    this->fileName = fileName;
-    textEdit->document()->setModified(false);
+    //this->fileName = fileName;
+    //textEdit->document()->setModified(false);
 
     QString shownName;
-    if (fileName.isEmpty())
+    if (this->fileName.isEmpty())
         shownName = "untitled.txt";
     else
-        shownName = QFileInfo(fileName).fileName();
+        shownName = QFileInfo(this->fileName).fileName();
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName, QCoreApplication::applicationName()));
     setWindowModified(false);
@@ -597,7 +604,7 @@ void TextEdit::fileNew()
 
 }
 
-void TextEdit::reciveSymbol(Message *m)
+void TextEdit::receiveSymbol(Message *m)
 {
     externAction=true;
    QTextCursor curs = textEdit->textCursor(),oldcurs;

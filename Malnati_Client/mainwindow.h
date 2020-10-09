@@ -64,6 +64,10 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void receiveTitle(QString title);
+
+    void openMw();
+
 private:
     Ui::MainWindow *ui;
     TextEdit *te;

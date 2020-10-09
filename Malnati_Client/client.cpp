@@ -13,26 +13,28 @@ Client::Client()
     connect(sockm, &socketManager::receivedFile, mw, &MainWindow::receivedFile);
     connect(sockm, &socketManager::receivedURIerror, mw, &MainWindow::receiveURIerror);
     connect(sockm,&socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
+    
+     lw.exec();
 
-    lw.exec();
+
 
     if(lw.getIsLogin()==true){
          mw->show();
+         crdt=new Crdt();
+         //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
+         connect(mw, &MainWindow::newTextEdit, this, &Client::receive_textEdit);
+
+         connect(mw, &MainWindow::sendImage,sockm,&socketManager::receiveImage);
+         connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
+         connect(mw,&MainWindow::sendTextMessage,sockm,&socketManager::messageToServer);
     }
 
-    crdt=new Crdt();
-    //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
-    connect(mw, &MainWindow::newTextEdit, this, &Client::receive_textEdit);
 
-    connect(mw, &MainWindow::sendImage,sockm,&socketManager::receiveImage);
-    connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
-    connect(mw,&MainWindow::sendTextMessage,sockm,&socketManager::messageToServer);
 }
 Client::~Client(){
     delete mw;
     delete crdt;
     delete sockm;
-
 }
 
 void Client::receive_textEdit(TextEdit *t){
@@ -41,7 +43,7 @@ void Client::receive_textEdit(TextEdit *t){
     this->textList.insert("prova1",t);
     t->setCrdt(this->crdt);
     t->setSocketM(Client::sockm);
-    connect(sockm, &socketManager::newMessage, t, &TextEdit::reciveSymbol);
+    connect(sockm, &socketManager::newMessage, t, &TextEdit::receiveSymbol);
    // this->textList.insert("prova1",t);
 
 }
