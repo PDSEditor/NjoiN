@@ -22,7 +22,16 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QString pass = "test";
 
 //    QFile img("~/projects/progett_malnati/Malnati_Client/images/draft.jpeg");
-    QString img("~/projects/progett_malnati/Malnati_Client/images/draft.jpeg");
+//    QString imgPath("/home/pepos/projects/progetto_malnati/Malnati_Client/images/cv_musk.png");
+//    QPixmap image(imgPath);
+
+//    //per averla sul json
+//    QJsonObject obj;
+//    QBuffer buffer;
+//    buffer.open(QIODevice::WriteOnly);
+//    image.save(&buffer, "PNG");
+//    auto const encoded = buffer.data().toBase64();
+//    obj.insert("image", QLatin1String(encoded));
 
 //    QByteArray image = img.readAll();
 //    QByteArray image = qualcosa.toString().toLatin1(); //base64
