@@ -20,7 +20,7 @@ public:
 
 signals:
     void sendMessage(Message* mex);
- public slots:
+public slots:
      void receivedLogin(bool resp);
      void receivedSiteId(int siteid);
 private slots:

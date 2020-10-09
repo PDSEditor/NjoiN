@@ -40,11 +40,15 @@ public:
 
 
 
+    bool getServerOn() const;
+    void setServerOn(bool value);
+
 private:
     QWebSocket webSocket;
     QUrl url;
     int i=100;
     int siteId;
+    bool serverOn;
 };
 
 #endif // SOCKETMANAGER_H

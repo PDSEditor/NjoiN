@@ -21,8 +21,11 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QString name = "test";
 //    QString pass = "test";
 
-//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QFile img("~/projects/progett_malnati/Malnati_Client/images/draft.jpeg");
+    QString img("~/projects/progett_malnati/Malnati_Client/images/draft.jpeg");
+
 //    QByteArray image = img.readAll();
+//    QByteArray image = qualcosa.toString().toLatin1(); //base64
 
 //    Account account(name, 5, image);
 //    account.setDocumentUris({"hello", "ciao"});

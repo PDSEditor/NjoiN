@@ -7,6 +7,9 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     //connect(webSocket, &QWebSocket::disconnected, this, &socketManager::closed);
     //webSocket= new QWebSocket();
     webSocket.open(QUrl(url));
+    if(webSocket.isValid())
+        this->setServerOn(true);
+    else this->setServerOn(false);
     //qDebug()<<webSocket.isValid();
 
 
@@ -21,14 +24,25 @@ void socketManager::messageToServer(Message *m)
 {
     //QString tmp = m->getAction();
     //webSocket.sendTextMessage(tmp);
-
-    webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
+    if(this->getServerOn())
+        webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
+    else qDebug() << "Server is down!";
 
     //qDebug()<<"Testo inviato: sia m diu ";
 }
 
+bool socketManager::getServerOn() const
+{
+    return serverOn;
+}
+
+void socketManager::setServerOn(bool value)
+{
+    serverOn = value;
+}
+
 void socketManager::receiveImage(QByteArray image){
-//    int i=0;
+    //    int i=0;
     image=0;
 }
 
