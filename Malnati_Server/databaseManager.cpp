@@ -225,6 +225,11 @@ bool DatabaseManager::insertSymbol(Message &mes) {
             << "siteId" << symbol.getSiteId()
             << "counter" << symbol.getCounter()
             << "position" << array_builder
+            << "family" << symbol.getFamily().toUtf8().constData()
+            << "bold" << symbol.getBold()
+            << "italic" << symbol.getItalic()
+            << "underln" << symbol.getUnderln()
+            << "size" << symbol.getSize()
             << bsoncxx::builder::stream::finalize;
 
     bsoncxx::document::view view = symbolToInsert.view();
@@ -247,11 +252,26 @@ bool DatabaseManager::deleteSymbol(Message &mes)
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     auto builder = bsoncxx::builder::stream::document{};
 
+    auto array_builder = bsoncxx::builder::basic::array{};
+
+    for (int i : symbol.getPosition()){
+        array_builder.append(i);
+    }
+
     bsoncxx::document::value symbolToDelete =
-            builder << "value" << symbol.getValue().toLatin1()
+            builder
+                    << "document_id" << documentName.toUtf8().constData()
+                    << "value" << symbol.getValue().toLatin1()
                     << "siteId" << symbol.getSiteId()
-                    << "counter" << symbol.getCounter()
-                    << "documentName" << documentName.toUtf8().constData()
+                    //<< "counter" << symbol.getCounter()
+                    << "position" << array_builder
+
+//                    << "family" << symbol.getFamily().toUtf8().constData()
+//                    << "bold" << symbol.getBold()
+//                    << "italic" << symbol.getItalic()
+//                    << "underln" << symbol.getUnderln()
+//                    << "size" << symbol.getSize()
+
                     << bsoncxx::builder::stream::finalize;
     bsoncxx::document::view view = symbolToDelete.view();
     try {
