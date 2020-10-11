@@ -1030,17 +1030,17 @@ void TextEdit::loadFile(QList<Symbol> file)
     QTextCharFormat qform;
     foreach(Symbol s,file){
         externAction=true;
-//        qform.setFontFamily(s.getFamily());
-//        qform.setFontItalic(s.getItalic());
-//        qform.setFontUnderline(s.getUnderln());
-//        qform.setFontPointSize(s.getSize());
-//        if(s.getBold())
-//            qform.setFontWeight(QFont::Bold);
-//        curs.insertText(s.getValue(),qform);
-        tmp.append(s.getValue());
+        qform.setFontFamily(s.getFamily());
+        qform.setFontItalic(s.getItalic());
+        qform.setFontUnderline(s.getUnderln());
+        qform.setFontPointSize(s.getSize());
+        if(s.getBold())
+            qform.setFontWeight(QFont::Bold);
+        curs.insertText((QChar)s.getValue(),qform);
+       // tmp.append(s.getValue());
         vtmp.push_back(s);
     }
-    textEdit->setPlainText(tmp);
+   // textEdit->setPlainText(tmp);
     crdt->setSymbols(vtmp);
 }
 
