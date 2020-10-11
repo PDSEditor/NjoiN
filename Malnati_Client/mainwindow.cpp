@@ -81,11 +81,11 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te = new TextEdit(this);
     emit(newTextEdit(te,siteId));
     te->setFileName(openURI.left(openURI.lastIndexOf('_')));
-    te->loadFile(tmp);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
-    this->hide();
     te->show();
+    te->loadFile(tmp);
+    this->hide();
 
 }
 
