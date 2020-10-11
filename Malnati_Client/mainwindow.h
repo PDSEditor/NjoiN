@@ -44,7 +44,7 @@ public slots:
     void receiveURIerror();
 
 signals:
-    void newTextEdit(TextEdit* t);
+    void newTextEdit(TextEdit* t,int s);
     // prova
     void sendImage(QByteArray& image);
     void sendMessage(Message* mex);

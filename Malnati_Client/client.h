@@ -17,7 +17,7 @@ public:
 
 
 private slots:
-    void receive_textEdit(TextEdit *t);
+    void receive_textEdit(TextEdit *t,int s);
 
 
 private:
