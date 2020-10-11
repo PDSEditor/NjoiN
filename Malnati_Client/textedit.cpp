@@ -1024,20 +1024,23 @@ void TextEdit::alignmentChanged(Qt::Alignment a)
 void TextEdit::loadFile(QList<Symbol> file)
 {
     setCurrentFileName(QString());
+    QString tmp;
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
     QTextCharFormat qform;
     foreach(Symbol s,file){
         externAction=true;
-        qform.setFontFamily(s.getFamily());
-        qform.setFontItalic(s.getItalic());
-        qform.setFontUnderline(s.getUnderln());
-        qform.setFontPointSize(s.getSize());
-        if(s.getBold())
-            qform.setFontWeight(QFont::Bold);
-        curs.insertText(s.getValue(),qform);
+//        qform.setFontFamily(s.getFamily());
+//        qform.setFontItalic(s.getItalic());
+//        qform.setFontUnderline(s.getUnderln());
+//        qform.setFontPointSize(s.getSize());
+//        if(s.getBold())
+//            qform.setFontWeight(QFont::Bold);
+//        curs.insertText(s.getValue(),qform);
+        tmp.append(s.getValue());
         vtmp.push_back(s);
     }
+    textEdit->setPlainText(tmp);
     crdt->setSymbols(vtmp);
 }
 
