@@ -1026,9 +1026,16 @@ void TextEdit::loadFile(QList<Symbol> file)
     setCurrentFileName(QString());
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
+    QTextCharFormat qform;
     foreach(Symbol s,file){
         externAction=true;
-        curs.insertText(s.getValue());
+        qform.setFontFamily(s.getFamily());
+        qform.setFontItalic(s.getItalic());
+        qform.setFontUnderline(s.getUnderln());
+        qform.setFontPointSize(s.getSize());
+        if(s.getBold())
+            qform.setFontWeight(QFont::Bold);
+        curs.insertText(s.getValue(),qform);
         vtmp.push_back(s);
     }
     crdt->setSymbols(vtmp);

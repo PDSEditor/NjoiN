@@ -9,6 +9,14 @@ InsertTitle::InsertTitle(QDialog *parent) :
     ui->setupUi(this);
     setWindowTitle("Inserisci il titolo");
 }
+InsertTitle::InsertTitle(QList<QString> s,QDialog *parent) :
+    QDialog(parent),
+    ui(new Ui::InsertTitle)
+{
+    ui->setupUi(this);
+    setWindowTitle("Inserisci il titolo");
+    names=s;
+}
 
 InsertTitle::~InsertTitle()
 {
@@ -18,9 +26,20 @@ InsertTitle::~InsertTitle()
 void InsertTitle::on_buttonBox_accepted()
 {
     QString title = ui->lineEdit->text();
+    bool flag=0;
+    foreach (QString s, names) {
+        if(s.left(s.lastIndexOf('_'))==title){
+            flag=1;
+            break;
+    }
+    }
     if ( title.size() == 0 ){
         QMessageBox::warning(this, "Titolo", "Titolo non valido");
-    } else {
+    }
+    else if(flag){
+        QMessageBox::warning(this, "Titolo", "Titolo già usato");
+    }
+    else {
         emit setTitle(title);
         this->hide();
     }

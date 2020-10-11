@@ -165,6 +165,9 @@ Message Crdt::localErase(int position){
     tmp.setValue(this->symbols.at(position).getValue());
     tmp.setSiteId(this->symbols.at(position).getSiteId());
     tmp.setPosizione(this->symbols.at(position).getPosizione());
+    // MODIFICA PER CONTATORE!!! se fa danni il crdt può essere questa
+    tmp.setCounter(this->getCounterAndIncrement());
+    //
     m.setSymbol(tmp);
     this->symbols.erase(i);
 
@@ -173,6 +176,11 @@ Message Crdt::localErase(int position){
 
 int Crdt::getSiteId(){
     return this->siteId;
+}
+
+void Crdt::setSiteId(int s)
+{
+    siteId=s;
 }
 
 int Crdt::getCounter(){

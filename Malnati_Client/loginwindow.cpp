@@ -96,9 +96,12 @@ void LoginWindow::receivedSiteId(int siteid){
 
 }
 
-void LoginWindow::loggedin()
+void LoginWindow::loggedin(bool c)
 {
-    QMessageBox::information(this,"Login","Utente già loggato");
+    if(c==1)
+        QMessageBox::information(this,"Login","Utente già loggato");
+    else
+        QMessageBox::information(this,"ERRORE","Impossibile connettersi al server");
 }
 bool LoginWindow::getIsLogin() const{
     return isLogin;

@@ -22,6 +22,9 @@ void socketManager::messageToServer(Message *m)
     //QString tmp = m->getAction();
     //webSocket.sendTextMessage(tmp);
 
+    if(server_on==0){
+        emit(loggedin(0));
+    }
     webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 
     //qDebug()<<"Testo inviato: sia m diu ";
@@ -194,7 +197,7 @@ void socketManager::onConnected()
     v.push_back(3);
     symbol.setPosizione(v);
     m->setSymbol(symbol);
-
+    server_on=1;
     //binaryMessageToServer(m);
     //qDebug() << "Numero byte inviati: "<< n;
 
@@ -211,7 +214,7 @@ void socketManager::onTextMessageReceived(QString message)
     case 'L':
         if(m.getError()){
             if( m.getParams().length()!=0 && m.getParams().at(0)=="2" )
-                emit(loggedin());
+                emit(loggedin(1));
             else
                 emit(receivedLogin(false));
         }
