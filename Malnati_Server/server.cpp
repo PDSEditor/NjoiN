@@ -43,7 +43,10 @@ Server::Server(QObject *parent) : QObject(parent)
 
 
 
-//    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
+//    Account account2 = this->dbMan.get()->getAccount(QString("test"));
+//    qDebug() << account2.toString();
+
+//    account2 = this->dbMan.get()->getAccount(QString("angelo"));
 //    qDebug() << account2.toString();
 
 //    if(this->dbMan.get()->checkAccountPsw(name,pass))
@@ -112,7 +115,7 @@ void Server::processMessage(Message &mesIn) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
-     * REGISTER user (Sign up)  -> S
+     * REGISTER user  -> E
      * LOG-IN -> L
      * LOGOUT -> O
     */
@@ -286,8 +289,28 @@ void Server::processMessage(Message &mesIn) {
 
         break;
 
-    case 'S' :
-        //Signup
+    case 'E' :
+        //rEgister
+
+        username = mesIn.getParams()[0];
+        mesOut.setAction('E');
+        mesOut.setSender(mesIn.getSender());
+
+        acc = this->dbMan->getAccount(username);
+
+        if( acc.getSiteId()< 0) {               // non esiste un account con questo username
+            mesOut.setError(false);
+
+            acc = Account(username, mesIn.getSender());
+
+            this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
+
+        }
+        else {
+            mesOut.setError(true);
+        }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
 

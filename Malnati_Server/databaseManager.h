@@ -50,7 +50,7 @@ private:
 public:
     DatabaseManager();
     /*** ACCOUNT ****/
-    bool registerAccount(Account &account, QString password, QByteArray &image);
+    bool registerAccount(Account &account, QString password);
     bool deleteAccount  (QString _id);
     bool checkAccountPsw(QString _id, QString password);
     bool changePassword(QString _id, QString old_password, QString new_password);
