@@ -14,6 +14,24 @@ Server::Server(QObject *parent) : QObject(parent)
     std::unique_ptr<AccountManager> acMan(new AccountManager);
     this->acMan = std::move(acMan);
 
+
+    // Salvo tutti i siteId già assegnati all'interno del socket managercosì da non assegnare a due client lo stessoS
+
+    try {
+        QList<Account> allAccounts = this->dbMan->getAllAccounts();
+
+        QMap<int, QString> siteIdUser;
+
+        for(auto account : allAccounts) {
+            siteIdUser[account.getSiteId()] = account.getUsername();
+        }
+
+        this->socketMan->setSiteIdUser(siteIdUser);
+
+    }
+    catch(std::exception& e){
+    }
+
     /***************************
      ****** TEST DB ***********
      *************************/

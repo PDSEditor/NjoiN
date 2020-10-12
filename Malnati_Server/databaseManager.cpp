@@ -96,6 +96,41 @@ Account DatabaseManager::getAccount(QString username){
 
 }
 
+QList<Account> DatabaseManager::getAllAccounts()
+{
+     mongocxx::collection userCollection = (this->db)["user"];
+
+      QList<Account> list;
+
+     try{
+         mongocxx::cursor cursor = userCollection.find({});
+
+
+         for(auto cur : cursor) {
+             QString string = QString::fromStdString(bsoncxx::to_json(cur));
+             QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
+
+             auto array = document["image"].toString().toLatin1();
+             QList<QString> documentUris;
+
+             for (auto i : document["documentUris"].toArray()){
+                 documentUris.push_back(i.toString());
+             }
+             Account account = Account(document["_id"].toString(), document["siteId"].toInt(), array, documentUris);
+
+             list.append(account);
+
+         }
+
+     }catch (mongocxx::query_exception &e){
+         qDebug() << "[ERROR][DatabaseManager::getAccount] find_one error, connection to db failed. Server should shutdown.";
+         qDebug() << e.what();
+         throw std::exception();
+     }
+
+     return list;
+}
+
 bool DatabaseManager::deleteAccount(QString _id){
     mongocxx::collection userCollection = (this->db)["user"];
     try {
