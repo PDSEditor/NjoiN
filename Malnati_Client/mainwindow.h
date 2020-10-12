@@ -60,10 +60,6 @@ private slots:
     void on_actionClose_triggered();
     void open_file_on_server(QListWidgetItem*);
 
-    void on_listView_indexesMoved(const QModelIndexList &indexes);
-
-    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
-
     void on_pushButton_2_clicked();
 
     void receiveTitle(QString title);
