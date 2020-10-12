@@ -30,6 +30,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     message.cpp \
+    registration.cpp \
     symbol.cpp \
     textedit.cpp \
     socketmanager.cpp
@@ -44,6 +45,7 @@ HEADERS += \
     loginwindow.h \
     mainwindow.h \
     message.h \
+    registration.h \
     symbol.h \
     textedit.h \
     socketmanager.h
@@ -54,7 +56,8 @@ FORMS += \
     inserturi.ui \
     inserttitle.ui \
     loginwindow.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    registration.ui
 
 RESOURCES += textedit.qrc
 build_all:!build_pass {

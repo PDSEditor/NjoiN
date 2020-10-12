@@ -1,4 +1,4 @@
-#include "loginwindow.h"
+﻿#include "loginwindow.h"
 #include "ui_loginwindow.h"
 #include <QMessageBox>
 #include <QStyle>
@@ -103,6 +103,16 @@ void LoginWindow::loggedin(bool c)
     else
         QMessageBox::information(this,"ERRORE","Impossibile connettersi al server");
 }
+
+void LoginWindow::sendRegistration(Message m)
+{
+    emit(sendMessage(&m));
+}
+
+void LoginWindow::receiveRegistration(Message m)
+{
+    emit(forwardRegistration(m));
+}
 bool LoginWindow::getIsLogin() const{
     return isLogin;
 }
@@ -111,8 +121,11 @@ void LoginWindow::setIsLogin(int isLogin){
 }
 
 void LoginWindow::on_pushButton_signup_clicked(){
-    qDebug() << "Registrazione";
-    //todo: fare la registrationWindow
+    Registration rg(siteId);
+    connect(&rg,&Registration::sendRegistration,this,&LoginWindow::sendRegistration);
+     connect(this,&LoginWindow::forwardRegistration,&rg,&Registration::receiveRegistration);
+    this->hide();
+    rg.exec();
 
 
 

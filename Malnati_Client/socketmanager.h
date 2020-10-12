@@ -27,6 +27,7 @@ signals:
     void receivedFile(QList<Symbol>);
     void receivedURIerror();
     void loggedin(bool);
+    void receiveRegistration(Message m);
 
 public slots:
     void receiveImage(QByteArray im);
