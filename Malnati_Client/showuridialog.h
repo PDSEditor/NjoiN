@@ -13,7 +13,8 @@ class ShowUriDialog : public QDialog
 
 public:
     explicit ShowUriDialog(QWidget *parent = nullptr);
-    explicit ShowUriDialog(QWidget *parent = nullptr,QString uri=nullptr);
+
+    void setUriDialog(QString uri);
     ~ShowUriDialog();
 
 private:

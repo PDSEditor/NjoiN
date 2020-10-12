@@ -178,15 +178,6 @@ void MainWindow::on_actionClose_triggered()
 }
 
 
-void MainWindow::on_listView_indexesMoved(const QModelIndexList &indexes)
-{
-
-}
-
-void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
-{
-
-}
 
 void MainWindow::on_pushButton_2_clicked()
 {Inserturi i;

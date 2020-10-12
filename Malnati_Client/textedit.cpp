@@ -531,9 +531,11 @@ void TextEdit::setupUriActions()
     QToolBar *tb = addToolBar(tr("Mostra Uri"));
     QMenu *menu = menuBar()->addMenu(tr("&Uri"));
 
-    const QIcon newIcon = QIcon::fromTheme("showUri", QIcon(rsrcPath + "Icons/icons8-collegamento-24.png"));
-    QAction *a = menu->addAction(newIcon,  tr("&showUri"), this, &TextEdit::showUriWindow);
+    const QIcon newIcon = QIcon::fromTheme("showUri", QIcon(rsrcPath + "/../Icons/icons8-collegamento-24.png"));
+    QAction *a = menu->addAction(newIcon, tr("&showUri"), this, &TextEdit::showUriWindow);
     tb->addAction(a);
+    a->setPriority(QAction::LowPriority);
+
 }
 
 bool TextEdit::load(const QString &f)
@@ -944,7 +946,10 @@ void TextEdit::textAlign(QAction *a)
 
 void TextEdit::showUriWindow()
 {
-  // ShowUriDialog uriD = ShowUriDialog(this,);
+   ShowUriDialog uriD;
+   uriD.setUriDialog(URI);
+   uriD.exec();
+
 }
 
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)

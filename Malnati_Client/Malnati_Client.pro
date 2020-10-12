@@ -59,8 +59,7 @@ FORMS += \
     mainwindow.ui \
     showuridialog.ui
 
-RESOURCES += textedit.qrc \
-    images/Icons/Icons.qrc
+RESOURCES += textedit.qrc
 build_all:!build_pass {
     CONFIG -= build_all
     CONFIG += release
@@ -76,6 +75,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     images/Icons/icons8-cancel-24.png \
+    images/Icons/icons8-collegamento-24.png \
     images/Icons/icons8-insert-page-24.png \
     images/Icons/icons8-male-user-24.png \
     images/Icons/icons8-open-document-24.png \

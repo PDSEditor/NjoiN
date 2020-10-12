@@ -9,13 +9,12 @@ ShowUriDialog::ShowUriDialog(QWidget *parent) :
 
 }
 
-ShowUriDialog::ShowUriDialog(QWidget *parent, QString uri):
-    QDialog(parent),
-    ui(new Ui::ShowUriDialog)
+void ShowUriDialog::setUriDialog(QString uri)
 {
-    ui->setupUi(this);
     ui->UriLabel->setText(uri);
 }
+
+
 
 ShowUriDialog::~ShowUriDialog()
 {
