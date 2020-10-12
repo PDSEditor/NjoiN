@@ -25,7 +25,7 @@ MainWindow::~MainWindow()
 }
 void MainWindow::newFile(){
     this->hide();
-    InsertTitle it;
+    InsertTitle it(documents);
 
     connect(&it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
     connect(&it,&InsertTitle::showMw,this,&MainWindow::openMw);
@@ -78,27 +78,14 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
 }
 
 void MainWindow::receivedFile(QList<Symbol> tmp){
-//    QList<Symbol> tmp;
-//    Symbol s1,s2,s3,s4;
-//    s1.setValue('a');
-//    s1.setPosizione({50});
-//    s2.setValue('b');
-//    s2.setPosizione({75});
-//    s3.setValue('c');
-//    s3.setPosizione({87});
-//    s4.setValue('d');
-//    s4.setPosizione({93});
-//    tmp.append(s1);
-//    tmp.append(s2);
-//    tmp.append(s3);
-//    tmp.append(s4);
     te = new TextEdit(this);
-    emit(newTextEdit(te));
+    emit(newTextEdit(te,siteId));
     te->setFileName(openURI.left(openURI.lastIndexOf('_')));
-    te->loadFile(tmp);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
     te->show();
+    te->loadFile(tmp);
+    this->hide();
 
 }
 
@@ -206,8 +193,9 @@ void MainWindow::receiveTitle(QString title)
     m.setAction('C');
     m.setParams({title, this->getUsername()});
     //emit(sendMessage(&m));
+    m.setSender(siteId);
     emit(sendTextMessage(&m));
-    emit(newTextEdit(te));
+    emit(newTextEdit(te,siteId));
     te->show();
 }
 

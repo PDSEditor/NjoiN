@@ -37,10 +37,11 @@ Client::~Client(){
     delete sockm;
 }
 
-void Client::receive_textEdit(TextEdit *t){
+void Client::receive_textEdit(TextEdit *t,int s){
 
 
     this->textList.insert("prova1",t);
+    this->crdt->setSiteId(s);
     t->setCrdt(this->crdt);
     t->setSocketM(Client::sockm);
     connect(sockm, &socketManager::newMessage, t, &TextEdit::receiveSymbol);

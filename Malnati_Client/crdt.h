@@ -37,6 +37,7 @@ public:
     Message localInsert(QChar value, int preceding, int following);
     Message localErase(int position);
     int getSiteId();
+    void setSiteId(int);
     int getCounter();
     int getCounterAndIncrement();
     int remoteinsert(Symbol s);

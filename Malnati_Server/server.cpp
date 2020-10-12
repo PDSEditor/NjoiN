@@ -24,10 +24,22 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
 //    QByteArray image = img.readAll();
 
-//    Account account(name, 5, image);
+//    Account account(name, 1, image);
 //    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
-//        qDebug() << "inseted?" ;
+//        qDebug() << "inserted" ;
+
+//    QString name1 = "prova";
+//    QString pass1 = "prova";
+
+
+//    QFile img1("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image1 = img.readAll();
+
+//    Account account1(name1, 5, image1);
+
+//    if(this->dbMan.get()->registerAccount(account1, pass1, image1))
+//        qDebug() << "inserted" ;
 
 
 
@@ -130,11 +142,18 @@ void Server::processMessage(Message &mesIn) {
 //            qDebug() << i.getValue();
 //        }
 
-        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
+        username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
+        documentId = this->acMan->getAccountOnDocument()[username];
+        mesIn.setParams({documentId});
+        this->dbMan.get()->insertSymbol(mesIn);
         this->dispatchMessage(mesIn);
 //        remoteInsert(mesIn.getSymbol());
         break;
     case 'D':
+        username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
+        documentId = this->acMan->getAccountOnDocument()[username];
+        mesIn.setParams({documentId});
+
         this->dbMan.get()->deleteSymbol(mesIn);
         this->dispatchMessage(mesIn);
 //        remoteDelete(mesIn.getSymbol());
@@ -157,10 +176,19 @@ void Server::processMessage(Message &mesIn) {
             }
             mesOut.setError(false);
 
+            this->acMan->updateAccountOnDocument(username, documentId);
+
+            auto accPerFile = this->acMan->getAccountsPerFile();
+            accPerFile[documentId].append(username);
+            accPerFile.insert (documentId, accPerFile[documentId]);
+            this->acMan->setAccountsPerFile(accPerFile);
+
         }
         else{
             mesOut.setError(true);              //Non autorizzato
         }
+
+
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
         break;
@@ -170,10 +198,10 @@ void Server::processMessage(Message &mesIn) {
     case 'C' :
     {
 
-        if(mesIn.getParams().size()!=2) {
-            qDebug()<< "Numero parametri errato nella creazione del file.";
-            break;
-        }
+//        if(mesIn.getParams().size()!=2) {
+//            qDebug()<< "Numero parametri errato nella creazione del file.";
+//            break;
+//        }
 
         nomeFile = mesIn.getParams()[0];
         //controllo db se esiste un file con lo stesso nome
@@ -193,6 +221,8 @@ void Server::processMessage(Message &mesIn) {
         auto accPerFile = this->acMan->getAccountsPerFile();
         accPerFile.insert(doc.getUri(), userAllowed);
         this->acMan->setAccountsPerFile(accPerFile);
+
+        this->acMan->updateAccountOnDocument(username, (nomeFile +"_"+username));
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
@@ -238,6 +268,13 @@ void Server::processMessage(Message &mesIn) {
                 mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
             }
             mesOut.setError(false);
+
+            this->acMan->updateAccountOnDocument(account.get()->getUsername(), uri);
+
+            auto accPerFile = this->acMan->getAccountsPerFile();
+            accPerFile[documentId].append((account.get()->getUsername()));
+            accPerFile.insert (documentId, accPerFile[documentId]);
+            this->acMan->setAccountsPerFile(accPerFile);
 
         }
         catch(std::exception& e){
