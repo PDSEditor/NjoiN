@@ -43,9 +43,9 @@ void Registration::closeRw()
 
 void Registration::on_pushButton_clicked()
 {
-    if(ui->lineEdit_2->text()!=ui->lineEdit_3->text()||!ui->lineEdit_2->text().isEmpty()||!ui->lineEdit_3->text().isEmpty()){
+    if(ui->lineEdit_2->text()!=ui->lineEdit_3->text()||ui->lineEdit_2->text().isNull()||ui->lineEdit_3->text().isNull()){
         emit(sendError("password"));
-    }else if(ui->label->text().contains('_')){
+    }else if(ui->lineEdit->text().contains('_')){
         emit(sendError("username"));
     }else{
         Message m;
