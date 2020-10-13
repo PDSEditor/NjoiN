@@ -24,9 +24,26 @@ void Registration::receiveRegistration(Message m)
 
 }
 
-void Registration::on_buttonBox_clicked(QAbstractButton *button)
+
+void Registration::openRw(int s)
 {
-    if(ui->lineEdit_2->text()!=ui->lineEdit_3->text()||ui->lineEdit_2->text().isEmpty()||ui->lineEdit_3->text().isEmpty()){
+    sId=s;
+    this->setWindowModality(Qt::ApplicationModal);
+    this->show();
+}
+
+void Registration::closeRw()
+{
+    ui->lineEdit->clear();
+    ui->lineEdit_2->clear();
+    ui->lineEdit_3->clear();
+    this->close();
+}
+
+
+void Registration::on_pushButton_clicked()
+{
+    if(ui->lineEdit_2->text()!=ui->lineEdit_3->text()||!ui->lineEdit_2->text().isEmpty()||!ui->lineEdit_3->text().isEmpty()){
         emit(sendError("password"));
     }else if(ui->label->text().contains('_')){
         emit(sendError("username"));
@@ -39,14 +56,7 @@ void Registration::on_buttonBox_clicked(QAbstractButton *button)
     }
 }
 
-void Registration::openRw(int s)
+void Registration::on_pushButton_2_clicked()
 {
-    sId=s;
-    this->setWindowModality(Qt::WindowModal);
-    this->show();
-}
-
-void Registration::closeRw()
-{
-    this->close();
+    closeRw();
 }

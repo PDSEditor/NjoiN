@@ -19,9 +19,14 @@ LoginWindow::LoginWindow(QWidget *parent) :
 
 }
 
+
 LoginWindow::~LoginWindow()
 {
     delete ui;
+}
+
+void LoginWindow::closeEvent(QCloseEvent *e){
+   exit;
 }
 
 void LoginWindow::on_pushButton_login_clicked()
