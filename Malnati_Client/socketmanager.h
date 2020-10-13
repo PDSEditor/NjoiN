@@ -26,6 +26,7 @@ signals:
     void setSiteId(int);
     void receivedFile(QList<Symbol>);
     void receivedURIerror();
+    void loggedin(bool);
 
 public slots:
     void receiveImage(QByteArray im);
@@ -50,7 +51,8 @@ private:
     QUrl url;
     int i=100;
     int siteId;
-    bool serverOn;
+    bool serverOn = false;
+
 };
 
 #endif // SOCKETMANAGER_H

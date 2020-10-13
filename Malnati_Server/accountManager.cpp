@@ -21,6 +21,17 @@ void AccountManager::setAccountsPerFile(const QMap<QString, QList<QString> > &va
     accountsPerFile = value;
 }
 
+
+QMap<QString, QString> AccountManager::getAccountOnDocument() const
+{
+    return accountOnDocument;
+}
+
+void AccountManager::setAccountOnDocument(const QMap<QString, QString> &value)
+{
+    accountOnDocument = value;
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject(parent)
 {
     
@@ -56,6 +67,11 @@ bool AccountManager::updateOnlineAccounts(int siteId, const Account& acc)
         return false;
     }
 
+}
+
+void AccountManager::updateAccountOnDocument(QString user, QString documentId)
+{
+    this->accountOnDocument[user] = documentId;
 }
 
 void AccountManager::removeOnlineAccounts(int siteId)

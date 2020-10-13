@@ -22,13 +22,11 @@ socketManager::~socketManager()
 
 void socketManager::messageToServer(Message *m)
 {
-    //QString tmp = m->getAction();
-    //webSocket.sendTextMessage(tmp);
-    if(this->getServerOn())
-        webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
-    else qDebug() << "Server is down!";
-
-    //qDebug()<<"Testo inviato: sia m diu ";
+    if(!this->getServerOn()){
+        qDebug() << "Server is down!";
+        emit(loggedin(false));
+    }
+    webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 }
 
 bool socketManager::getServerOn() const
@@ -186,8 +184,6 @@ void socketManager::onConnected()
     //webSocket.sendTextMessage(QStringLiteral("Hello, world!"));
 
     QByteArray a("Test start");
-    long long n = 0;
-    //n = webSocket.sendBinaryMessage(a);
 
     Message *m = new Message(QChar('I'));
 //    Symbol *symbol = new Symbol();
@@ -208,7 +204,7 @@ void socketManager::onConnected()
     v.push_back(3);
     symbol.setPosizione(v);
     m->setSymbol(symbol);
-
+    serverOn=true;
     //binaryMessageToServer(m);
     //qDebug() << "Numero byte inviati: "<< n;
 
@@ -224,7 +220,10 @@ void socketManager::onTextMessageReceived(QString message)
     switch (m.getAction().toLatin1()) {
     case 'L':
         if(m.getError()){
-            emit(receivedLogin(false));
+            if( m.getParams().length()!=0 && m.getParams().at(0)=="2" )
+                emit(loggedin(true));
+            else
+                emit(receivedLogin(false));
         }
         else{
             this->siteId = m.getSender();
@@ -255,6 +254,7 @@ void socketManager::onTextMessageReceived(QString message)
         else{
             emit(receivedURIerror());
         }
+        break;
 //
     default:
         qDebug() << "default";
@@ -374,10 +374,6 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         symbol.setUnderln(un);
         symbol.setFamily(family);
         m->setSymbol(symbol);
-
-
-
-
 
         emit newMessage(m);
     }

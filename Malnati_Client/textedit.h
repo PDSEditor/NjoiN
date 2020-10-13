@@ -32,15 +32,19 @@ public:
     void setCrdt(Crdt *crdtclient);
     void setSocketM(socketManager *sockclient);
     void loadFile(QList<Symbol>);
+    void setFileName(QString fileName);
+    void setURI(QString);
+    QString getURI();
 
 
 public slots:
     void fileNew();
-    void reciveSymbol(Message *m);
+    void receiveSymbol(Message *m);
 
 
 signals:
     void sendMessage(Message *m);
+    void openMW();
 
 
 protected:
@@ -115,7 +119,7 @@ private:
     QComboBox *comboSize;
 
     QToolBar *tb;
-    QString fileName;
+    QString fileName,URI;
     QTextEdit *textEdit;
     Crdt *crdt;
     socketManager *sockm;

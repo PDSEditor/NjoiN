@@ -23,6 +23,7 @@ signals:
 public slots:
      void receivedLogin(bool resp);
      void receivedSiteId(int siteid);
+     void loggedin(bool);
 private slots:
     void on_pushButton_login_clicked();
     void on_pushButton_signup_clicked();
@@ -32,7 +33,7 @@ private:
     MainWindow *mw;
     bool isLogin;
     int siteId;
-    void setIsLogin(int isLogin);
+    void setIsLogin(bool isLogin);
 };
 
 #endif // LOGINWINDOW_H

@@ -329,7 +329,7 @@ void SocketManager::onNewConnection()
 
     qDebug()<<"Nuova connessione avvenuta.";
 
-    //versione text message era funzionante
+
     connect(socket, &QWebSocket::textMessageReceived, this, &SocketManager::processTextMessage);
     connect(socket, &QWebSocket::binaryMessageReceived, this, &SocketManager::processBinaryMessage);
     connect(socket, &QWebSocket::disconnected, this, &SocketManager::socketDisconnected);
@@ -341,6 +341,11 @@ void SocketManager::onNewConnection()
     Message m;
 
     m.setAction('S');
+
+    while(this->siteIdUser.keys().contains(this->siteId)){      //controlla se il siteId attuale corrisponde già a qualche altro utente
+        this->siteId++;
+    }
+
     QString s = QString::number(SocketManager::siteId);
     m.setParams({s});
     m.setSender(SocketManager::siteId);
@@ -377,5 +382,15 @@ void SocketManager::socketDisconnected()
         qDebug()<<"errore disconnessione socket";
     }
 
+}
+
+QMap<int, QString> SocketManager::getSiteIdUser() const
+{
+    return siteIdUser;
+}
+
+void SocketManager::setSiteIdUser(const QMap<int, QString> &value)
+{
+    siteIdUser = value;
 }
 

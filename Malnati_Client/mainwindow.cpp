@@ -5,6 +5,7 @@
 #include <QDesktopWidget>
 #include "loginwindow.h"
 #include "accountinterface.h"
+#include "inserttitle.h"
 
 socketManager *sock;
 MainWindow::MainWindow(QWidget *parent)
@@ -23,24 +24,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::newFile(){
-    te = new TextEdit(this);
+    this->hide();
+    InsertTitle it(documents);
 
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
-    te->resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
-    te->move((availableGeometry.width() - te->width()) / 2,
-           (availableGeometry.height() - te->height()) / 2);
+    connect(&it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
+    connect(&it,&InsertTitle::showMw,this,&MainWindow::openMw);
 
-    //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-   // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
+    it.exec();
 
-    te->fileNew();
-    Message m;
-    m.setAction('C');
-    m.setParams({"newfile", this->getUsername()});
-    m.setSender(this->getSiteId());
-    emit(sendTextMessage(&m));
-    emit(newTextEdit(te));
-    te->show();
+
     // This is available in all editors.
 }
 
@@ -52,6 +44,16 @@ int MainWindow::getSiteId() const
 void MainWindow::setSiteId(int value)
 {
     siteId = value;
+}
+
+void MainWindow::setURI(QString u)
+{
+    openURI=u;
+}
+
+QString MainWindow::getURI()
+{
+    return openURI;
 }
 
 void MainWindow::receiveimage(QPixmap& q){
@@ -68,43 +70,36 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
     m.setAction('R');
     m.setParams({s->text(),username});
     m.setSender(siteId);
+    openURI=s->text();
+    flaglocal=1;
     emit(sendTextMessage(&m));
 
 
 }
 
 void MainWindow::receivedFile(QList<Symbol> tmp){
-//    QList<Symbol> tmp;
-//    Symbol s1,s2,s3,s4;
-//    s1.setValue('a');
-//    s1.setPosizione({50});
-//    s2.setValue('b');
-//    s2.setPosizione({75});
-//    s3.setValue('c');
-//    s3.setPosizione({87});
-//    s4.setValue('d');
-//    s4.setPosizione({93});
-//    tmp.append(s1);
-//    tmp.append(s2);
-//    tmp.append(s3);
-//    tmp.append(s4);
     te = new TextEdit(this);
-    emit(newTextEdit(te));
-    te->loadFile(tmp);
+    emit(newTextEdit(te,siteId));
+    te->setFileName(openURI.left(openURI.lastIndexOf('_')));
+    te->setURI(openURI);
+    connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
     te->show();
+    te->loadFile(tmp);
+    this->hide();
 
 }
 
 void MainWindow::sendUri(Message m)
 {
     m.setSender(siteId);
+    openURI=m.getParams().at(0);
     emit(sendTextMessage(&m));
 
 }
 
 void MainWindow::receiveURIerror()
 {
-   QMessageBox::information(this,"Login","Username e password corretti");
+    QMessageBox::information(this,"ERRORE","URI non corretta");
 }
 
 void MainWindow::setImage(QPixmap im){
@@ -169,6 +164,7 @@ void MainWindow::on_actionClose_triggered()
     this->close();
 }
 
+
 void MainWindow::on_listView_indexesMoved(const QModelIndexList &indexes)
 {
 
@@ -183,5 +179,37 @@ void MainWindow::on_pushButton_2_clicked()
 {Inserturi i;
     connect(&i,&Inserturi::sendUri,this,&MainWindow::sendUri);
     i.exec();
+}
+
+
+void MainWindow::receiveTitle(QString title)
+{
+    te = new TextEdit(this);
+
+    const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
+    te->resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
+    te->move((availableGeometry.width() - te->width()) / 2,
+           (availableGeometry.height() - te->height()) / 2);
+
+    //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
+   // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
+    te->setFileName(title);
+    te->setURI(title+"_"+username);
+    addElementforUser(title+"_"+username);
+    te->fileNew();
+    connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+    Message m;
+    m.setAction('C');
+    m.setParams({title, this->getUsername()});
+    //emit(sendMessage(&m));
+    m.setSender(siteId);
+    emit(sendTextMessage(&m));
+    emit(newTextEdit(te,siteId));
+    te->show();
+}
+
+void MainWindow::openMw()
+{
+    this->show();
 
 }

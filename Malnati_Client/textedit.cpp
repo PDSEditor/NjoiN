@@ -196,114 +196,15 @@ TextEdit::TextEdit(QWidget *parent)
 
 }
 
-TextEdit::TextEdit(QList<Symbol> file,QWidget *parent)
-    : QMainWindow(parent)
-{
-#ifdef Q_OS_OSX
-    setUnifiedTitleAndToolBarOnMac(true);
-#endif
-    setWindowTitle(QCoreApplication::applicationName());
-
-
-
-
-
-    textEdit = new QTextEdit(this);
-    externAction=false;
-    //symbols = new std::vector<Symbol>();
-    //QTextDocument document = textEdit->document();
-
-
-    connect(textEdit, &QTextEdit::currentCharFormatChanged,
-            this, &TextEdit::currentCharFormatChanged);
-    connect(textEdit, &QTextEdit::cursorPositionChanged,
-            this, &TextEdit::cursorPositionChanged);
-
-
-    setCentralWidget(textEdit);
-
-    setToolButtonStyle(Qt::ToolButtonFollowStyle);
-    setupFileActions();
-    setupEditActions();
-    setupTextActions();
-
-    {
-        QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
-        helpMenu->addAction(tr("About"), this, &TextEdit::about);
-        helpMenu->addAction(tr("About &Qt"), qApp, &QApplication::aboutQt);
-    }
-
-    QFont textFont("Helvetica");
-    //
-    //
-    textEdit->setFont(textFont);
-    fontChanged(textEdit->font());
-    colorChanged(textEdit->textColor());
-    alignmentChanged(textEdit->alignment());
-
-
-    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    textEdit->setFontFamily("kalapi");
-    localFamily="kalapi";
-    textEdit->setFontPointSize(12);
-    localsize=12;
-    textEdit->currentCharFormat().setFontItalic(false);
-    textEdit->currentCharFormat().setFontUnderline(false);
-
-
-
-
-    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-    connect(textEdit->document(), &QTextDocument::modificationChanged,
-            actionSave, &QAction::setEnabled);
-    connect(textEdit->document(), &QTextDocument::modificationChanged,
-            this, &QWidget::setWindowModified);
-    connect(textEdit->document(), &QTextDocument::undoAvailable,
-            actionUndo, &QAction::setEnabled);
-    connect(textEdit->document(), &QTextDocument::redoAvailable,
-            actionRedo, &QAction::setEnabled);
-    connect(textEdit->document(), &QTextDocument::contentsChange,
-            this, &TextEdit::onTextChanged);
-
-
-
-    setWindowModified(textEdit->document()->isModified());
-    actionSave->setEnabled(textEdit->document()->isModified());
-    actionUndo->setEnabled(textEdit->document()->isUndoAvailable());
-    actionRedo->setEnabled(textEdit->document()->isRedoAvailable());
-    textEdit->textChanged();
-#ifndef QT_NO_CLIPBOARD
-    actionCut->setEnabled(false);
-    connect(textEdit, &QTextEdit::copyAvailable, actionCut, &QAction::setEnabled);
-    actionCopy->setEnabled(false);
-    connect(textEdit, &QTextEdit::copyAvailable, actionCopy, &QAction::setEnabled);
-
-    connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &TextEdit::clipboardDataChanged);
-#endif
-
-    textEdit->setFocus();
-    setCurrentFileName(QString());
-
-#ifdef Q_OS_MACOS
-    // Use dark text on light background on macOS, also in dark mode.
-    QPalette pal = textEdit->palette();
-    pal.setColor(QPalette::Base, QColor(Qt::white));
-    pal.setColor(QPalette::Text, QColor(Qt::black));
-    textEdit->setPalette(pal);
-#endif
-
-
-}
-
 
 void TextEdit::closeEvent(QCloseEvent *e)
 {
+
     if (maybeSave())
         e->accept();
     else
         e->ignore();
+    emit(openMW());
 }
 
 void TextEdit::setupFileActions()
@@ -555,6 +456,23 @@ void TextEdit::setSocketM(socketManager *sockclient)
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
 }
 
+void TextEdit::setFileName(QString fileName)
+{
+    this->fileName = fileName;
+}
+
+void TextEdit::setURI(QString u)
+{
+    URI=u;
+}
+
+QString TextEdit::getURI()
+{
+    return URI;
+}
+
+
+
 bool TextEdit::maybeSave()
 {
     if (!textEdit->document()->isModified())
@@ -574,14 +492,14 @@ bool TextEdit::maybeSave()
 
 void TextEdit::setCurrentFileName(const QString &fileName)
 {
-    this->fileName = fileName;
-    textEdit->document()->setModified(false);
+    //this->fileName = fileName;
+    //textEdit->document()->setModified(false);
 
     QString shownName;
-    if (fileName.isEmpty())
+    if (this->fileName.isEmpty())
         shownName = "untitled.txt";
     else
-        shownName = QFileInfo(fileName).fileName();
+        shownName = QFileInfo(this->fileName).fileName();
 
     setWindowTitle(tr("%1[*] - %2").arg(shownName, QCoreApplication::applicationName()));
     setWindowModified(false);
@@ -597,7 +515,7 @@ void TextEdit::fileNew()
 
 }
 
-void TextEdit::reciveSymbol(Message *m)
+void TextEdit::receiveSymbol(Message *m)
 {
     externAction=true;
    QTextCursor curs = textEdit->textCursor(),oldcurs;
@@ -787,20 +705,10 @@ void TextEdit::textBold()
 
 void TextEdit::textUnderline()
 {
-    QTextCursor curs=textEdit->textCursor();
-    /*
     QTextCharFormat fmt;
     fmt.setFontUnderline(actionTextUnderline->isChecked());
     mergeFormatOnWordOrSelection(fmt);
-    */
-    QTextCharFormat qq;
-    qq.setFontUnderline(1);
-    int p=0;
-    int num=3;
-    curs.setPosition(p);
-    curs.movePosition(QTextCursor::NoMove,QTextCursor::KeepAnchor);
-    curs.setPosition(p+num);
-    curs.mergeCharFormat(qq);
+
 }
 
 void TextEdit::textItalic()
@@ -949,17 +857,28 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
         if(charsAdded!= 0){
             if(charsAdded==charsRemoved){
                 //dati da passare
-                int cpos=cursor.selectionStart();
-                int cn=charsAdded;
-                bool cbold=actionTextBold->isChecked();
-                bool citalic=actionTextItalic->isChecked();
-                bool cundl=actionTextUnderline->isChecked();
-                QString cfam=localFamily;
-                qreal csize=localsize;
+                int pos=cursor.selectionStart();
+                for(int i=0;i<charsAdded;i++){
+                    Message mc,mi;
+                    Symbol s=crdt->getSymbols().at(pos+i);
+                    //eliminazione vecchio carattere
+                    mc.setSymbol(s);
+                    mc.setAction('D');
+                    emit(sendMessage(&mc));
+                    //invio carattere modificato
+                    mi.setAction('I');
+                    s.setBold(actionTextBold->isChecked());
+                    s.setItalic(actionTextItalic->isChecked());
+                    s.setUnderln(actionTextUnderline->isChecked());
+                    s.setFamily(localFamily);
+                    s.setSize(localsize);
+                    mi.setSymbol(s);
+                    emit(sendMessage(&mi));
+                }
                 //
 
             }
-            else
+            else{
                 if(charsRemoved>0)
                 charsAdded--;
             for(int i=0; i<charsAdded; i++){
@@ -974,6 +893,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 m.setSymbol(s);
                 position+=1;
                 emit(sendMessage(&m));
+            }
             }
         }
    }
@@ -1103,13 +1023,24 @@ void TextEdit::alignmentChanged(Qt::Alignment a)
 
 void TextEdit::loadFile(QList<Symbol> file)
 {
+    setCurrentFileName(QString());
+    QString tmp;
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
+    QTextCharFormat qform;
     foreach(Symbol s,file){
         externAction=true;
-        curs.insertText(s.getValue());
+        qform.setFontFamily(s.getFamily());
+        qform.setFontItalic(s.getItalic());
+        qform.setFontUnderline(s.getUnderln());
+        qform.setFontPointSize(s.getSize());
+        if(s.getBold())
+            qform.setFontWeight(QFont::Bold);
+        curs.insertText((QChar)s.getValue(),qform);
+       // tmp.append(s.getValue());
         vtmp.push_back(s);
     }
+   // textEdit->setPlainText(tmp);
     crdt->setSymbols(vtmp);
 }
 

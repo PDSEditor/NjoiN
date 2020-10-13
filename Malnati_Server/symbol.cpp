@@ -125,12 +125,19 @@ Symbol Symbol::fromJson(const QJsonDocument &charJD){
     for(auto i: fractionalPosJ){
         fractionalPos.push_back(i.toInt());
     }
-    /** TODO: non ancora implementato lo stile **/
-//    QJsonObject styleJ = charJ["style"].toObject();
-//    tStyle l_style = { styleJSON["fontFamily"].toString(), styleJSON["fontSize"].toInt(),
-//                           styleJSON["bold"].toBool(), styleJSON["italic"].toBool(),
-//                           styleJSON["underline"].toBool(), styleJSON["alignment"].toInt() };
+
+    QString family = charJ["family"].toString();
+    bool bold = charJ["bold"].toBool();
+    bool italic = charJ["italic"].toBool();
+    bool underln = charJ["underln"].toBool();
+    qreal size = charJ["size"].toDouble();
+
     Symbol result(value, fractionalPos, siteId, counter);
+    result.setFamily(family);
+    result.setBold(bold);
+    result.setItalic(italic);
+    result.setUnderln(underln);
+    result.setSize(size);
     return result;
 }
 

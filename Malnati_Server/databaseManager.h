@@ -12,6 +12,7 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
+#include <mongocxx/cursor.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/exception/query_exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
@@ -50,12 +51,13 @@ private:
 public:
     DatabaseManager();
     /*** ACCOUNT ****/
-    bool registerAccount(Account &account, QString password, QByteArray &image);
+    bool registerAccount(Account &account, QString password);
     bool deleteAccount  (QString _id);
     bool checkAccountPsw(QString _id, QString password);
     bool changePassword(QString _id, QString old_password, QString new_password);
     bool changeImage(QString _id, QByteArray &image);
     Account getAccount(QString username);
+    QList<Account> getAllAccounts();
     /************/
 
     /** SYMBOL **/

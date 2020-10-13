@@ -14,6 +14,24 @@ Server::Server(QObject *parent) : QObject(parent)
     std::unique_ptr<AccountManager> acMan(new AccountManager);
     this->acMan = std::move(acMan);
 
+
+    // Salvo tutti i siteId già assegnati all'interno del socket managercosì da non assegnare a due client lo stessoS
+
+    try {
+        QList<Account> allAccounts = this->dbMan->getAllAccounts();
+
+        QMap<int, QString> siteIdUser;
+
+        for(auto account : allAccounts) {
+            siteIdUser[account.getSiteId()] = account.getUsername();
+        }
+
+        this->socketMan->setSiteIdUser(siteIdUser);
+
+    }
+    catch(std::exception& e){
+    }
+
     /***************************
      ****** TEST DB ***********
      *************************/
@@ -36,14 +54,29 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QByteArray image = img.readAll();
 //    QByteArray image = qualcosa.toString().toLatin1(); //base64
 
-//    Account account(name, 5, image);
+//    Account account(name, 1, image);
 //    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass, image))
-//        qDebug() << "inseted?" ;
+//        qDebug() << "inserted" ;
+
+//    QString name1 = "prova";
+//    QString pass1 = "prova";
+
+
+//    QFile img1("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image1 = img.readAll();
+
+//    Account account1(name1, 5, image1);
+
+//    if(this->dbMan.get()->registerAccount(account1, pass1, image1))
+//        qDebug() << "inserted" ;
 
 
 
-//    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
+//    Account account2 = this->dbMan.get()->getAccount(QString("test"));
+//    qDebug() << account2.toString();
+
+//    account2 = this->dbMan.get()->getAccount(QString("angelo"));
 //    qDebug() << account2.toString();
 
 //    if(this->dbMan.get()->checkAccountPsw(name,pass))
@@ -88,9 +121,17 @@ void Server::dispatchMessage(Message &mes) {
     int sender = mes.getSender();
 
     for(it=clients.begin(); it!= clients.end(); it++) {
-        if(it.key() != sender)
+        if(it.key() != sender) {
+
             //qDebug()<< "Mando la remote insert al client n" << it.key();
-            this->socketMan->messageToUser(mes, it.key());
+
+            QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
+
+            if(this->acMan->getAccountsPerFile().contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
+                                                                                       // lavorando al documento, in quel caso invia la insert o delete
+                this->socketMan->messageToUser(mes, it.key());
+            }
+        }
     }
 }
 
@@ -104,7 +145,7 @@ void Server::processMessage(Message &mesIn) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
-     * REGISTER user (Sign up)  -> S
+     * REGISTER user  -> E
      * LOG-IN -> L
      * LOGOUT -> O
     */
@@ -134,12 +175,19 @@ void Server::processMessage(Message &mesIn) {
 //            qDebug() << i.getValue();
 //        }
 
-//        this->dbMan.get()->insertSymbol(mesIn); //da fareeeeeeeeeeeeeeeeeee
+        username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
+        documentId = this->acMan->getAccountOnDocument()[username];
+        mesIn.setParams({documentId});
+        this->dbMan.get()->insertSymbol(mesIn);
         this->dispatchMessage(mesIn);
 //        remoteInsert(mesIn.getSymbol());
         break;
     case 'D':
-//        this->dbMan.get()->deleteSymbol(mesIn);
+        username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
+        documentId = this->acMan->getAccountOnDocument()[username];
+        mesIn.setParams({documentId});
+
+        this->dbMan.get()->deleteSymbol(mesIn);
         this->dispatchMessage(mesIn);
 //        remoteDelete(mesIn.getSymbol());
         break;
@@ -161,10 +209,19 @@ void Server::processMessage(Message &mesIn) {
             }
             mesOut.setError(false);
 
+            this->acMan->updateAccountOnDocument(username, documentId);
+
+            auto accPerFile = this->acMan->getAccountsPerFile();
+            accPerFile[documentId].append(username);
+            accPerFile.insert (documentId, accPerFile[documentId]);
+            this->acMan->setAccountsPerFile(accPerFile);
+
         }
         else{
             mesOut.setError(true);              //Non autorizzato
         }
+
+
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
         break;
@@ -174,10 +231,10 @@ void Server::processMessage(Message &mesIn) {
     case 'C' :
     {
 
-        if(mesIn.getParams().size()!=2) {
-            qDebug()<< "Numero parametri errato nella creazione del file.";
-            break;
-        }
+//        if(mesIn.getParams().size()!=2) {
+//            qDebug()<< "Numero parametri errato nella creazione del file.";
+//            break;
+//        }
 
         nomeFile = mesIn.getParams()[0];
         //controllo db se esiste un file con lo stesso nome
@@ -197,6 +254,8 @@ void Server::processMessage(Message &mesIn) {
         auto accPerFile = this->acMan->getAccountsPerFile();
         accPerFile.insert(doc.getUri(), userAllowed);
         this->acMan->setAccountsPerFile(accPerFile);
+
+        this->acMan->updateAccountOnDocument(username, (nomeFile +"_"+username));
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
@@ -243,6 +302,13 @@ void Server::processMessage(Message &mesIn) {
             }
             mesOut.setError(false);
 
+            this->acMan->updateAccountOnDocument(account.get()->getUsername(), uri);
+
+            auto accPerFile = this->acMan->getAccountsPerFile();
+            accPerFile[documentId].append((account.get()->getUsername()));
+            accPerFile.insert (documentId, accPerFile[documentId]);
+            this->acMan->setAccountsPerFile(accPerFile);
+
         }
         catch(std::exception& e){
             qDebug() << "Documento non esistente";
@@ -253,8 +319,28 @@ void Server::processMessage(Message &mesIn) {
 
         break;
 
-    case 'S' :
-        //Signup
+    case 'E' :
+        //rEgister
+
+        username = mesIn.getParams()[0];
+        mesOut.setAction('E');
+        mesOut.setSender(mesIn.getSender());
+
+        acc = this->dbMan->getAccount(username);
+
+        if( acc.getSiteId()< 0) {               // non esiste un account con questo username
+            mesOut.setError(false);
+
+            acc = Account(username, mesIn.getSender());
+
+            this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
+
+        }
+        else {
+            mesOut.setError(true);
+        }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
 
