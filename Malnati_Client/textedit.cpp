@@ -207,7 +207,7 @@ void TextEdit::closeEvent(QCloseEvent *e)
     else
         e->ignore();
 
-    emit(openMW(this->fileName));
+    emit(openMW(this->getURI()));
 
     //emit(closeDocument(this->fileName));
 }

@@ -253,8 +253,8 @@ void Server::processMessage(Message &mesIn) {
     case 'X' :
         //gestire chiusura del file
         //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
-        username = mesIn.getParams()[0];
-        documentId = mesIn.getParams()[1];
+        username = mesIn.getParams()[1];
+        documentId = mesIn.getParams()[0];
         if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
 
             // per ora commentato

@@ -209,8 +209,8 @@ void MainWindow::openMw(QString fileName)
         Message m;
         m.setAction('X');
         m.setSender(this->getSiteId());
-        m.setParams({fileName});
-        emit(sendMessage(&m));
+        m.setParams({fileName, this->username});
+        emit(sendTextMessage(&m));
 
     }
 
