@@ -22,8 +22,10 @@ public:
 public slots:
     void receiveRegistration(Message);
      void openRw(int);
+     void closeRw();
 signals:
     void sendMessage(Message*);
+    void sendError(QString);
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
 

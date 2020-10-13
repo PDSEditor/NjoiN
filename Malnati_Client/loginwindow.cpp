@@ -109,6 +109,7 @@ void LoginWindow::receiveRegistration(Message m)
     }
     else{
         QMessageBox::information(this,"Registrazione avvenuta","La registrazione è avvenuta correttamente");
+        emit(closeRw());
     }
 }
 
@@ -118,6 +119,17 @@ void LoginWindow::loggedin(bool c)
         QMessageBox::information(this,"Login","Utente già loggato");
     else
         QMessageBox::information(this,"ERRORE","Impossibile connettersi al server");
+}
+
+void LoginWindow::receiveErrorReg(QString s)
+{
+    if(s=="password"){
+        QMessageBox::information(this,"Errore password","Le due password non coincidono");
+        emit(openRw(siteId));
+    }else if(s=="usenrame"){
+        QMessageBox::information(this,"Errore username","Carattere '_' proibito");
+        emit(openRw(siteId));
+    }
 }
 
 

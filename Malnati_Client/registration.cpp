@@ -26,14 +26,14 @@ void Registration::receiveRegistration(Message m)
 
 void Registration::on_buttonBox_clicked(QAbstractButton *button)
 {
-    if(ui->lineEdit_2->text()!=ui->lineEdit_3->text()){
-        QMessageBox::information(this,"Errore password","Le due password non coincidono");
+    if(ui->lineEdit_2->text()!=ui->lineEdit_3->text()||ui->lineEdit_2->text().isEmpty()||ui->lineEdit_3->text().isEmpty()){
+        emit(sendError("password"));
     }else if(ui->label->text().contains('_')){
-        QMessageBox::information(this,"Errore username","Carattere '_' proibito");
+        emit(sendError("username"));
     }else{
         Message m;
         m.setAction('E');
-        m.setParams({ui->label->text(),ui->label_2->text()});
+        m.setParams({ui->lineEdit->text(),ui->lineEdit_2->text()});
         m.setSender(sId);
         emit(sendMessage(&m));
     }
@@ -42,5 +42,11 @@ void Registration::on_buttonBox_clicked(QAbstractButton *button)
 void Registration::openRw(int s)
 {
     sId=s;
-    this->exec();
+    this->setWindowModality(Qt::WindowModal);
+    this->show();
+}
+
+void Registration::closeRw()
+{
+    this->close();
 }

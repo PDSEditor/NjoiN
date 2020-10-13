@@ -6,8 +6,9 @@ Client::Client()
     Registration rw;
     sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
     mw = new MainWindow();
-    connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::binaryMessageToServer);
     connect(&lw,&LoginWindow::openRw,&rw,&Registration::openRw);
+    connect(&lw,&LoginWindow::closeRw,&rw,&Registration::closeRw);
+    connect(&rw,&Registration::sendError,&lw,&LoginWindow::receiveErrorReg);
     connect(sockm,&socketManager::receiveRegistration,&lw,&LoginWindow::receiveRegistration);
     connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::messageToServer);
     connect(&rw, &Registration::sendMessage, sockm, &socketManager::messageToServer);
@@ -18,8 +19,6 @@ Client::Client()
     connect(sockm, &socketManager::receivedURIerror, mw, &MainWindow::receiveURIerror);
     connect(sockm,&socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
     lw.exec();
-    rw.exec();
-    rw.hide();
 
 
 
