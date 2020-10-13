@@ -16,6 +16,7 @@ LoginWindow::LoginWindow(QWidget *parent) :
     this->ui->logo1->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center;");
     setWindowTitle("Login");
 
+
 }
 
 LoginWindow::~LoginWindow()
@@ -98,7 +99,17 @@ void LoginWindow::receivedLogin(bool resp){
 
 void LoginWindow::receivedSiteId(int siteid){
     siteId=siteid;
+}
 
+void LoginWindow::receiveRegistration(Message m)
+{
+    if(m.getError()){
+        QMessageBox::information(this,"Errore","Username già presente, utilizzarne un altro");
+        emit(openRw(siteId));
+    }
+    else{
+        QMessageBox::information(this,"Registrazione avvenuta","La registrazione è avvenuta correttamente");
+    }
 }
 
 void LoginWindow::loggedin(bool c)
@@ -109,15 +120,9 @@ void LoginWindow::loggedin(bool c)
         QMessageBox::information(this,"ERRORE","Impossibile connettersi al server");
 }
 
-void LoginWindow::sendRegistration(Message m)
-{
-    emit(sendMessage(&m));
-}
 
-void LoginWindow::receiveRegistration(Message m)
-{
-    emit(forwardRegistration(m));
-}
+
+
 bool LoginWindow::getIsLogin() const{
     return isLogin;
 }
@@ -126,11 +131,9 @@ void LoginWindow::setIsLogin(int isLogin){
 }
 
 void LoginWindow::on_pushButton_signup_clicked(){
-    Registration rg(siteId);
-    connect(&rg,&Registration::sendRegistration,this,&LoginWindow::sendRegistration);
-     connect(this,&LoginWindow::forwardRegistration,&rg,&Registration::receiveRegistration);
-    this->hide();
-    rg.exec();
+
+
+    emit(openRw(siteId));
 
 
 

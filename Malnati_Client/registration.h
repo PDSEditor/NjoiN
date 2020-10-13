@@ -16,13 +16,14 @@ class Registration : public QDialog
 
 public:
     explicit Registration(QWidget *parent = nullptr);
-    explicit Registration(int siteId,QWidget *parent = nullptr);
     ~Registration();
+    void setiteId(int s);
 
 public slots:
     void receiveRegistration(Message);
+     void openRw(int);
 signals:
-    void sendRegistration(Message);
+    void sendMessage(Message*);
 private slots:
     void on_buttonBox_clicked(QAbstractButton *button);
 

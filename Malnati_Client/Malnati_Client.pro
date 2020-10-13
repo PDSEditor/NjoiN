@@ -59,7 +59,7 @@ FORMS += \
     inserttitle.ui \
     loginwindow.ui \
     mainwindow.ui \
-    registration.ui
+    registration.ui \
     showuridialog.ui
 
 RESOURCES += textedit.qrc
