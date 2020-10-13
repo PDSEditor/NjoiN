@@ -206,7 +206,10 @@ void TextEdit::closeEvent(QCloseEvent *e)
         e->accept();
     else
         e->ignore();
-    emit(openMW());
+
+    emit(openMW(this->fileName));
+
+    //emit(closeDocument(this->fileName));
 }
 
 void TextEdit::setupFileActions()

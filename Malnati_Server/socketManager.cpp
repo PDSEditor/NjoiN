@@ -174,8 +174,6 @@ void SocketManager::processTextMessage(QString message)
 {
 
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
-    int i = 0;
-    i++;
     //qDebug()<<message;
 
     //deserialize JSON
