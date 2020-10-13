@@ -30,6 +30,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     message.cpp \
+    registration.cpp \
     showuridialog.cpp \
     symbol.cpp \
     textedit.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     loginwindow.h \
     mainwindow.h \
     message.h \
+    registration.h \
     showuridialog.h \
     symbol.h \
     textedit.h \
@@ -57,6 +59,7 @@ FORMS += \
     inserttitle.ui \
     loginwindow.ui \
     mainwindow.ui \
+    registration.ui \
     showuridialog.ui
 
 RESOURCES += textedit.qrc

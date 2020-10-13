@@ -2,6 +2,7 @@
 #define SHOWURIDIALOG_H
 
 #include <QDialog>
+#include <QDebug>
 
 namespace Ui {
 class ShowUriDialog;
@@ -10,6 +11,10 @@ class ShowUriDialog;
 class ShowUriDialog : public QDialog
 {
     Q_OBJECT
+
+
+protected:
+//    void closeEvent(QCloseEvent *e) override;
 
 public:
     explicit ShowUriDialog(QWidget *parent = nullptr);

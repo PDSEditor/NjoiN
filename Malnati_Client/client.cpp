@@ -3,18 +3,23 @@
 Client::Client()
 {
     LoginWindow lw;
+    Registration rw;
     sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
     mw = new MainWindow();
-    //connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::binaryMessageToServer);
+    connect(&lw,&LoginWindow::openRw,&rw,&Registration::openRw);
+    connect(&lw,&LoginWindow::closeRw,&rw,&Registration::closeRw);
+    connect(&rw,&Registration::sendError,&lw,&LoginWindow::receiveErrorReg);
+    connect(sockm,&socketManager::receiveRegistration,&lw,&LoginWindow::receiveRegistration);
     connect(&lw, &LoginWindow::sendMessage, sockm, &socketManager::messageToServer);
+    connect(&rw, &Registration::sendMessage, sockm, &socketManager::messageToServer);
     connect(sockm, &socketManager::receivedLogin, &lw, &LoginWindow::receivedLogin);
     connect(sockm, &socketManager::loggedin,&lw, &LoginWindow::loggedin);
     connect(sockm, &socketManager::receivedInfoAccount, mw, &MainWindow::receivedInfoAccount);
     connect(sockm, &socketManager::receivedFile, mw, &MainWindow::receivedFile);
     connect(sockm, &socketManager::receivedURIerror, mw, &MainWindow::receiveURIerror);
     connect(sockm,&socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
-    
-     lw.exec();
+
+    lw.exec();
 
      //    /** TEST IMMAGINE! **/
      //    QString imgPath("/home/pepos/projects/progetto_malnati/Malnati_Client/images/cv_musk.png");

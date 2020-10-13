@@ -14,7 +14,9 @@ void ShowUriDialog::setUriDialog(QString uri)
     ui->UriLabel->setText(uri);
 }
 
-
+//void closeEvent(QCloseEvent *e){
+//    qDebug() << "chiusura";
+//}
 
 ShowUriDialog::~ShowUriDialog()
 {

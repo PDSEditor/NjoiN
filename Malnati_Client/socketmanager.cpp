@@ -235,6 +235,9 @@ void socketManager::onTextMessageReceived(QString message)
 
         emit(setSiteId(m.getSender()));
         break;
+    case 'E'://Registrazione
+        emit(receiveRegistration(m));
+        break;
     case 'R':
 
         foreach (QString s, m.getParams()) {
@@ -256,6 +259,7 @@ void socketManager::onTextMessageReceived(QString message)
         }
         break;
 //
+
     default:
         qDebug() << "default";
         break;
