@@ -44,7 +44,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
 //    Account account(name, 1, image);
 //    account.setDocumentUris({"hello", "ciao"});
-//    if(this->dbMan.get()->registerAccount(account, pass, image))
+//    if(this->dbMan.get()->registerAccount(account, pass))
 //        qDebug() << "inserted" ;
 
 //    QString name1 = "prova";
@@ -56,7 +56,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
 //    Account account1(name1, 5, image1);
 
-//    if(this->dbMan.get()->registerAccount(account1, pass1, image1))
+//    if(this->dbMan.get()->registerAccount(account1, pass1))
 //        qDebug() << "inserted" ;
 
 
