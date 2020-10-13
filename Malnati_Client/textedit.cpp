@@ -89,6 +89,7 @@
 #include "textedit.h"
 #include<QDebug>
 #include "message.h"
+#include "showuridialog.h"
 
 #ifdef Q_OS_MAC
 const QString rsrcPath = ":/images/mac";
@@ -129,6 +130,7 @@ TextEdit::TextEdit(QWidget *parent)
     setupFileActions();
     setupEditActions();
     setupTextActions();
+    setupUriActions();
 
     {
         QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
@@ -421,6 +423,18 @@ void TextEdit::setupTextActions()
     comboSize->setCurrentIndex(standardSizes.indexOf(QApplication::font().pointSize()));
 
     connect(comboSize, QOverload<const QString &>::of(&QComboBox::activated), this, &TextEdit::textSize);
+}
+
+void TextEdit::setupUriActions()
+{
+    QToolBar *tb = addToolBar(tr("Mostra Uri"));
+    QMenu *menu = menuBar()->addMenu(tr("&Uri"));
+
+    const QIcon newIcon = QIcon::fromTheme("showUri", QIcon(rsrcPath + "/../Icons/icons8-collegamento-24.png"));
+    QAction *a = menu->addAction(newIcon, tr("&showUri"), this, &TextEdit::showUriWindow);
+    tb->addAction(a);
+    a->setPriority(QAction::LowPriority);
+
 }
 
 bool TextEdit::load(const QString &f)
@@ -827,6 +841,14 @@ void TextEdit::textAlign(QAction *a)
         textEdit->setAlignment(Qt::AlignRight | Qt::AlignAbsolute);
     else if (a == actionAlignJustify)
         textEdit->setAlignment(Qt::AlignJustify);
+}
+
+void TextEdit::showUriWindow()
+{
+   ShowUriDialog uriD;
+   uriD.setUriDialog(URI);
+   uriD.exec();
+
 }
 
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
