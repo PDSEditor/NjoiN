@@ -66,6 +66,7 @@ private slots:
     void textStyle(int styleIndex);
     void textColor();
     void textAlign(QAction *a);
+    void showUriWindow();
 
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorPositionChanged();
@@ -79,6 +80,7 @@ private:
     void setupFileActions();
     void setupEditActions();
     void setupTextActions();
+    void setupUriActions();
     bool maybeSave();
     void setCurrentFileName(const QString &fileName);
 

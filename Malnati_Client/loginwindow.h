@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QObject>
 #include "mainwindow.h"
+#include <registration.h>
 
 namespace Ui {
 class LoginWindow;
@@ -20,9 +21,11 @@ public:
 
 signals:
     void sendMessage(Message* mex);
+    void openRw(int);
  public slots:
      void receivedLogin(bool resp);
      void receivedSiteId(int siteid);
+     void receiveRegistration(Message);
      void loggedin(bool);
 private slots:
     void on_pushButton_login_clicked();

@@ -1,4 +1,4 @@
-#include "loginwindow.h"
+﻿#include "loginwindow.h"
 #include "ui_loginwindow.h"
 #include <QMessageBox>
 #include <QStyle>
@@ -12,7 +12,11 @@ LoginWindow::LoginWindow(QWidget *parent) :
 {
     isLogin = false;
     ui->setupUi(this);
+
+    this->ui->logo1->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center;");
     setWindowTitle("Login");
+
+
 }
 
 LoginWindow::~LoginWindow()
@@ -24,6 +28,7 @@ void LoginWindow::on_pushButton_login_clicked()
 {
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
+
     if ( username.size() == 0 || password.size() == 0 ) {
             QMessageBox::warning(this, "Login Error", "Username and password cannot be empty");
     } else {
@@ -59,6 +64,7 @@ void LoginWindow::on_pushButton_login_clicked()
         //        isLogin=false;
         //    }
     }
+
 }
 
 void LoginWindow::receivedLogin(bool resp){
@@ -93,7 +99,17 @@ void LoginWindow::receivedLogin(bool resp){
 
 void LoginWindow::receivedSiteId(int siteid){
     siteId=siteid;
+}
 
+void LoginWindow::receiveRegistration(Message m)
+{
+    if(m.getError()){
+        QMessageBox::information(this,"Errore","Username già presente, utilizzarne un altro");
+        emit(openRw(siteId));
+    }
+    else{
+        QMessageBox::information(this,"Registrazione avvenuta","La registrazione è avvenuta correttamente");
+    }
 }
 
 void LoginWindow::loggedin(bool c)
@@ -103,6 +119,10 @@ void LoginWindow::loggedin(bool c)
     else
         QMessageBox::information(this,"ERRORE","Impossibile connettersi al server");
 }
+
+
+
+
 bool LoginWindow::getIsLogin() const{
     return isLogin;
 }
@@ -111,12 +131,14 @@ void LoginWindow::setIsLogin(int isLogin){
 }
 
 void LoginWindow::on_pushButton_signup_clicked(){
-    qDebug() << "Registrazione";
-    //todo: fare la registrationWindow
+
+
+    emit(openRw(siteId));
 
 
 
 
 
 }
+
 
