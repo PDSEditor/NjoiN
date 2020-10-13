@@ -256,7 +256,9 @@ void Server::processMessage(Message &mesIn) {
         username = mesIn.getParams()[0];
         documentId = mesIn.getParams()[1];
         if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
-            this->docMan->saveToServer(documentId);
+
+            // per ora commentato
+            //this->docMan->saveToServer(documentId);
         }
 
         break;

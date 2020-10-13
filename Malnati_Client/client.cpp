@@ -18,8 +18,6 @@ Client::Client()
     connect(sockm, &socketManager::receivedURIerror, mw, &MainWindow::receiveURIerror);
     connect(sockm,&socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
     lw.exec();
-    rw.exec();
-    rw.hide();
 
 
 

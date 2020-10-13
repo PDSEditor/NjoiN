@@ -67,6 +67,7 @@ Account::Account(const Account &other){
     this->siteId = other.siteId;
     this->username = other.username;
     this->image = other.image;
+    this->documentUris = other.documentUris;
 }
 
 QString Account::toString(){
