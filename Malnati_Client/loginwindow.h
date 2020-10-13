@@ -32,6 +32,7 @@ signals:
 private slots:
     void on_pushButton_login_clicked();
     void on_pushButton_signup_clicked();
+    void closeEvent(QCloseEvent *e);
 
 private:
     Ui::LoginWindow *ui;

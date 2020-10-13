@@ -27,7 +27,8 @@ signals:
     void sendMessage(Message*);
     void sendError(QString);
 private slots:
-    void on_buttonBox_clicked(QAbstractButton *button);
+    void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
 
 private:
     Ui::Registration *ui;
