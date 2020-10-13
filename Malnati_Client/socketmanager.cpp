@@ -26,6 +26,7 @@ void socketManager::messageToServer(Message *m)
         qDebug() << "Server is down!";
         emit(loggedin(false));
     }
+
     webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 }
 

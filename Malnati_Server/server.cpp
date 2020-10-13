@@ -56,7 +56,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
 //    Account account(name, 1, image);
 //    account.setDocumentUris({"hello", "ciao"});
-//    if(this->dbMan.get()->registerAccount(account, pass, image))
+//    if(this->dbMan.get()->registerAccount(account, pass))
 //        qDebug() << "inserted" ;
 
 //    QString name1 = "prova";
@@ -68,7 +68,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
 //    Account account1(name1, 5, image1);
 
-//    if(this->dbMan.get()->registerAccount(account1, pass1, image1))
+//    if(this->dbMan.get()->registerAccount(account1, pass1))
 //        qDebug() << "inserted" ;
 
 
@@ -265,10 +265,12 @@ void Server::processMessage(Message &mesIn) {
     case 'X' :
         //gestire chiusura del file
         //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
-        username = mesIn.getParams()[0];
-        documentId = mesIn.getParams()[1];
+        username = mesIn.getParams()[1];
+        documentId = mesIn.getParams()[0];
         if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
-            this->docMan->saveToServer(documentId);
+
+            // per ora commentato
+            //this->docMan->saveToServer(documentId);
         }
 
         break;

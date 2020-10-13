@@ -188,7 +188,9 @@ void MainWindow::receiveTitle(QString title)
     te->setURI(title+"_"+username);
     addElementforUser(title+"_"+username);
     te->fileNew();
+    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+
     Message m;
     m.setAction('C');
     m.setParams({title, this->getUsername()});
@@ -199,8 +201,22 @@ void MainWindow::receiveTitle(QString title)
     te->show();
 }
 
-void MainWindow::openMw()
+void MainWindow::openMw(QString fileName)
 {
     this->show();
+
+    if (fileName!="") {
+        Message m;
+        m.setAction('X');
+        m.setSender(this->getSiteId());
+        m.setParams({fileName, this->username});
+        emit(sendTextMessage(&m));
+
+    }
+
+}
+
+void MainWindow::documentClosed(QString fileName)
+{
 
 }

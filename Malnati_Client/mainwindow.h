@@ -64,7 +64,8 @@ private slots:
 
     void receiveTitle(QString title);
 
-    void openMw();
+    void openMw(QString);
+    void documentClosed(QString);
 
 private:
     Ui::MainWindow *ui;

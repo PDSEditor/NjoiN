@@ -174,8 +174,7 @@ void SocketManager::processTextMessage(QString message)
 {
 
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
-
-    qDebug()<<message;
+    //qDebug()<<message;
 
     //deserialize JSON
 //    Message m = Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
@@ -334,6 +333,10 @@ void SocketManager::onNewConnection()
     connect(socket, &QWebSocket::binaryMessageReceived, this, &SocketManager::processBinaryMessage);
     connect(socket, &QWebSocket::disconnected, this, &SocketManager::socketDisconnected);
 
+    while(this->siteIdUser.keys().contains(this->siteId)){      //controlla se il siteId attuale corrisponde già a qualche altro utente
+        this->siteId++;
+    }
+
     clients.insert(SocketManager::siteId, socket);
 
 
@@ -342,9 +345,7 @@ void SocketManager::onNewConnection()
 
     m.setAction('S');
 
-    while(this->siteIdUser.keys().contains(this->siteId)){      //controlla se il siteId attuale corrisponde già a qualche altro utente
-        this->siteId++;
-    }
+
 
     QString s = QString::number(SocketManager::siteId);
     m.setParams({s});
@@ -358,7 +359,7 @@ void SocketManager::socketDisconnected()
 {
     QWebSocket *client = qobject_cast<QWebSocket *>(sender());
 
-    int siteId = 9999;
+    int siteId = -1;
 
     if (client) {
         auto it = clients.begin();
@@ -374,7 +375,7 @@ void SocketManager::socketDisconnected()
     }
 
     //emetti segnale per rimuovere da onlineAccounts
-    if(siteId != 9999) {
+    if(siteId >=0) {
         emit(accountDisconnected(siteId));
         qDebug() << "socketDisconnected";
     }
