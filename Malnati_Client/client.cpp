@@ -6,6 +6,7 @@ Client::Client()
     Registration rw;
     sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
     mw = new MainWindow();
+    connect(&lw,&LoginWindow::closeMw,mw,&MainWindow::closeMw);
     connect(&lw,&LoginWindow::openRw,&rw,&Registration::openRw);
     connect(&lw,&LoginWindow::closeRw,&rw,&Registration::closeRw);
     connect(&rw,&Registration::sendError,&lw,&LoginWindow::receiveErrorReg);

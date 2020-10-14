@@ -102,6 +102,11 @@ void MainWindow::receiveURIerror()
     QMessageBox::information(this,"ERRORE","URI non corretta");
 }
 
+void MainWindow::closeMw()
+{
+    on_actionClose_triggered();
+}
+
 void MainWindow::setImage(QPixmap im){
     image=im;
 }

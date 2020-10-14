@@ -43,6 +43,8 @@ public slots:
     void sendUri(Message);
     void receiveURIerror();
 
+    void closeMw();
+
 signals:
     void newTextEdit(TextEdit* t,int s);
     // prova
