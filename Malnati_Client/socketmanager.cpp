@@ -25,6 +25,7 @@ void socketManager::messageToServer(Message *m)
     if(server_on==0){
         emit(loggedin(0));
     }
+
     webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 
     //qDebug()<<"Testo inviato: sia m diu ";

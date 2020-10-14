@@ -47,7 +47,7 @@ void InsertTitle::on_buttonBox_accepted()
 
 void InsertTitle::on_buttonBox_rejected()
 {
-    emit showMw();
+    emit showMw("");
     this->close();
 }
 

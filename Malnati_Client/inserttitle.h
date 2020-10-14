@@ -25,7 +25,7 @@ private slots:
 signals:
     void setTitle(QString& title);
 
-    void showMw();
+    void showMw(QString);
 
 private:
     Ui::InsertTitle *ui;

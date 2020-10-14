@@ -174,8 +174,7 @@ void SocketManager::processTextMessage(QString message)
 {
 
     //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
-
-    qDebug()<<message;
+    //qDebug()<<message;
 
     //deserialize JSON
 //    Message m = Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
@@ -329,10 +328,14 @@ void SocketManager::onNewConnection()
 
     qDebug()<<"Nuova connessione avvenuta.";
 
-    //versione text message era funzionante
+
     connect(socket, &QWebSocket::textMessageReceived, this, &SocketManager::processTextMessage);
     connect(socket, &QWebSocket::binaryMessageReceived, this, &SocketManager::processBinaryMessage);
     connect(socket, &QWebSocket::disconnected, this, &SocketManager::socketDisconnected);
+
+    while(this->siteIdUser.keys().contains(this->siteId)){      //controlla se il siteId attuale corrisponde già a qualche altro utente
+        this->siteId++;
+    }
 
     clients.insert(SocketManager::siteId, socket);
 
@@ -341,6 +344,9 @@ void SocketManager::onNewConnection()
     Message m;
 
     m.setAction('S');
+
+
+
     QString s = QString::number(SocketManager::siteId);
     m.setParams({s});
     m.setSender(SocketManager::siteId);
@@ -354,7 +360,7 @@ void SocketManager::socketDisconnected()
 {
     QWebSocket *client = qobject_cast<QWebSocket *>(sender());
 
-    int siteId = 9999;
+    int siteId = -1;
 
     if (client) {
         auto it = clients.begin();
@@ -370,7 +376,7 @@ void SocketManager::socketDisconnected()
     }
 
     //emetti segnale per rimuovere da onlineAccounts
-    if(siteId != 9999) {
+    if(siteId >=0) {
         emit(accountDisconnected(siteId));
         qDebug() << "socketDisconnected";
     }
@@ -378,5 +384,15 @@ void SocketManager::socketDisconnected()
         qDebug()<<"errore disconnessione socket";
     }
 
+}
+
+QMap<int, QString> SocketManager::getSiteIdUser() const
+{
+    return siteIdUser;
+}
+
+void SocketManager::setSiteIdUser(const QMap<int, QString> &value)
+{
+    siteIdUser = value;
 }
 

@@ -12,6 +12,7 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
+#include <mongocxx/cursor.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/exception/query_exception.hpp>
 #include <mongocxx/exception/operation_exception.hpp>
@@ -56,6 +57,7 @@ public:
     bool changePassword(QString _id, QString old_password, QString new_password);
     bool changeImage(QString _id, QByteArray &image);
     Account getAccount(QString username);
+    QList<Account> getAllAccounts();
     /************/
 
     /** SYMBOL **/

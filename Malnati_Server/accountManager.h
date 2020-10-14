@@ -13,7 +13,7 @@ class AccountManager : public QObject
 private:
     QMap<int, std::shared_ptr<Account>> onlineAccounts;         //tutti gli account online in questo momento      (siteId, Account)
     QMap<QString, QList<QString>> accountsPerFile;              //tutti gli account che stanno lavorando in questo momento su un file  (documentId, lista username)
-    QMap<QString, QString> accountOnDocument;                   //mappa username e documento aperto
+    QMap<QString, QString> usernameDocumentMap;                   //mappa username e documento aperto
 
 public:
     explicit AccountManager(QObject *parent = nullptr);

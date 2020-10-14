@@ -44,7 +44,8 @@ public slots:
 
 signals:
     void sendMessage(Message *m);
-    void openMW();
+    void openMW(QString);
+    void closeDocument(QString fileName);
 
 
 protected:

@@ -30,6 +30,9 @@ public:
     QMap<int, QWebSocket *> getClients() const;
     void setClients(const QMap<int, QWebSocket *> &value);
 
+    QMap<int, QString> getSiteIdUser() const;
+    void setSiteIdUser(const QMap<int, QString> &value);
+
 signals:
     void newMessage(Message &m);
     void newAccountOnline (int siteId);
@@ -48,6 +51,7 @@ private:
     QWebSocketServer* qWebSocketServer;
     QMap<int, QWebSocket *> clients;
 
+    QMap<int, QString> siteIdUser;
     int siteId;
 
 };
