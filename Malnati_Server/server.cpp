@@ -39,23 +39,10 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QString name = "test";
 //    QString pass = "test";
 
-//    QFile img("~/projects/progett_malnati/Malnati_Client/images/draft.jpeg");
-//    QString imgPath("/home/pepos/projects/progetto_malnati/Malnati_Client/images/cv_musk.png");
-//    QPixmap image(imgPath);
-
-//    //per averla sul json
-//    QJsonObject obj;
-//    QBuffer buffer;
-//    buffer.open(QIODevice::WriteOnly);
-//    image.save(&buffer, "PNG");
-//    auto const encoded = buffer.data().toBase64();
-//    obj.insert("image", QLatin1String(encoded));
-
-//    QByteArray image = img.readAll();
-//    QByteArray image = qualcosa.toString().toLatin1(); //base64
+//    QFile img1("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img1.readAll();
 
 //    Account account(name, 1, image);
-//    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass))
 //        qDebug() << "inserted" ;
 
@@ -63,8 +50,8 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QString pass1 = "prova";
 
 
-//    QFile img1("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-//    QByteArray image1 = img.readAll();
+//    QFile img2("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image1 = img2.readAll();
 
 //    Account account1(name1, 5, image1);
 

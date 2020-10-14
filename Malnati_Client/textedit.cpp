@@ -851,7 +851,6 @@ void TextEdit::showUriWindow()
    ShowUriDialog uriD;
    uriD.setUriDialog(URI);
    uriD.exec();
-
 }
 
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
