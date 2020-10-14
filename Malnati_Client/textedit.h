@@ -38,7 +38,6 @@ public:
     Qt::Alignment insertalign(QChar c);
     QChar findalign(Qt::Alignment);
 
-
 public slots:
     void fileNew();
     void receiveSymbol(Message *m);
