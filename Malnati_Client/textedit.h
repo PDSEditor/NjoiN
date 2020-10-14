@@ -36,7 +36,6 @@ public:
     void setURI(QString);
     QString getURI();
 
-
 public slots:
     void fileNew();
     void receiveSymbol(Message *m);

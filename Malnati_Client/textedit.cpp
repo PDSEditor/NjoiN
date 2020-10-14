@@ -68,6 +68,7 @@
 #include <QToolBar>
 #include <QTextCursor>
 #include <QTextDocumentWriter>
+#include<QPushButton>
 #include <QTextList>
 #include <QtDebug>
 #include <QCloseEvent>
@@ -851,7 +852,6 @@ void TextEdit::showUriWindow()
    ShowUriDialog uriD;
    uriD.setUriDialog(URI);
    uriD.exec();
-
 }
 
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
