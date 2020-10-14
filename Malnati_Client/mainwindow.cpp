@@ -24,13 +24,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::newFile(){
-    this->hide();
-    InsertTitle it(documents);
 
-    connect(&it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
-    connect(&it,&InsertTitle::showMw,this,&MainWindow::openMw);
+    it= new InsertTitle(documents);
 
-    it.exec();
+    connect(it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
+    connect(it,&InsertTitle::showMw,this,&MainWindow::openMw);
+
+    it->exec();
 
 
     // This is available in all editors.
@@ -102,6 +102,11 @@ void MainWindow::receiveURIerror()
     QMessageBox::information(this,"ERRORE","URI non corretta");
 }
 
+void MainWindow::closeMw()
+{
+    on_actionClose_triggered();
+}
+
 void MainWindow::setImage(QPixmap im){
     image=im;
 }
@@ -167,14 +172,15 @@ void MainWindow::on_actionClose_triggered()
 
 
 void MainWindow::on_pushButton_2_clicked()
-{Inserturi i;
-    connect(&i,&Inserturi::sendUri,this,&MainWindow::sendUri);
-    i.exec();
+{   i = new Inserturi();
+    connect(i,&Inserturi::sendUri,this,&MainWindow::sendUri);
+    i->exec();
 }
 
 
 void MainWindow::receiveTitle(QString title)
 {
+    this->hide();
     te = new TextEdit(this);
 
     const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);

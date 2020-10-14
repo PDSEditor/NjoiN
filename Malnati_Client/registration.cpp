@@ -44,10 +44,14 @@ void Registration::closeRw()
 void Registration::on_pushButton_clicked()
 {
     auto username = ui->lineEdit->text();
+    auto password = ui->lineEdit_2->text();
+    auto password2 = ui->lineEdit_3->text();
 
-    if(username.contains('_') || username.size() == 0){
-        emit(sendError("username"));
-    }else if(ui->lineEdit_2->text()!=ui->lineEdit_3->text()||ui->lineEdit_2->text().isNull()||ui->lineEdit_3->text().isNull()){
+    if(username.contains('_')){
+        emit(sendError("username_"));
+    }else if(username.size() == 0){
+        emit(sendError("usernameNull"));
+    }else if(QString::compare(password, password2, Qt::CaseSensitive) || password.size()==0 || password2.size() == 0){
         emit(sendError("password"));
     }else if(this->img.size() == 0){
         emit(sendError("immagine"));

@@ -8,6 +8,7 @@
 #include "QBuffer"
 #include <QListWidgetItem>
 #include <inserturi.h>
+#include <inserttitle.h>
 
 
 
@@ -42,6 +43,8 @@ public slots:
     void receivedFile(QList<Symbol>);
     void sendUri(Message);
     void receiveURIerror();
+
+    void closeMw();
 
 signals:
     void newTextEdit(TextEdit* t,int s);
@@ -78,6 +81,8 @@ private:
     QString username,openURI;
     QList<QString> documents;
     int siteId;
+    Inserturi *i;
+    InsertTitle *it;
     /*************/
 
 };

@@ -7,6 +7,7 @@
 #include <symbol.h>
 #include <crdt.h>
 #include <QPrinter>
+#include <showuridialog.h>
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -27,7 +28,6 @@ class TextEdit : public QMainWindow
 
 public:
     TextEdit(QWidget *parent = 0);
-    TextEdit(QList<Symbol> file,QWidget *parent = 0);
     bool load(const QString &f);
     void setCrdt(Crdt *crdtclient);
     void setSocketM(socketManager *sockclient);
@@ -128,6 +128,8 @@ private:
     Crdt *crdt;
     socketManager *sockm;
     std :: vector<Symbol> *symbols;
+    ShowUriDialog *shu;
+
 };
 
 #endif // TEXTEDIT_H

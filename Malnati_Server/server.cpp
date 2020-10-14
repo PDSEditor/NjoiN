@@ -308,19 +308,22 @@ void Server::processMessage(Message &mesIn) {
 
         break;
 
-    case 'E' :
+    case 'E' :{
         //rEgister
 
         username = mesIn.getParams()[0];
         mesOut.setAction('E');
         mesOut.setSender(mesIn.getSender());
 
+        QByteArray img = mesIn.getParams()[2].toLatin1();
+
         acc = this->dbMan->getAccount(username);
 
         if( acc.getSiteId()< 0) {               // non esiste un account con questo username
             mesOut.setError(false);
 
-            acc = Account(username, mesIn.getSender());
+//            acc = Account(username, mesIn.getSender());
+            acc = Account(username, mesIn.getSender(), img);
 
             this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
 
@@ -332,6 +335,7 @@ void Server::processMessage(Message &mesIn) {
         socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
+    }
 
     case 'L' :
         //Login

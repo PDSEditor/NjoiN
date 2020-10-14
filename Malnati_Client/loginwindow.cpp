@@ -26,7 +26,6 @@ LoginWindow::~LoginWindow()
 }
 
 void LoginWindow::closeEvent(QCloseEvent *e){
-
 }
 
 void LoginWindow::on_pushButton_login_clicked()
@@ -128,13 +127,16 @@ void LoginWindow::loggedin(bool c)
 
 void LoginWindow::receiveErrorReg(QString s)
 {
-    if(s=="password"){
+    if(QString::compare(s, "password", Qt::CaseSensitive)==0){
         QMessageBox::information(this,"Errore password","Le due password non coincidono");
         emit(openRw(siteId));
-    }else if(s=="usenrame"){
+    }else if(QString::compare(s, "username_", Qt::CaseSensitive)==0){
         QMessageBox::information(this,"Errore username","Carattere '_' proibito");
         emit(openRw(siteId));
-    }else if(QString::compare(s, "password", Qt::CaseInsensitive)){
+    }else if(QString::compare(s, "usernameNull", Qt::CaseSensitive)==0){
+        QMessageBox::information(this,"Errore username","Inserisci un username valido");
+        emit(openRw(siteId));
+    }else if(QString::compare(s, "immagine", Qt::CaseSensitive)==0){
         QMessageBox::information(this, "Errore immagine", "Caricare un'immagine valida");
         emit(openRw(siteId));
     }

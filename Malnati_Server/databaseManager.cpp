@@ -20,8 +20,8 @@ bool DatabaseManager::registerAccount(Account &account, QString password){
 
     QString hashpsw = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex();
 
-
     QByteArray image = QByteArray();
+    //inserire immagine utente
 
     std::vector<unsigned char> vector(image.begin(), image.end());
     bsoncxx::types::b_binary img {bsoncxx::binary_sub_type::k_binary,
