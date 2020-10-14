@@ -23,6 +23,7 @@ signals:
     void sendMessage(Message* mex);
     void openRw(int);
     void closeRw();
+    void closeMw();
  public slots:
      void receivedLogin(bool resp);
      void receivedSiteId(int siteid);

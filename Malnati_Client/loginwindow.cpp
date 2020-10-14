@@ -26,7 +26,6 @@ LoginWindow::~LoginWindow()
 }
 
 void LoginWindow::closeEvent(QCloseEvent *e){
-
 }
 
 void LoginWindow::on_pushButton_login_clicked()
@@ -131,7 +130,7 @@ void LoginWindow::receiveErrorReg(QString s)
     if(s=="password"){
         QMessageBox::information(this,"Errore password","Le due password non coincidono");
         emit(openRw(siteId));
-    }else if(s=="usenrame"){
+    }else if(s=="username"){
         QMessageBox::information(this,"Errore username","Carattere '_' proibito");
         emit(openRw(siteId));
     }
