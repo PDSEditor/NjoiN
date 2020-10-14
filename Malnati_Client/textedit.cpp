@@ -198,15 +198,25 @@ TextEdit::TextEdit(QWidget *parent)
 
 }
 
+TextEdit::~TextEdit()
+{
+  emit(openMW());
+  delete textEdit;
+
+}
+
 
 void TextEdit::closeEvent(QCloseEvent *e)
 {
 
-    if (maybeSave())
+    if (maybeSave() && e != nullptr)
+
         e->accept();
-    else
+    else{
+     if(e!=nullptr)
         e->ignore();
-    emit(openMW());
+    }
+    //emit(openMW());
 }
 
 void TextEdit::setupFileActions()

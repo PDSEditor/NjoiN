@@ -17,6 +17,9 @@ public:
     void setUriDialog(QString uri);
     ~ShowUriDialog();
 
+protected:
+void closeEvent(QCloseEvent *e) override;
+
 private:
     Ui::ShowUriDialog *ui;
 };
