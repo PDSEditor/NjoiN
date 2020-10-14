@@ -134,6 +134,9 @@ void LoginWindow::receiveErrorReg(QString s)
     }else if(s=="usenrame"){
         QMessageBox::information(this,"Errore username","Carattere '_' proibito");
         emit(openRw(siteId));
+    }else if(QString::compare(s, "password", Qt::CaseInsensitive)){
+        QMessageBox::information(this, "Errore immagine", "Caricare un'immagine valida");
+        emit(openRw(siteId));
     }
 }
 
