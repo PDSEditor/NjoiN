@@ -14,6 +14,24 @@ Server::Server(QObject *parent) : QObject(parent)
     std::unique_ptr<AccountManager> acMan(new AccountManager);
     this->acMan = std::move(acMan);
 
+
+    // Salvo tutti i siteId già assegnati all'interno del socket managercosì da non assegnare a due client lo stessoS
+
+    try {
+        QList<Account> allAccounts = this->dbMan->getAllAccounts();
+
+        QMap<int, QString> siteIdUser;
+
+        for(auto account : allAccounts) {
+            siteIdUser[account.getSiteId()] = account.getUsername();
+        }
+
+        this->socketMan->setSiteIdUser(siteIdUser);
+
+    }
+    catch(std::exception& e){
+    }
+
     /***************************
      ****** TEST DB ***********
      *************************/
@@ -26,7 +44,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
 //    Account account(name, 1, image);
 //    account.setDocumentUris({"hello", "ciao"});
-//    if(this->dbMan.get()->registerAccount(account, pass, image))
+//    if(this->dbMan.get()->registerAccount(account, pass))
 //        qDebug() << "inserted" ;
 
 //    QString name1 = "prova";
@@ -38,12 +56,15 @@ Server::Server(QObject *parent) : QObject(parent)
 
 //    Account account1(name1, 5, image1);
 
-//    if(this->dbMan.get()->registerAccount(account1, pass1, image1))
+//    if(this->dbMan.get()->registerAccount(account1, pass1))
 //        qDebug() << "inserted" ;
 
 
 
-//    Account account2 = this->dbMan.get()->getAccount(QString("angelo"));
+//    Account account2 = this->dbMan.get()->getAccount(QString("test"));
+//    qDebug() << account2.toString();
+
+//    account2 = this->dbMan.get()->getAccount(QString("angelo"));
 //    qDebug() << account2.toString();
 
 //    if(this->dbMan.get()->checkAccountPsw(name,pass))
@@ -112,7 +133,7 @@ void Server::processMessage(Message &mesIn) {
      * CREATE file -> C
      * CLOSE file -> X
      * Collaborate by URI -> U
-     * REGISTER user (Sign up)  -> S
+     * REGISTER user  -> E
      * LOG-IN -> L
      * LOGOUT -> O
     */
@@ -232,10 +253,12 @@ void Server::processMessage(Message &mesIn) {
     case 'X' :
         //gestire chiusura del file
         //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
-        username = mesIn.getParams()[0];
-        documentId = mesIn.getParams()[1];
+        username = mesIn.getParams()[1];
+        documentId = mesIn.getParams()[0];
         if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
-            this->docMan->saveToServer(documentId);
+
+            // per ora commentato
+            //this->docMan->saveToServer(documentId);
         }
 
         break;
@@ -286,8 +309,28 @@ void Server::processMessage(Message &mesIn) {
 
         break;
 
-    case 'S' :
-        //Signup
+    case 'E' :
+        //rEgister
+
+        username = mesIn.getParams()[0];
+        mesOut.setAction('E');
+        mesOut.setSender(mesIn.getSender());
+
+        acc = this->dbMan->getAccount(username);
+
+        if( acc.getSiteId()< 0) {               // non esiste un account con questo username
+            mesOut.setError(false);
+
+            acc = Account(username, mesIn.getSender());
+
+            this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
+
+        }
+        else {
+            mesOut.setError(true);
+        }
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
 

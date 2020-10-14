@@ -1,4 +1,4 @@
-#include "loginwindow.h"
+﻿#include "loginwindow.h"
 #include "ui_loginwindow.h"
 #include <QMessageBox>
 #include <QStyle>
@@ -16,11 +16,16 @@ LoginWindow::LoginWindow(QWidget *parent) :
     this->ui->logo1->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center;");
     setWindowTitle("Login");
 
+
 }
+
 
 LoginWindow::~LoginWindow()
 {
     delete ui;
+}
+
+void LoginWindow::closeEvent(QCloseEvent *e){
 }
 
 void LoginWindow::on_pushButton_login_clicked()
@@ -98,7 +103,18 @@ void LoginWindow::receivedLogin(bool resp){
 
 void LoginWindow::receivedSiteId(int siteid){
     siteId=siteid;
+}
 
+void LoginWindow::receiveRegistration(Message m)
+{
+    if(m.getError()){
+        QMessageBox::information(this,"Errore","Username già presente, utilizzarne un altro");
+        emit(openRw(siteId));
+    }
+    else{
+        QMessageBox::information(this,"Registrazione avvenuta","La registrazione è avvenuta correttamente");
+        emit(closeRw());
+    }
 }
 
 void LoginWindow::loggedin(bool c)
@@ -108,6 +124,21 @@ void LoginWindow::loggedin(bool c)
     else
         QMessageBox::information(this,"ERRORE","Impossibile connettersi al server");
 }
+
+void LoginWindow::receiveErrorReg(QString s)
+{
+    if(s=="password"){
+        QMessageBox::information(this,"Errore password","Le due password non coincidono");
+        emit(openRw(siteId));
+    }else if(s=="username"){
+        QMessageBox::information(this,"Errore username","Carattere '_' proibito");
+        emit(openRw(siteId));
+    }
+}
+
+
+
+
 bool LoginWindow::getIsLogin() const{
     return isLogin;
 }
@@ -116,8 +147,9 @@ void LoginWindow::setIsLogin(int isLogin){
 }
 
 void LoginWindow::on_pushButton_signup_clicked(){
-    qDebug() << "Registrazione";
-    //todo: fare la registrationWindow
+
+
+    emit(openRw(siteId));
 
 
 

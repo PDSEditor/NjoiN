@@ -7,6 +7,7 @@ ShowUriDialog::ShowUriDialog(QWidget *parent) :
     ui(new Ui::ShowUriDialog)
 {
     ui->setupUi(this);
+    b= new QSignalBlocker(this);
 
 }
 
@@ -15,14 +16,15 @@ void ShowUriDialog::setUriDialog(QString uri)
     ui->UriLabel->setText(uri);
 }
 
+void ShowUriDialog::closeEvent(QCloseEvent *event){
 
+    this->close();
+
+
+}
 
 ShowUriDialog::~ShowUriDialog()
 {
     delete ui;
 }
 
-void ShowUriDialog::closeEvent(QCloseEvent *e)
-{
-    e->Hide;
-}

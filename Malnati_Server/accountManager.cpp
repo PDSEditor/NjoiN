@@ -24,12 +24,12 @@ void AccountManager::setAccountsPerFile(const QMap<QString, QList<QString> > &va
 
 QMap<QString, QString> AccountManager::getAccountOnDocument() const
 {
-    return accountOnDocument;
+    return usernameDocumentMap;
 }
 
 void AccountManager::setAccountOnDocument(const QMap<QString, QString> &value)
 {
-    accountOnDocument = value;
+    usernameDocumentMap = value;
 }
 
 AccountManager::AccountManager(QObject *parent) : QObject(parent)
@@ -48,9 +48,11 @@ bool AccountManager::closeDocumentByUser(QString username, QString documentId)
 
             if(list.count()==0) {
                 //bisogna salvare il documento
+                return false;
             }
         }
     }
+    return true;
 
 }
 
@@ -71,7 +73,7 @@ bool AccountManager::updateOnlineAccounts(int siteId, const Account& acc)
 
 void AccountManager::updateAccountOnDocument(QString user, QString documentId)
 {
-    this->accountOnDocument[user] = documentId;
+    this->usernameDocumentMap[user] = documentId;
 }
 
 void AccountManager::removeOnlineAccounts(int siteId)

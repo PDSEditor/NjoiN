@@ -2,6 +2,11 @@
 #include "ui_inserttitle.h"
 #include <QMessageBox>
 
+void InsertTitle::closeEvent(QCloseEvent *event)
+{
+
+}
+
 InsertTitle::InsertTitle(QDialog *parent) :
     QDialog(parent),
     ui(new Ui::InsertTitle)
@@ -47,7 +52,7 @@ void InsertTitle::on_buttonBox_accepted()
 
 void InsertTitle::on_buttonBox_rejected()
 {
-    emit showMw();
+    emit showMw("");
     this->close();
 }
 

@@ -198,12 +198,6 @@ TextEdit::TextEdit(QWidget *parent)
 
 }
 
-TextEdit::~TextEdit()
-{
-  emit(openMW());
-  delete textEdit;
-
-}
 
 
 void TextEdit::closeEvent(QCloseEvent *e)
@@ -215,8 +209,14 @@ void TextEdit::closeEvent(QCloseEvent *e)
     else{
      if(e!=nullptr)
         e->ignore();
+
     }
-    //emit(openMW());
+
+
+    emit(openMW(this->getURI()));
+
+    //emit(closeDocument(this->fileName));
+
 }
 
 void TextEdit::setupFileActions()
@@ -855,9 +855,9 @@ void TextEdit::textAlign(QAction *a)
 
 void TextEdit::showUriWindow()
 {
-   ShowUriDialog uriD;
-   uriD.setUriDialog(URI);
-   uriD.exec();
+   shu = new ShowUriDialog(this);
+   shu->setUriDialog(URI);
+   shu->exec();
 
 }
 

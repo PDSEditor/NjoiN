@@ -12,6 +12,11 @@ Account::Account(QString username, int siteId, QByteArray& image, QList<QString>
 Account::Account(QString username, int siteId, QByteArray& image): username(username), siteId(siteId), image(image)
 {}
 
+Account::Account(QString username, int siteId): username(username), siteId(siteId)
+{
+    this->image = QByteArray();
+}
+
 
 QList<QString> Account::getDocumentUris() const
 {
@@ -62,6 +67,7 @@ Account::Account(const Account &other){
     this->siteId = other.siteId;
     this->username = other.username;
     this->image = other.image;
+    this->documentUris = other.documentUris;
 }
 
 QString Account::toString(){

@@ -25,6 +25,7 @@ void socketManager::messageToServer(Message *m)
     if(server_on==0){
         emit(loggedin(0));
     }
+
     webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 
     //qDebug()<<"Testo inviato: sia m diu ";
@@ -228,6 +229,9 @@ void socketManager::onTextMessageReceived(QString message)
 
         emit(setSiteId(m.getSender()));
         break;
+    case 'E'://Registrazione
+        emit(receiveRegistration(m));
+        break;
     case 'R':
 
         foreach (QString s, m.getParams()) {
@@ -247,7 +251,9 @@ void socketManager::onTextMessageReceived(QString message)
         else{
             emit(receivedURIerror());
         }
+        break;
 //
+
     default:
         qDebug() << "default";
         break;

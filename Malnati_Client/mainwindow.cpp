@@ -24,13 +24,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 void MainWindow::newFile(){
-    this->hide();
-    InsertTitle it(documents);
 
-    connect(&it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
-    connect(&it,&InsertTitle::showMw,this,&MainWindow::openMw);
+    it= new InsertTitle(documents);
 
-    it.exec();
+    connect(it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
+    connect(it,&InsertTitle::showMw,this,&MainWindow::openMw);
+
+    it->exec();
 
 
     // This is available in all editors.
@@ -102,6 +102,11 @@ void MainWindow::receiveURIerror()
     QMessageBox::information(this,"ERRORE","URI non corretta");
 }
 
+void MainWindow::closeMw()
+{
+    on_actionClose_triggered();
+}
+
 void MainWindow::setImage(QPixmap im){
     image=im;
 }
@@ -167,14 +172,15 @@ void MainWindow::on_actionClose_triggered()
 
 
 void MainWindow::on_pushButton_2_clicked()
-{Inserturi i;
-    connect(&i,&Inserturi::sendUri,this,&MainWindow::sendUri);
-    i.exec();
+{   i = new Inserturi();
+    connect(i,&Inserturi::sendUri,this,&MainWindow::sendUri);
+    i->exec();
 }
 
 
 void MainWindow::receiveTitle(QString title)
 {
+    this->hide();
     te = new TextEdit(this);
 
     const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
@@ -188,7 +194,9 @@ void MainWindow::receiveTitle(QString title)
     te->setURI(title+"_"+username);
     addElementforUser(title+"_"+username);
     te->fileNew();
+    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+
     Message m;
     m.setAction('C');
     m.setParams({title, this->getUsername()});
@@ -199,8 +207,22 @@ void MainWindow::receiveTitle(QString title)
     te->show();
 }
 
-void MainWindow::openMw()
+void MainWindow::openMw(QString fileName)
 {
     this->show();
+
+    if (fileName!="") {
+        Message m;
+        m.setAction('X');
+        m.setSender(this->getSiteId());
+        m.setParams({fileName, this->username});
+        emit(sendTextMessage(&m));
+
+    }
+
+}
+
+void MainWindow::documentClosed(QString fileName)
+{
 
 }
