@@ -14,6 +14,7 @@ class Client: public QObject
 public:
     Client();
     ~Client();
+    bool Login();
 
 
 private slots:
@@ -24,7 +25,7 @@ private:
     MainWindow *mw = nullptr;
     socketManager *sockm;
     Crdt *crdt;
-
+    bool closed=false;
     QMap<QString,TextEdit*> textList;
 
 

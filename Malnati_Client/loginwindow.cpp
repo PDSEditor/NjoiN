@@ -26,8 +26,6 @@ LoginWindow::~LoginWindow()
 }
 
 void LoginWindow::closeEvent(QCloseEvent *e){
-    emit closeMw();
-    this->close();
 }
 
 void LoginWindow::on_pushButton_login_clicked()

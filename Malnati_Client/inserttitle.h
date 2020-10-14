@@ -11,7 +11,8 @@ class InsertTitle;
 class InsertTitle : public QDialog
 {
     Q_OBJECT
-
+protected:
+    void closeEvent(QCloseEvent *event) override;
 public:
     explicit InsertTitle(QDialog *parent = nullptr);
     explicit InsertTitle(QList<QString> s,QDialog *parent = nullptr);

@@ -848,9 +848,9 @@ void TextEdit::textAlign(QAction *a)
 
 void TextEdit::showUriWindow()
 {
-   ShowUriDialog uriD;
-   uriD.setUriDialog(URI);
-   uriD.exec();
+   shu = new ShowUriDialog(this);
+   shu->setUriDialog(URI);
+   shu->exec();
 
 }
 

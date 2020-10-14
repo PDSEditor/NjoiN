@@ -8,6 +8,7 @@
 #include "QBuffer"
 #include <QListWidgetItem>
 #include <inserturi.h>
+#include <inserttitle.h>
 
 
 
@@ -80,6 +81,8 @@ private:
     QString username,openURI;
     QList<QString> documents;
     int siteId;
+    Inserturi *i;
+    InsertTitle *it;
     /*************/
 
 };
