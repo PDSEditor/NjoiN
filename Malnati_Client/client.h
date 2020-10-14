@@ -24,7 +24,6 @@ private:
     MainWindow *mw = nullptr;
     socketManager *sockm;
     Crdt *crdt;
-
     QMap<QString,TextEdit*> textList;
 
 

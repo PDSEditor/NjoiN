@@ -35,7 +35,7 @@ void LoginWindow::on_pushButton_login_clicked()
     QString password = ui->lineEdit_password->text();
 
     if ( username.size() == 0 || password.size() == 0 ) {
-            QMessageBox::warning(this, "Login Error", "Username and password cannot be empty");
+            QMessageBox::warning(this, "Login Error", "Username e password non possono essere vuoti");
     } else {
         Message m;
         m.setAction('L');
