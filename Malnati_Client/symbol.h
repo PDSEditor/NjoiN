@@ -20,6 +20,7 @@ private:
     bool italic;
     bool underln;
     qreal size;
+    QChar align;
 public:
 
     QString getFamily();
@@ -41,6 +42,8 @@ public:
     void setPosizione(const std::vector<int> &value);
     int getSiteId() const;
     void setSiteId(int value);
+    QChar getAlign();
+    void setAlign(QChar);
     int getCounter() const;
     void setCounter(int value);
     static Symbol fromJson(const QJsonDocument &charJD);

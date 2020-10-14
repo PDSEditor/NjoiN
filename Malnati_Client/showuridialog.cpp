@@ -16,10 +16,7 @@ void ShowUriDialog::setUriDialog(QString uri)
 }
 
 void ShowUriDialog::closeEvent(QCloseEvent *event){
-
     this->close();
-
-
 }
 
 ShowUriDialog::~ShowUriDialog()

@@ -35,6 +35,8 @@ public:
     void setFileName(QString fileName);
     void setURI(QString);
     QString getURI();
+    Qt::Alignment insertalign(QChar c);
+    QChar findalign(Qt::Alignment);
 
 
 public slots:

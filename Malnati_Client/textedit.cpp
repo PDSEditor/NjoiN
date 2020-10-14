@@ -144,7 +144,7 @@ TextEdit::TextEdit(QWidget *parent)
     textEdit->setFont(textFont);
     fontChanged(textEdit->font());
     colorChanged(textEdit->textColor());
-    alignmentChanged(textEdit->alignment());
+    //alignmentChanged(textEdit->alignment());
 
 
     //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -550,7 +550,8 @@ void TextEdit::receiveSymbol(Message *m)
     }
     col=colors.take(m->getSymbol().getSiteId());
     //textEdit->setTextBackgroundColor(col);
-
+    alignmentChanged(Qt::AlignRight);
+    //sopraaaa
     qform.setBackground(col);
     qform.setFontFamily(m->getSymbol().getFamily());
     qform.setFontItalic(m->getSymbol().getItalic());
@@ -559,6 +560,7 @@ void TextEdit::receiveSymbol(Message *m)
     qform.setFontPointSize(m->getSymbol().getSize());
     if(m->getSymbol().getBold())
         qform.setFontWeight(QFont::Bold);
+
     //curs.setCharFormat(qform);
 
     int position,oldposition;
@@ -1069,3 +1071,37 @@ void TextEdit::loadFile(QList<Symbol> file)
     crdt->setSymbols(vtmp);
 }
 
+Qt::Alignment TextEdit::insertalign(QChar c){
+    Qt::Alignment alline;
+    switch (c.toLatin1()) {
+    case 'L' :
+        alline=Qt::AlignLeft;
+        break;
+    case 'C' :
+        alline= Qt::AlignCenter;
+        break;
+    case 'R' :
+        alline= Qt::AlignRight;
+        break;
+    case 'J' :
+        alline= Qt::AlignJustify;
+        break;
+    default:
+        break;
+    }
+    return alline;
+
+}
+
+QChar TextEdit::findalign(Qt::Alignment al){
+    QChar c;
+    if(al==Qt::AlignLeft)
+        c='L';
+    else if(al==Qt::AlignCenter)
+        c='C';
+    else if(al==Qt::AlignRight)
+        c='R';
+    else if(al==Qt::AlignJustify)
+        c='R';
+    return c;
+}
