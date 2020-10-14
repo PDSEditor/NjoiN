@@ -107,6 +107,7 @@ void Server::dispatchMessage(Message &mes) {
     QMap<int, QWebSocket *>::iterator it;
 
     int sender = mes.getSender();
+    QString documentId = mes.getParams()[0];
 
     for(it=clients.begin(); it!= clients.end(); it++) {
         if(it.key() != sender) {
@@ -115,7 +116,7 @@ void Server::dispatchMessage(Message &mes) {
 
             QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
 
-            if(this->acMan->getAccountsPerFile().contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
+            if(this->acMan->getAccountsPerFile()[documentId].contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
                                                                                        // lavorando al documento, in quel caso invia la insert o delete
                 this->socketMan->messageToUser(mes, it.key());
             }
@@ -384,6 +385,14 @@ void Server::processMessage(Message &mesIn) {
         mesOut.setAction('A');
 
         params = this->acMan->getAccountsPerFile()[documentId].toVector();
+
+        params.append("___");           // separator beetween online and offline users
+
+        for(auto user : this->dbMan->getDocument(documentId).getUserAllowed()) {
+            if(!params.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
+                params.append(user);
+
+        }
 
         mesOut.setParams(params);
 
