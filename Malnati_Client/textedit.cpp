@@ -145,7 +145,7 @@ TextEdit::TextEdit(QWidget *parent)
     textEdit->setFont(textFont);
     fontChanged(textEdit->font());
     colorChanged(textEdit->textColor());
-    //alignmentChanged(textEdit->alignment());
+    alignmentChanged(textEdit->alignment());
 
 
     //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -472,6 +472,7 @@ void TextEdit::setSocketM(socketManager *sockclient)
 {
     sockm=sockclient;
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
+    connect(this, &TextEdit::sendTextMessage, sockm, &socketManager::messageToServer);
 }
 
 void TextEdit::setFileName(QString fileName)
@@ -551,7 +552,7 @@ void TextEdit::receiveSymbol(Message *m)
     }
     col=colors.take(m->getSymbol().getSiteId());
     //textEdit->setTextBackgroundColor(col);
-    alignmentChanged(Qt::AlignRight);
+    textEdit->setAlignment(Qt::AlignRight);
     //sopraaaa
     qform.setBackground(col);
     qform.setFontFamily(m->getSymbol().getFamily());
@@ -573,6 +574,7 @@ void TextEdit::receiveSymbol(Message *m)
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);
         curs.insertText((QChar)tmp.getValue(),qform);
+        textEdit->setAlignment(Qt::AlignLeft);
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -839,6 +841,8 @@ void TextEdit::textColor()
 
 void TextEdit::textAlign(QAction *a)
 {
+    alignAction=true;
+    externAction=true;
     if (a == actionAlignLeft)
         textEdit->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
     else if (a == actionAlignCenter)
@@ -847,6 +851,7 @@ void TextEdit::textAlign(QAction *a)
         textEdit->setAlignment(Qt::AlignRight | Qt::AlignAbsolute);
     else if (a == actionAlignJustify)
         textEdit->setAlignment(Qt::AlignJustify);
+
 }
 
 void TextEdit::showUriWindow()
@@ -865,7 +870,42 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
+    if(alignAction==true){
 
+        QChar c;
+        int max,min, p=textEdit->textCursor().position();
+        min=p-1;
+        max=p;
+        if(p!=(int)crdt->getSymbols().size()){
+            c=crdt->getSymbols().at(p).getValue();
+            while(c.toLatin1()!='\0'&& min>=0){
+               crdt->getSymbols().at(min).setAlign(findalign(textEdit->alignment()));
+                c=crdt->getSymbols().at(min).getValue();
+                min--;
+            }
+                c=crdt->getSymbols().at(p).getValue();
+                while(c.toLatin1()!='\0'&& max<(int)crdt->getSymbols().size()){
+                crdt->getSymbols().at(max).setAlign(findalign(textEdit->alignment()));
+                c=crdt->getSymbols().at(max).getValue();
+                max++;
+
+            }
+        }
+        else{
+             c=crdt->getSymbols().at(min).getValue();
+             while(c.toLatin1()!='\0'&& min>=0){
+             crdt->getSymbols().at(min).setAlign(findalign(textEdit->alignment()));
+             c=crdt->getSymbols().at(min).getValue();
+             min--;
+            }
+        }
+        Message m;
+        m.setAction('B');
+        m.setParams({QString::number(min),QString::number(max)});
+        emit(sendTextMessage(&m));
+
+
+    }
 
    if(externAction==false){
 
@@ -1103,6 +1143,6 @@ QChar TextEdit::findalign(Qt::Alignment al){
     else if(al==Qt::AlignRight)
         c='R';
     else if(al==Qt::AlignJustify)
-        c='R';
+        c='J';
     return c;
 }
