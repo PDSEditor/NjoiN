@@ -34,7 +34,7 @@ SOURCES += \
     showuridialog.cpp \
     symbol.cpp \
     textedit.cpp \
-    socketmanager.cpp
+    socketmanager.cpp\
 
 HEADERS += \
     accountinterface.h \
@@ -50,7 +50,7 @@ HEADERS += \
     showuridialog.h \
     symbol.h \
     textedit.h \
-    socketmanager.h
+    socketmanager.h\
 
 FORMS += \
     accountinterface.ui \
