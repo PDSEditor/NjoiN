@@ -68,6 +68,7 @@
 #include <QToolBar>
 #include <QTextCursor>
 #include <QTextDocumentWriter>
+#include<QPushButton>
 #include <QTextList>
 #include <QtDebug>
 #include <QCloseEvent>
