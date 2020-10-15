@@ -317,7 +317,7 @@ void Server::processMessage(Message &mesIn) {
 
         QByteArray img = mesIn.getParams()[2].toLatin1();
 
-        acc = this->dbMan->getAccount(username);
+        Account acc(this->dbMan->getAccount(username));
 
         if( acc.getSiteId()< 0) {               // non esiste un account con questo username
             mesOut.setError(false);
@@ -337,22 +337,28 @@ void Server::processMessage(Message &mesIn) {
         break;
     }
 
-    case 'L' :
+    case 'L' :{
         //Login
 
         mesOut.setAction('L');
         mesOut.setSender(mesIn.getSender());
-        if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
 
-            Account acc(dbMan->getAccount(mesIn.getParams()[0]));
+        auto username = mesIn.getParams()[0];
+        auto password = mesIn.getParams()[1];
+
+        if(dbMan->checkAccountPsw(username, password)){
+
+            Account acc(dbMan->getAccount(username));
 
             if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
-                params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+//                auto image = acc.getImage();
+//                auto pix = acc.toPix(image);
+                params = {acc.getUsername(), QString::number(acc.getSiteId()), acc.getImage()};
                 params.append(acc.getDocumentUris().toVector());
                 mesOut.setParams(params);
                 mesOut.setError(false);
-                mesOut.setSender(acc.getSiteId());           }
-            else {                                                                      //utente era già collegato da un altro client
+                mesOut.setSender(acc.getSiteId());
+            }else {                                                                      //utente era già collegato da un altro client
                 mesOut.setError(true);
                 qDebug() << "autenticazione di un utente già online";
                 mesOut.setParams({"2"});
@@ -369,6 +375,7 @@ void Server::processMessage(Message &mesIn) {
                                                                                     // e dentro il siteId ci metto il sender "ufficiale"
 
         break;
+    }
 
     case 'O' :
         //Logout

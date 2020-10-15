@@ -37,10 +37,11 @@ void Account::setImage(QPixmap Pix)
     this->image = QLatin1String(encoded).latin1();
 }
 
-QPixmap Account::getImage() const {
-    QPixmap p;
-    p.loadFromData(QByteArray::fromBase64(image), "PNG");
-    return p;
+QByteArray Account::getImage() const {
+//    QPixmap p;
+//    p.loadFromData(QByteArray::fromBase64(image), "PNG");
+//    return p;
+    return this->image;
 }
 
 QString Account::getUsername() const
@@ -72,4 +73,10 @@ Account::Account(const Account &other){
 
 QString Account::toString(){
     return "username: " + this->username + " siteId: " + QString::number(this->siteId);
+}
+
+QPixmap Account::toPix(QByteArray &image){
+    QPixmap p;
+    p.loadFromData(QByteArray::fromBase64(image), "PNG");
+    return p;
 }

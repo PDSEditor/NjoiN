@@ -11,9 +11,9 @@ AccountInterface::AccountInterface(QWidget *parent) :
 {
     ui->setupUi(this);
     this->changePwdDialog = new ChangePwd(this);
-        setWindowTitle("Profile");
+    setWindowTitle("Profile");
 
-        connect(changePwdDialog, &ChangePwd::pwdUpdate, this, &AccountInterface::changePassword);
+    connect(changePwdDialog, &ChangePwd::pwdUpdate, this, &AccountInterface::changePassword);
 }
 
 AccountInterface::~AccountInterface()

@@ -20,8 +20,12 @@ bool DatabaseManager::registerAccount(Account &account, QString password){
 
     QString hashpsw = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex();
 
-    QByteArray image = QByteArray();
-    //inserire immagine utente
+    auto image = account.getImage();
+
+    if(image == nullptr){
+        qDebug() << "sono qui";
+        return false;
+    }
 
     std::vector<unsigned char> vector(image.begin(), image.end());
     bsoncxx::types::b_binary img {bsoncxx::binary_sub_type::k_binary,
@@ -81,10 +85,20 @@ Account DatabaseManager::getAccount(QString username){
         for (auto i : documentJ["documentUris"].toArray()){
             documentUris.push_back(i.toString());
         }
-        QString accountString = QString::fromStdString(bsoncxx::to_json(result->view()));
-        QJsonDocument document = QJsonDocument::fromJson(accountString.toUtf8());
-        auto array = document["image"].toString().toLatin1();
-        Account account(document["_id"].toString(), document["siteId"].toInt(), array, documentUris);
+
+        auto image = result->view()["image"];
+        long size = image.length();
+        auto *bytes = const_cast<uint8_t*>(image.get_binary().bytes);
+
+        QByteArray toReturn;
+        for(int i=0; i<size; i++){
+            toReturn.append(static_cast<char>(bytes[i]));
+        }
+
+//        auto array = documentJ["image"].toString().toLatin1(); //non funziona
+
+        //da testare questa
+        Account account(documentJ["_id"].toString(), documentJ["siteId"].toInt(), toReturn, documentUris);
         return account;
     }
     else {

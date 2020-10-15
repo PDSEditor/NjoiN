@@ -130,6 +130,7 @@ void MainWindow::setList(QList<QString> l){
 void MainWindow::receivedInfoAccount(Message& m){
    setUsername(m.getParams().at(0));
    setSiteId(m.getSender());
+   setImage(m.getParams().at(2)); //todo: vado a vedere dal servere
    //setImage(m.getParams().at(2));
    QList<QString> tmp;
    for(int i=2;i<m.getParams().size();i++){
@@ -138,6 +139,7 @@ void MainWindow::receivedInfoAccount(Message& m){
    }
 
 }
+
 void MainWindow::on_pushButton_clicked()
 {
     newFile();
@@ -158,6 +160,7 @@ void MainWindow::on_actionAccount_triggered()
     AccountInterface ai;
     //
     ai.setUsername(username);
+    ai.setImagePic(image);
    connect(&ai,&AccountInterface::changeImage,this,&MainWindow::receiveimage);
     //
     ai.exec();
