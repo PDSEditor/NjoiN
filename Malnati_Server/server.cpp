@@ -108,6 +108,7 @@ void Server::dispatchMessage(Message &mes) {
     QMap<int, QWebSocket *>::iterator it;
 
     int sender = mes.getSender();
+    QString documentId = mes.getParams()[0];
 
     for(it=clients.begin(); it!= clients.end(); it++) {
         if(it.key() != sender) {
@@ -116,7 +117,7 @@ void Server::dispatchMessage(Message &mes) {
 
             QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
 
-            if(this->acMan->getAccountsPerFile().contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
+            if(this->acMan->getAccountsPerFile()[documentId].contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
                                                                                        // lavorando al documento, in quel caso invia la insert o delete
                 this->socketMan->messageToUser(mes, it.key());
             }
@@ -137,6 +138,7 @@ void Server::processMessage(Message &mesIn) {
      * REGISTER user  -> E
      * LOG-IN -> L
      * LOGOUT -> O
+     * ACCOUNTS ON FILE -> A
     */
 
     QChar action = mesIn.getAction();
@@ -258,9 +260,12 @@ void Server::processMessage(Message &mesIn) {
         documentId = mesIn.getParams()[0];
         if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
 
+            this->docMan->closeDocument(documentId);
+
             // per ora commentato
             //this->docMan->saveToServer(documentId);
         }
+
 
         break;
 
@@ -379,6 +384,28 @@ void Server::processMessage(Message &mesIn) {
     case 'O' :
         //Logout
         this->acMan->removeOnlineAccounts(mesIn.getSender());                       // il metodo si occupa di cancellare l'account da tutte le liste di account online
+
+        break;
+
+    case 'A' :
+       //Recupera la lista degli utenti attualmente in lavorazione sul file
+        documentId=mesIn.getParams()[0];
+        mesOut.setSender(mesIn.getSender());
+        mesOut.setAction('A');
+
+        params = this->acMan->getAccountsPerFile()[documentId].toVector();
+
+        params.append("___");           // separator beetween online and offline users
+
+        for(auto user : this->dbMan->getDocument(documentId).getUserAllowed()) {
+            if(!params.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
+                params.append(user);
+
+        }
+
+        mesOut.setParams(params);
+
+        socketMan->messageToUser(mesOut, mesIn.getSender());
 
         break;
 

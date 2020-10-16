@@ -48,3 +48,13 @@ void DocumentManager::openDocument(SharedDocument &doc)
 {
     this->openDocuments.push_back(doc);
 }
+
+void DocumentManager::closeDocument(QString uri)
+{
+    int i=0;
+    for(auto doc : openDocuments) {
+        if(doc.getUri() == uri)
+            openDocuments.removeAt(i);
+        i++;
+    }
+}
