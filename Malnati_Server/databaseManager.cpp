@@ -86,28 +86,23 @@ Account DatabaseManager::getAccount(QString username){
             documentUris.push_back(i.toString());
         }
 
-        auto image = result->view()["image"];
-        long size = image.length();
-        auto *bytes = const_cast<uint8_t*>(image.get_binary().bytes);
+        auto imageJ = result->view()["image"];
+        long size = imageJ.length();
+        auto *bytes = const_cast<uint8_t*>(imageJ.get_binary().bytes);
 
-        QByteArray toReturn;
+        QByteArray image;
         for(int i=0; i<size; i++){
-            toReturn.append(static_cast<char>(bytes[i]));
+            image.append(static_cast<char>(bytes[i]));
         }
 
-//        auto array = documentJ["image"].toString().toLatin1(); //non funziona
-
-        //da testare questa
-        Account account(documentJ["_id"].toString(), documentJ["siteId"].toInt(), toReturn, documentUris);
+        Account account(documentJ["_id"].toString(), documentJ["siteId"].toInt(), image, documentUris);
         return account;
     }
     else {
         Account account = Account();
         account.setSiteId(-1);
         return account;
-
     }
-
 }
 
 QList<Account> DatabaseManager::getAllAccounts()
@@ -119,7 +114,6 @@ QList<Account> DatabaseManager::getAllAccounts()
      try{
          mongocxx::cursor cursor = userCollection.find({});
 
-
          for(auto cur : cursor) {
              QString string = QString::fromStdString(bsoncxx::to_json(cur));
              QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
@@ -130,10 +124,9 @@ QList<Account> DatabaseManager::getAllAccounts()
              for (auto i : document["documentUris"].toArray()){
                  documentUris.push_back(i.toString());
              }
+
              Account account = Account(document["_id"].toString(), document["siteId"].toInt(), array, documentUris);
-
              list.append(account);
-
          }
 
      }catch (mongocxx::query_exception &e){
@@ -141,7 +134,6 @@ QList<Account> DatabaseManager::getAllAccounts()
          qDebug() << e.what();
          throw std::exception();
      }
-
      return list;
 }
 

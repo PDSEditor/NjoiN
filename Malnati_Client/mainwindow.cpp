@@ -128,16 +128,25 @@ void MainWindow::setList(QList<QString> l){
 }
 
 void MainWindow::receivedInfoAccount(Message& m){
-   setUsername(m.getParams().at(0));
-   setSiteId(m.getSender());
-   setImage(m.getParams().at(2)); //todo: vado a vedere dal servere
-   //setImage(m.getParams().at(2));
-   QList<QString> tmp;
-   for(int i=2;i<m.getParams().size();i++){
-       documents.append(m.getParams().at(i));
-       addElementforUser(m.getParams().at(i));
-   }
+    QString username = m.getParams().at(0);
+    int siteId = m.getSender();
 
+    QByteArray barray;
+    barray = m.getParams().at(2).toLatin1(); //in base64
+
+    QPixmap image;
+    image.loadFromData(QByteArray::fromBase64(barray), "PNG");
+
+    setUsername(username);
+    setSiteId(siteId);
+    setImage(image);
+
+    QList<QString> tmp;
+    long size = m.getParams().size();
+    for(int i=3; i<size; i++){
+        documents.append(m.getParams().at(i));
+        addElementforUser(m.getParams().at(i));
+    }
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -220,9 +229,7 @@ void MainWindow::openMw(QString fileName)
         m.setSender(this->getSiteId());
         m.setParams({fileName, this->username});
         emit(sendTextMessage(&m));
-
     }
-
 }
 
 void MainWindow::documentClosed(QString fileName)

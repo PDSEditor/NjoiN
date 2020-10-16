@@ -351,8 +351,6 @@ void Server::processMessage(Message &mesIn) {
             Account acc(dbMan->getAccount(username));
 
             if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
-//                auto image = acc.getImage();
-//                auto pix = acc.toPix(image);
                 params = {acc.getUsername(), QString::number(acc.getSiteId()), acc.getImage()};
                 params.append(acc.getDocumentUris().toVector());
                 mesOut.setParams(params);
@@ -373,7 +371,6 @@ void Server::processMessage(Message &mesIn) {
 
         socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
                                                                                     // e dentro il siteId ci metto il sender "ufficiale"
-
         break;
     }
 
