@@ -30,6 +30,8 @@ Server::Server(QObject *parent) : QObject(parent)
 
     }
     catch(std::exception& e){
+        qDebug() << "error, " << e.what();
+        throw e;
     }
 
     /***************************
@@ -413,7 +415,7 @@ int compare(Symbol s1, Symbol s2){
     return res;
 }
 
-int Server::remoteInsert(Symbol symbol){
+/*int Server::remoteInsert(Symbol symbol){
     int min=0;
     int max = this->symbols.size()-1;
     int middle=(max+min)/2 , pos;
@@ -488,7 +490,7 @@ int Server::remoteDelete(Symbol s){
     }
     return middle;
 
-}
+}*/
 
 bool Symbol::operator<(const Symbol &other) const{
     return this->getPosition() < other.getPosition();

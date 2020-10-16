@@ -57,6 +57,5 @@ void AccountInterface::on_changeImage_clicked()
         QMessageBox::warning(this, "Warning", "The file's dimension is greater than 2MB!");
         return;
     }
-
     emit changeImage(pix);
 }

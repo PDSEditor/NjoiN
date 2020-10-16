@@ -41,7 +41,6 @@ void socketManager::setServerOn(bool value)
 }
 
 void socketManager::receiveImage(QByteArray image){
-    //    int i=0;
     image=0;
 }
 
