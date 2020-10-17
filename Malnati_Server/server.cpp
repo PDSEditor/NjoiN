@@ -411,6 +411,7 @@ void Server::processMessage(Message &mesIn) {
 
         break;
     }
+
     case 'G':{
         //cambio immagine
         username = mesIn.getParams()[0];
