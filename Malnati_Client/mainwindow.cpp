@@ -89,7 +89,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     layout->addWidget(te);
     layout->addWidget(usersWindow);
 
-    //this->dockOnline->sets
+    //this->dockOnline->setf
 
     this->dockOnline = new QDockWidget(tr("Utenti online"));
     this->dockOnline->setParent(this->usersWindow);
@@ -102,7 +102,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
 
     layoutUsers->addWidget(dockOnline);
 
-    this->dockOffline = new QDockWidget(tr("Utenti online"));
+    this->dockOffline = new QDockWidget(tr("Utenti offline"));
     this->dockOffline->setParent(this->usersWindow);
 
     dockOffline->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -144,6 +144,28 @@ void MainWindow::receiveURIerror()
 void MainWindow::closeMw()
 {
     on_actionClose_triggered();
+}
+
+void MainWindow::showUsers(Message m)
+{
+    this->onlineUsers->clear();
+    this->offlineUsers->clear();
+
+    bool online = true;
+
+    for (auto user : m.getParams()) {
+
+        if(user == "___")
+            online = false;
+        else {
+            if(online)
+                this->onlineUsers->addItem(user);
+            else
+                this->offlineUsers->addItem(user);
+        }
+
+    }
+
 }
 
 void MainWindow::setImage(QPixmap im){
@@ -238,13 +260,14 @@ void MainWindow::receiveTitle(QString title)
 
     dockOnline->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     onlineUsers = new QListWidget(dockOnline);
+    onlineUsers->addItem(this->username);
 
     dockOnline->setWidget(onlineUsers);
     addDockWidget(Qt::RightDockWidgetArea, dockOnline);
 
     layoutUsers->addWidget(dockOnline);
 
-    this->dockOffline = new QDockWidget(tr("Utenti online"));
+    this->dockOffline = new QDockWidget(tr("Utenti offline"));
     this->dockOffline->setParent(this->usersWindow);
 
     dockOffline->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);

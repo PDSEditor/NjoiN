@@ -127,6 +127,7 @@ Symbol Symbol::fromJson(const QJsonDocument &charJD){
     bool italic = charJ["italic"].toBool();
     bool underln = charJ["underln"].toBool();
     qreal size = charJ["size"].toDouble();
+    QChar align = charJ["align"].toInt();
 
     Symbol result(value, fractionalPos, siteId, counter);
     result.setFamily(family);
@@ -134,6 +135,7 @@ Symbol Symbol::fromJson(const QJsonDocument &charJD){
     result.setItalic(italic);
     result.setUnderln(underln);
     result.setSize(size);
+    result.setAlign(align);
     return result;
 }
 
@@ -148,6 +150,7 @@ QJsonDocument Symbol::toJson()
     json_obj["italic"] = this->italic;
     json_obj["underln"] = this->underln;
     json_obj["size"] = this->size;
+    json_obj["align"] = this->align.toLatin1();
 
     QJsonArray positionj;
     for(int pos : this->position) {

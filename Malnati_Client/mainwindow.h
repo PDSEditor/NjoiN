@@ -46,6 +46,7 @@ public slots:
     void receiveURIerror();
 
     void closeMw();
+    void showUsers(Message);
 
 signals:
     void newTextEdit(TextEdit* t,int s);
