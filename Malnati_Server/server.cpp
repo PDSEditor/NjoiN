@@ -139,6 +139,7 @@ void Server::processMessage(Message &mesIn) {
      * LOG-IN -> L
      * LOGOUT -> O
      * ACCOUNTS ON FILE -> A
+     * CAMBIO IMMAGINE ACCOUNT -> G
     */
 
     QChar action = mesIn.getAction();
@@ -381,13 +382,14 @@ void Server::processMessage(Message &mesIn) {
         break;
     }
 
-    case 'O' :
+    case 'O' :{
         //Logout
         this->acMan->removeOnlineAccounts(mesIn.getSender());                       // il metodo si occupa di cancellare l'account da tutte le liste di account online
 
         break;
+    }
 
-    case 'A' :
+    case 'A' :{
        //Recupera la lista degli utenti attualmente in lavorazione sul file
         documentId=mesIn.getParams()[0];
         mesOut.setSender(mesIn.getSender());
@@ -408,6 +410,27 @@ void Server::processMessage(Message &mesIn) {
         socketMan->messageToUser(mesOut, mesIn.getSender());
 
         break;
+    }
+    case 'G':{
+        //cambio immagine
+        username = mesIn.getParams()[0];
+        mesOut.setAction('G');
+        mesOut.setSender(mesIn.getSender());
+
+        QByteArray img = mesIn.getParams()[1].toLatin1();
+
+        Account acc(this->dbMan->getAccount(username));
+
+        if(acc.getSiteId()<0)
+            mesOut.setError(true);
+
+        if(this->dbMan->changeImage(username, img)){
+            mesOut.setError(false);
+        }else mesOut.setError(true);
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
+        break;
+    }
 
     default:
         this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");

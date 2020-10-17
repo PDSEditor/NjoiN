@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <changepwd.h>
+#include <QBuffer>
 
 namespace Ui {
 class AccountInterface;
@@ -25,7 +26,7 @@ private:
     ChangePwd *changePwdDialog = nullptr;
 
 signals:
-    void changeImage(QPixmap&);
+    void changeImage(QByteArray&);
     void changePassword(QString&);
 };
 

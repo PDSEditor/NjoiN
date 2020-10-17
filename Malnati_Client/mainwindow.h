@@ -50,13 +50,13 @@ public slots:
 signals:
     void newTextEdit(TextEdit* t,int s);
     // prova
-    void sendImage(QByteArray& image);
+    void sendImage(Message *);
     void sendMessage(Message* mex);
     void sendTextMessage(Message* mex);
 
 
 private slots:
-    void receiveimage(QPixmap& im);
+    void receiveimage(QByteArray &bArray);
     void on_pushButton_clicked();
     void addElementforUser(QString);
     void on_actionNew_triggered();

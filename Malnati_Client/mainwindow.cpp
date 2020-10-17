@@ -56,12 +56,18 @@ QString MainWindow::getURI()
     return openURI;
 }
 
-void MainWindow::receiveimage(QPixmap& q){
-    QByteArray bArray;
-    QBuffer buffer(&bArray);
-    buffer.open(QIODevice::WriteOnly);
-    q.save(&buffer,"PNG");
-    emit sendImage(bArray);
+void MainWindow::receiveimage(QByteArray &bArray){
+//    QByteArray bArray;
+//    QBuffer buffer(&bArray);
+//    buffer.open(QIODevice::WriteOnly);
+//    q.save(&buffer,"PNG");
+
+    Message m;
+    m.setAction('G');
+    m.setSender(siteId);
+    m.setParams({username, bArray});
+//    emit sendMessage(&m);
+    emit sendImage(&m);
 
 }
 
