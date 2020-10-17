@@ -30,7 +30,7 @@ signals:
     void receiveRegistration(Message);
 
 public slots:
-    void receiveImage(QByteArray im);
+    void receiveImage(Message &m);
     void onConnected();
     void onTextMessageReceived(QString message);
     void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal

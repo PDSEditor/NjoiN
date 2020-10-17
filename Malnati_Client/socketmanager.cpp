@@ -40,10 +40,8 @@ void socketManager::setServerOn(bool value)
     serverOn = value;
 }
 
-void socketManager::receiveImage(QByteArray image){
-    Message m;
-
-//    this->messageToServer(m);
+void socketManager::receiveImage(Message &m){
+    // da gestire
 }
 
 
@@ -260,7 +258,12 @@ void socketManager::onTextMessageReceived(QString message)
             emit(receivedURIerror());
         }
         break;
-//
+
+    case 'G':{
+        // ricevo risultato del cambio immagine
+        emit(receiveImage(m));
+        break;
+    }
 
     default:
         qDebug() << "default";
