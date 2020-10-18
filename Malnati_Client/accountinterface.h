@@ -27,7 +27,7 @@ private:
 
 signals:
     void changeImage(QByteArray&);
-    void changePassword(QString&);
+    void changePassword(QString, QString);
 };
 
 #endif // ACCOUNTINTERFACE_H

@@ -17,11 +17,18 @@ ChangePwd::~ChangePwd()
 
 void ChangePwd::on_buttonBox_accepted()
 {
-    QString pwd = ui->lineEdit->text();
-    if ( pwd.size() == 0 ){
+    QString oldPwd = ui->lineEdit->text();
+    QString newPwd = ui->lineEdit_2->text();
+    QString newPwd2 = ui->lineEdit_3->text();
+
+    if (oldPwd.size() == 0 ){
         QMessageBox::warning(this, "Password", "Password not valid");
+    }else if(QString::compare(newPwd, newPwd2, Qt::CaseSensitive) || newPwd.size()==0 || newPwd2.size()==0){
+        QMessageBox::warning(this, "Password error", "Password non uguali o invalide");
     } else {
-        emit pwdUpdate(pwd);
+//        emit pwdUpdate(pwd);
+        this->setNewPwd(newPwd);
+        this->setOldPwd(oldPwd);
         this->hide();
     }    
 }
@@ -30,3 +37,22 @@ void ChangePwd::on_buttonBox_rejected()
 {
     this->hide();
 }
+
+void ChangePwd::setNewPwd(const QString &value)
+{
+    newPwd = value;
+}
+
+void ChangePwd::setOldPwd(const QString &value)
+{
+    oldPwd = value;
+}
+
+QString ChangePwd::getNewPassword(){
+    return this->newPwd;
+}
+
+QString ChangePwd::getOldPassword(){
+    return this->oldPwd;
+}
+

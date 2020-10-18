@@ -51,12 +51,12 @@ signals:
     void newTextEdit(TextEdit* t,int s);
     // prova
     void sendImage(Message *);
+    void sendNewPwd(Message *);
     void sendMessage(Message* mex);
     void sendTextMessage(Message* mex);
 
 
 private slots:
-    void receiveimage(QByteArray &bArray);
     void on_pushButton_clicked();
     void addElementforUser(QString);
     void on_actionNew_triggered();
@@ -70,6 +70,9 @@ private slots:
 
     void openMw(QString);
     void documentClosed(QString);
+
+    void receiveimage(QByteArray &bArray);
+    void receiveNewPwd(QString oldPwd, QString newPwd);
 
 private:
     Ui::MainWindow *ui;

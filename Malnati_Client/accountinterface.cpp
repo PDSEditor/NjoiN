@@ -13,7 +13,7 @@ AccountInterface::AccountInterface(QWidget *parent) :
     this->changePwdDialog = new ChangePwd(this);
     setWindowTitle("Profile");
 
-    connect(changePwdDialog, &ChangePwd::pwdUpdate, this, &AccountInterface::changePassword);
+//    connect(changePwdDialog, &ChangePwd::pwdUpdate, this, &AccountInterface::changePassword);
 }
 
 AccountInterface::~AccountInterface()
@@ -33,7 +33,19 @@ void AccountInterface::setImagePic(const QPixmap &imagePic)
 
 void AccountInterface::on_changePassword_clicked()
 {
-    this->changePwdDialog->show();
+//    QString pwd;
+//    this->changePwdDialog->show();
+//    emit(changePassword(pwd));
+
+    changePwdDialog->exec();
+
+    QString newPwd, oldPwd;
+//    if(changePwdDialog->exec()){
+        newPwd = changePwdDialog->getNewPassword();
+        oldPwd = changePwdDialog->getOldPassword();
+//    }
+    emit(changePassword(oldPwd, newPwd));
+    return;
 }
 
 void AccountInterface::on_changeImage_clicked()

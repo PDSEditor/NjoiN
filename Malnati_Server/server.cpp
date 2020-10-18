@@ -140,6 +140,7 @@ void Server::processMessage(Message &mesIn) {
      * LOGOUT -> O
      * ACCOUNTS ON FILE -> A
      * CAMBIO IMMAGINE ACCOUNT -> G
+     * CAMBIO PASSWORD ACCOUNT -> P
     */
 
     QChar action = mesIn.getAction();
@@ -166,7 +167,7 @@ void Server::processMessage(Message &mesIn) {
 //        for(auto i : document){
 //            qDebug() << i.getValue();
 //        }
-
+    {
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
         documentId = this->acMan->getAccountOnDocument()[username];
         mesIn.setParams({documentId});
@@ -174,7 +175,8 @@ void Server::processMessage(Message &mesIn) {
         this->dispatchMessage(mesIn);
 //        remoteInsert(mesIn.getSymbol());
         break;
-    case 'D':
+    }
+    case 'D':{
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
         documentId = this->acMan->getAccountOnDocument()[username];
         mesIn.setParams({documentId});
@@ -183,10 +185,9 @@ void Server::processMessage(Message &mesIn) {
         this->dispatchMessage(mesIn);
 //        remoteDelete(mesIn.getSymbol());
         break;
+    }
 
-
-
-    case 'R' :
+    case 'R' :{
 
         documentId = mesIn.getParams()[0];
         username = mesIn.getParams()[1];
@@ -217,8 +218,7 @@ void Server::processMessage(Message &mesIn) {
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
         break;
-
-
+    }
 
     case 'C' :
     {
@@ -254,7 +254,7 @@ void Server::processMessage(Message &mesIn) {
         break;
     }
 
-    case 'X' :
+    case 'X' :{
         //gestire chiusura del file
         //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
         username = mesIn.getParams()[1];
@@ -266,11 +266,10 @@ void Server::processMessage(Message &mesIn) {
             // per ora commentato
             //this->docMan->saveToServer(documentId);
         }
-
-
         break;
+    }
 
-    case 'U' :
+    case 'U' :{
         // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
@@ -315,6 +314,7 @@ void Server::processMessage(Message &mesIn) {
         socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
+    }
 
     case 'E' :{
         //rEgister
@@ -432,9 +432,29 @@ void Server::processMessage(Message &mesIn) {
         socketMan->messageToUser(mesOut, mesOut.getSender());
         break;
     }
+    case 'P':{
+        username = mesIn.getParams()[0];
+        QString oldPsw = mesIn.getParams()[1];
+        QString newPsw = mesIn.getParams()[2];
+        mesOut.setAction('G');
+        mesOut.setSender(mesIn.getSender());
 
-    default:
+        Account acc(this->dbMan->getAccount(username));
+
+        if(acc.getSiteId()<0)
+            mesOut.setError(true);
+
+        if(this->dbMan->changePassword(username, oldPsw, newPsw))
+            mesOut.setError(false);
+        else mesOut.setError(true);
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
+        break;
+    }
+
+    default:{
         this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
+    }
     }
 
 }

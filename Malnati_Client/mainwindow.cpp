@@ -71,6 +71,14 @@ void MainWindow::receiveimage(QByteArray &bArray){
 
 }
 
+void MainWindow::receiveNewPwd(QString oldPsw, QString newPwd){
+    Message m;
+    m.setAction('P');
+    m.setSender(siteId);
+    m.setParams({username, oldPsw, newPwd});
+    emit (sendNewPwd(&m));
+}
+
 void MainWindow::open_file_on_server(QListWidgetItem* s){
     Message m;
     m.setAction('R');
@@ -216,6 +224,7 @@ void MainWindow::on_actionAccount_triggered()
     ai.setUsername(username);
     ai.setImagePic(image);
    connect(&ai,&AccountInterface::changeImage,this,&MainWindow::receiveimage);
+   connect(&ai, &AccountInterface::changePassword, this, &MainWindow::receiveNewPwd);
     //
     ai.exec();
 

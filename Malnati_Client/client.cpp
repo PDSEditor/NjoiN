@@ -97,6 +97,7 @@ bool Client::Login()
 
 //         connect(mw, &MainWindow::sendImage,sockm,&socketManager::receiveImage);
          connect(mw, &MainWindow::sendImage,sockm,&socketManager::messageToServer);
+         connect(mw, &MainWindow::sendNewPwd,sockm,&socketManager::messageToServer);
          connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
          connect(mw,&MainWindow::sendTextMessage,sockm,&socketManager::messageToServer);
          return true;
