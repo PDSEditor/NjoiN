@@ -31,10 +31,8 @@ public:
     bool updateOnlineAccounts (int siteId, const Account &acc);
     void updateAccountOnDocument (QString user, QString documentId);
 
-
-
-    QMap<QString, QString> getAccountOnDocument() const;
-    void setAccountOnDocument(const QMap<QString, QString> &value);
+    QMap<QString, QString> getUsernameDocumentMap() const;
+    void setUsernameDocumentMap(const QMap<QString, QString> &value);
 
 public slots:
     void removeOnlineAccounts (int siteId);

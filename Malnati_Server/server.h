@@ -31,6 +31,7 @@ private:
 
     int remoteInsert(Symbol symbol);
     int remoteDelete(Symbol symbol);
+    void updateUsersOnDocument(Message mes);
 
     std::vector<Symbol> symbols;
     void dispatchMessage(Message &mes);          //capisci a quali client inviare il messaggi

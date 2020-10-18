@@ -108,12 +108,14 @@ void Server::dispatchMessage(Message &mes) {
     QMap<int, QWebSocket *>::iterator it;
 
     int sender = mes.getSender();
-    QString documentId = mes.getParams()[0];
+    //QString documentId = mes.getParams()[0];
+
+    QString user = this->acMan->getOnlineAccounts()[sender].get()->getUsername();
+
+    QString documentId = this->acMan->getUsernameDocumentMap()[user];
 
     for(it=clients.begin(); it!= clients.end(); it++) {
-        if(it.key() != sender) {
-
-            //qDebug()<< "Mando la remote insert al client n" << it.key();
+        if(it.key() != sender || mes.getAction()=='A') {
 
             QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
 
@@ -155,6 +157,7 @@ void Server::processMessage(Message &mesIn) {
     QVector<QString> params;
     QString username;
     QList<QString> userAllowed;
+    int start, end, type;
 
     switch (first){
     case 'I':
@@ -169,7 +172,7 @@ void Server::processMessage(Message &mesIn) {
 //        }
     {
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
-        documentId = this->acMan->getAccountOnDocument()[username];
+        documentId = this->acMan->getUsernameDocumentMap()[username];
         mesIn.setParams({documentId});
         this->dbMan.get()->insertSymbol(mesIn);
         this->dispatchMessage(mesIn);
@@ -178,7 +181,7 @@ void Server::processMessage(Message &mesIn) {
     }
     case 'D':{
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
-        documentId = this->acMan->getAccountOnDocument()[username];
+        documentId = this->acMan->getUsernameDocumentMap()[username];
         mesIn.setParams({documentId});
 
         this->dbMan.get()->deleteSymbol(mesIn);
@@ -217,6 +220,9 @@ void Server::processMessage(Message &mesIn) {
 
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
+
+        this->updateUsersOnDocument(mesIn);
+
         break;
     }
 
@@ -313,6 +319,8 @@ void Server::processMessage(Message &mesIn) {
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
 
+        this->updateUsersOnDocument(mesIn);
+
         break;
     }
 
@@ -391,23 +399,30 @@ void Server::processMessage(Message &mesIn) {
 
     case 'A' :{
        //Recupera la lista degli utenti attualmente in lavorazione sul file
-        documentId=mesIn.getParams()[0];
-        mesOut.setSender(mesIn.getSender());
-        mesOut.setAction('A');
 
-        params = this->acMan->getAccountsPerFile()[documentId].toVector();
+        this->updateUsersOnDocument(mesIn);
 
-        params.append("___");           // separator beetween online and offline users
+        break;
 
-        for(auto user : this->dbMan->getDocument(documentId).getUserAllowed()) {
-            if(!params.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
-                params.append(user);
+    case 'B' :
 
+        start = mesIn.getParams()[0].toInt();
+        end = mesIn.getParams()[1].toInt();
+        type = mesIn.getParams()[2].toInt();
+
+        username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
+
+        documentId = this->acMan->getUsernameDocumentMap()[username];
+
+        document = this->dbMan->retrieveSymbolsOfDocument(documentId);
+
+        for (int i=start; i<= end; i++) {
+           symbols[i].setAlign(type);
         }
 
-        mesOut.setParams(params);
+        this->dbMan->setSymbolsOfDocument(documentId, document);
 
-        socketMan->messageToUser(mesOut, mesIn.getSender());
+        this->dispatchMessage(mesIn);
 
         break;
     }
@@ -456,6 +471,28 @@ void Server::processMessage(Message &mesIn) {
         this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
     }
     }
+
+}
+
+void Server::updateUsersOnDocument(Message mes)
+{
+    QString documentId=mes.getParams()[0];
+    mes.setAction('A');
+
+    QVector<QString> params = this->acMan->getAccountsPerFile()[documentId].toVector();
+
+    params.append("___");           // separator beetween online and offline users
+
+    for(auto user : this->dbMan->getDocument(documentId).getUserAllowed()) {
+        if(!params.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
+            params.append(user);
+
+    }
+
+    mes.setParams(params);
+
+    //socketMan->messageToUser(mes, mes.getSender());
+    this->dispatchMessage(mes);
 
 }
 
@@ -562,6 +599,8 @@ int Server::remoteDelete(Symbol s){
     return middle;
 
 }*/
+
+
 
 bool Symbol::operator<(const Symbol &other) const{
     return this->getPosition() < other.getPosition();

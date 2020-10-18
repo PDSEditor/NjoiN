@@ -28,6 +28,7 @@ signals:
     void receivedURIerror();
     void loggedin(bool);
     void receiveRegistration(Message);
+    void showUsers(Message);
 
 public slots:
     void receiveImage(Message &m);
