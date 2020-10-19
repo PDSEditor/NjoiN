@@ -55,6 +55,8 @@ public:
     static Symbol fromJson(const QJsonDocument &charJD);
     QJsonDocument toJson();
     bool operator < (const Symbol &other) const;
+    QChar getAlign() const;
+    void setAlign(const QChar &value);
 };
 
 #endif // SYMBOL_H

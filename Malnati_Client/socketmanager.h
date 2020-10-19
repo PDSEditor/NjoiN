@@ -29,6 +29,8 @@ signals:
     void loggedin(bool);
     void receiveRegistration(Message);
     void receiveAllign(Message);
+    void showUsers(Message);
+
 
 public slots:
     void receiveImage(QByteArray im);

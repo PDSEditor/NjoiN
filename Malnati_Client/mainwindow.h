@@ -1,6 +1,7 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtWidgets>
 #include <QMainWindow>
 #include "textedit.h"
 #include "accountinterface.h"
@@ -45,6 +46,7 @@ public slots:
     void receiveURIerror();
 
     void closeMw();
+    void showUsers(Message);
 
 signals:
     void newTextEdit(TextEdit* t,int s);
@@ -85,5 +87,15 @@ private:
     InsertTitle *it;
     /*************/
 
+    QWidget* teWindow;
+    QWidget* usersWindow;
+    QDockWidget* dockOnline;
+    QListWidget *onlineUsers;
+
+    QDockWidget* dockOffline;
+    QListWidget *offlineUsers;
+
+    QVBoxLayout* layoutUsers;
+    QHBoxLayout* layout;
 };
 #endif // MAINWINDOW_H

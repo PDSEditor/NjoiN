@@ -23,7 +23,6 @@
 
 #include <bsoncxx/json.hpp>
 
-
 #include "message.h"
 #include "account.h"
 #include "sharedDocument.h"
@@ -69,6 +68,7 @@ public:
     bool insertDocument(SharedDocument &document);
     SharedDocument getDocument(QString documentId); /* cercare nella collezione il documento, e crearne uno con la lista dei simboli con retrieve simbols*/
     QList<Symbol> retrieveSymbolsOfDocument(QString documentId);
+    bool setSymbolsOfDocument(QString documentId, QList<Symbol> document);
     QList<SharedDocument> getAllDocuments(); //todo: da fare
     QList<SharedDocument> getAllMyDocuments(QString username); //to test
     bool deleteDocument(QString documentId); //da fare

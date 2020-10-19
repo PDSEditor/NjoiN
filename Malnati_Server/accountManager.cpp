@@ -22,12 +22,12 @@ void AccountManager::setAccountsPerFile(const QMap<QString, QList<QString> > &va
 }
 
 
-QMap<QString, QString> AccountManager::getAccountOnDocument() const
+QMap<QString, QString> AccountManager::getUsernameDocumentMap() const
 {
     return usernameDocumentMap;
 }
 
-void AccountManager::setAccountOnDocument(const QMap<QString, QString> &value)
+void AccountManager::setUsernameDocumentMap(const QMap<QString, QString> &value)
 {
     usernameDocumentMap = value;
 }
