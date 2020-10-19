@@ -40,11 +40,6 @@ void socketManager::setServerOn(bool value)
     serverOn = value;
 }
 
-void socketManager::receiveImage(Message &m){
-    // da gestire
-//void socketManager::receiveImage(QByteArray image){
-}
-
 
 //Send a message from client to server
 void socketManager::binaryMessageToServer(Message *m)
@@ -262,13 +257,18 @@ void socketManager::onTextMessageReceived(QString message)
 
     case 'G':{
         // ricevo risultato del cambio immagine
-        emit(receiveImage(m));
+        emit(receiveNewImage(m));
         break;
     }
 
     case 'A':{
         //aggiorna gli utenti online e offline sul documento aperto dal client
         emit(showUsers(m));
+        break;
+    }
+    case 'P':{
+        //ricevo risultato del cambio password
+//        emit(receiveNewPassword(m));
         break;
     }
 

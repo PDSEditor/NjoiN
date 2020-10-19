@@ -50,8 +50,10 @@ bool Client::Login()
 {
     LoginWindow lw;
     Registration rw;
+    AccountInterface ai;
     sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
     mw = new MainWindow();
+
     connect(&lw,&LoginWindow::closeMw,mw,&MainWindow::closeMw);
     connect(&lw,&LoginWindow::openRw,&rw,&Registration::openRw);
     connect(&lw,&LoginWindow::closeRw,&rw,&Registration::closeRw);
@@ -64,8 +66,9 @@ bool Client::Login()
     connect(sockm, &socketManager::receivedInfoAccount, mw, &MainWindow::receivedInfoAccount);
     connect(sockm, &socketManager::receivedFile, mw, &MainWindow::receivedFile);
     connect(sockm, &socketManager::receivedURIerror, mw, &MainWindow::receiveURIerror);
-    connect(sockm,&socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
+    connect(sockm, &socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
     connect(sockm, &socketManager::showUsers, mw, &MainWindow::showUsers);
+//    connect(sockm, &socketManager::receiveNewImage, mw->getAccountGui, &AccountInterface::receiveNewImage);
 
     lw.exec();
 
@@ -98,7 +101,7 @@ bool Client::Login()
 
 //         connect(mw, &MainWindow::sendImage,sockm,&socketManager::receiveImage);
          connect(mw, &MainWindow::sendImage,sockm,&socketManager::messageToServer);
-         connect(mw, &MainWindow::sendNewPwd,sockm,&socketManager::messageToServer);
+//         connect(mw, &MainWindow::sendNewPwd,sockm,&socketManager::messageToServer);
          connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
          connect(mw,&MainWindow::sendTextMessage,sockm,&socketManager::messageToServer);
          return true;

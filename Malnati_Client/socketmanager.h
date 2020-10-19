@@ -29,9 +29,9 @@ signals:
     void loggedin(bool);
     void receiveRegistration(Message);
     void showUsers(Message);
+    void receiveNewImage(Message &m);
 
 public slots:
-    void receiveImage(Message &m);
     void onConnected();
     void onTextMessageReceived(QString message);
     void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal

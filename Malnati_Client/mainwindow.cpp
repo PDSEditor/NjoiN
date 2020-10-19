@@ -56,7 +56,7 @@ QString MainWindow::getURI()
     return openURI;
 }
 
-void MainWindow::receiveimage(QByteArray &bArray){
+void MainWindow::sendNewImage(QByteArray &bArray){
 //    QByteArray bArray;
 //    QBuffer buffer(&bArray);
 //    buffer.open(QIODevice::WriteOnly);
@@ -71,7 +71,7 @@ void MainWindow::receiveimage(QByteArray &bArray){
 
 }
 
-void MainWindow::receiveNewPwd(QString oldPsw, QString newPwd){
+void MainWindow::sendNewPwd(QString oldPsw, QString newPwd){
     Message m;
     m.setAction('P');
     m.setSender(siteId);
@@ -245,8 +245,8 @@ void MainWindow::on_actionAccount_triggered()
     //
     ai.setUsername(username);
     ai.setImagePic(image);
-   connect(&ai,&AccountInterface::changeImage,this,&MainWindow::receiveimage);
-   connect(&ai, &AccountInterface::changePassword, this, &MainWindow::receiveNewPwd);
+   connect(&ai, &AccountInterface::changeImage, this, &MainWindow::sendNewImage);
+//   connect(&ai, &AccountInterface::changePassword, this, &MainWindow::sendNewPwd);
     //
     ai.exec();
 

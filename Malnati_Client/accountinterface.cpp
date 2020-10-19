@@ -79,3 +79,12 @@ void AccountInterface::on_changeImage_clicked()
 
     emit changeImage(encoded);
 }
+
+void AccountInterface::receiveNewImage(Message &m){
+    if(m.getError()){
+        QMessageBox::critical(this,"Error","Errore nel cambio immagine, riprova");
+        return;
+    }else QMessageBox::information(this, "Success", "Immagine cambiata correttamente!");
+
+    return;
+}
