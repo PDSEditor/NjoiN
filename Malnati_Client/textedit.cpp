@@ -473,6 +473,7 @@ void TextEdit::setSocketM(socketManager *sockclient)
     sockm=sockclient;
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
     connect(this, &TextEdit::sendTextMessage, sockm, &socketManager::messageToServer);
+    connect(sockm,&socketManager::receiveAllign,this,&TextEdit::receiveAllign);
 }
 
 void TextEdit::setFileName(QString fileName)
@@ -552,8 +553,8 @@ void TextEdit::receiveSymbol(Message *m)
     }
     col=colors.take(m->getSymbol().getSiteId());
     //textEdit->setTextBackgroundColor(col);
-    textEdit->setAlignment(Qt::AlignRight);
-    //sopraaaa
+
+
     qform.setBackground(col);
     qform.setFontFamily(m->getSymbol().getFamily());
     qform.setFontItalic(m->getSymbol().getItalic());
@@ -573,8 +574,19 @@ void TextEdit::receiveSymbol(Message *m)
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);
-        curs.insertText((QChar)tmp.getValue(),qform);
-        textEdit->setAlignment(Qt::AlignLeft);
+        if(insertalign(m->getSymbol().getAlign().toLatin1())!=textEdit->alignment()){
+//            textEdit->setAlignment(insertalign( m->getSymbol().getAlign().toLatin1()));
+            textEdit->setAlignment(Qt::AlignRight);
+            //chiamare lo slot receiveallign
+            externAction=true;
+        }
+        if(tmp.getValue()=='\0')
+             curs.insertText((QChar)'\n',qform);
+        else
+             curs.insertText((QChar)tmp.getValue(),qform);
+//        alignAction=true;
+//        textEdit->setAlignment(Qt::AlignRight);
+//        alignAction=false;
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -584,6 +596,29 @@ void TextEdit::receiveSymbol(Message *m)
     }
 
 
+
+}
+
+void TextEdit::receiveAllign(Message m)
+{
+    int start,end;
+    QChar a;
+    Qt::Alignment al;
+    start=m.getParams().at(0).toInt();
+    end=m.getParams().at(1).toInt();
+    a=m.getParams().at(2).toLatin1().at(0);
+    al=insertalign(a);
+    for(int i=0;i<=end;i++){
+        crdt->getSymbols().at(i).setAlign(a);
+    }
+    textEdit->textCursor().setPosition(start);
+    textEdit->setAlignment(al);
+
+}
+
+void TextEdit::setSiteid(int s)
+{
+    siteid=s;
 
 }
 
@@ -842,7 +877,6 @@ void TextEdit::textColor()
 void TextEdit::textAlign(QAction *a)
 {
     alignAction=true;
-    externAction=true;
     if (a == actionAlignLeft)
         textEdit->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
     else if (a == actionAlignCenter)
@@ -871,42 +905,20 @@ void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
     if(alignAction==true){
-
+        alignAction=false;
         QChar c;
         int max,min, p=textEdit->textCursor().position();
-        min=p-1;
-        max=p;
-        if(p!=(int)crdt->getSymbols().size()){
-            c=crdt->getSymbols().at(p).getValue();
-            while(c.toLatin1()!='\0'&& min>=0){
-               crdt->getSymbols().at(min).setAlign(findalign(textEdit->alignment()));
-                c=crdt->getSymbols().at(min).getValue();
-                min--;
-            }
-                c=crdt->getSymbols().at(p).getValue();
-                while(c.toLatin1()!='\0'&& max<(int)crdt->getSymbols().size()){
-                crdt->getSymbols().at(max).setAlign(findalign(textEdit->alignment()));
-                c=crdt->getSymbols().at(max).getValue();
-                max++;
+        min=position;
+        max=min+charsAdded;
 
-            }
-        }
-        else{
-             c=crdt->getSymbols().at(min).getValue();
-             while(c.toLatin1()!='\0'&& min>=0){
-             crdt->getSymbols().at(min).setAlign(findalign(textEdit->alignment()));
-             c=crdt->getSymbols().at(min).getValue();
-             min--;
-            }
-        }
         Message m;
         m.setAction('B');
-        m.setParams({QString::number(min),QString::number(max)});
+        m.setParams({QString::number(min),QString::number(max),});
         emit(sendTextMessage(&m));
 
 
     }
-
+else{
    if(externAction==false){
 
 
@@ -924,27 +936,32 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
         }else
         if(charsAdded!= 0){
             if(charsAdded==charsRemoved){
-                //dati da passare
-                int pos=cursor.selectionStart();
-                for(int i=0;i<charsAdded;i++){
-                    Message mc,mi;
-                    Symbol s=crdt->getSymbols().at(pos+i);
-                    //eliminazione vecchio carattere
-                    mc.setSymbol(s);
-                    mc.setAction('D');
-                    emit(sendMessage(&mc));
-                    //invio carattere modificato
-                    mi.setAction('I');
-                    s.setBold(actionTextBold->isChecked());
-                    s.setItalic(actionTextItalic->isChecked());
-                    s.setUnderln(actionTextUnderline->isChecked());
-                    s.setFamily(localFamily);
-                    s.setSize(localsize);
-                    mi.setSymbol(s);
-                    emit(sendMessage(&mi));
+                if(alignAction==true){
+
+                }
+//                dati da passare
+                else{
+                    int pos=cursor.selectionStart();
+                    for(int i=0;i<charsAdded;i++){
+                        Message mc,mi;
+                        Symbol s=crdt->getSymbols().at(pos+i);
+                        //eliminazione vecchio carattere
+                        mc.setSymbol(s);
+                        mc.setAction('D');
+                        emit(sendMessage(&mc));
+                        //invio carattere modificato
+                        mi.setAction('I');
+                        s.setBold(actionTextBold->isChecked());
+                        s.setItalic(actionTextItalic->isChecked());
+                        s.setUnderln(actionTextUnderline->isChecked());
+                        s.setFamily(localFamily);
+                        s.setSize(localsize);
+                        s.setAlign(findalign(textEdit->alignment()));
+                        mi.setSymbol(s);
+                        emit(sendMessage(&mi));
                 }
                 //
-
+                }
             }
             else{
                 if(charsRemoved>0)
@@ -958,6 +975,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 s.setUnderln(textEdit->currentCharFormat().fontUnderline());
                 s.setItalic(textEdit->currentCharFormat().fontItalic());
                 s.setBold(actionTextBold->isChecked());
+                s.setAlign(findalign(textEdit->alignment()));
                 m.setSymbol(s);
                 position+=1;
                 emit(sendMessage(&m));
@@ -965,7 +983,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
             }
         }
    }
-   externAction=false;
+externAction=false;
+    }
 
 }
 
@@ -1096,15 +1115,25 @@ void TextEdit::loadFile(QList<Symbol> file)
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
     QTextCharFormat qform;
+    QColor col;
     foreach(Symbol s,file){
         externAction=true;
+        //da aggiungere controllo sul proprio siteId
+        if(s.getSiteId()==siteid)
+            col=Qt::transparent;
+        else
+            col=listcolor.at(s.getSiteId()%5);
+        qform.setBackground(col);
         qform.setFontFamily(s.getFamily());
         qform.setFontItalic(s.getItalic());
         qform.setFontUnderline(s.getUnderln());
         qform.setFontPointSize(s.getSize());
         if(s.getBold())
             qform.setFontWeight(QFont::Bold);
-        curs.insertText((QChar)s.getValue(),qform);
+        if(s.getValue()=='\0')
+            curs.insertText((QChar)'\n',qform);
+        else
+            curs.insertText(s.getValue(),qform);
        // tmp.append(s.getValue());
         vtmp.push_back(s);
     }
@@ -1136,13 +1165,13 @@ Qt::Alignment TextEdit::insertalign(QChar c){
 
 QChar TextEdit::findalign(Qt::Alignment al){
     QChar c;
-    if(al==Qt::AlignLeft)
+    if(al==Qt::AlignLeft || al==(Qt::AlignLeft | Qt::AlignAbsolute))
         c='L';
-    else if(al==Qt::AlignCenter)
+    else if(al==Qt::AlignCenter || al==(Qt::AlignCenter | Qt::AlignAbsolute))
         c='C';
-    else if(al==Qt::AlignRight)
+    else if(al==Qt::AlignRight || al==(Qt::AlignRight | Qt::AlignAbsolute))
         c='R';
-    else if(al==Qt::AlignJustify)
+    else if(al==Qt::AlignJustify || al==(Qt::AlignJustify | Qt::AlignAbsolute))
         c='J';
     return c;
 }

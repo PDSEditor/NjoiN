@@ -108,6 +108,7 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
+        bytemex.append(symbol.getAlign());
         bytemex.append(symbol.getFamily());
 
     }
@@ -212,7 +213,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     QByteArray c;
     int tmp,d,sender;
     QChar tmpc;
-    QChar action;
+    QChar action,align;
     Symbol symbol;
     QVector<QString> params;
     action=bytemex.at(0);
@@ -260,6 +261,8 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
         memcpy(&tmp,c,4);
         sender=tmp;
         i+=4;
+        align=bytemex.at(i);
+        i++;
         family=bytemex.right(bytemex.length()-i);
     }
     else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
@@ -298,6 +301,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     symbol.setItalic(it);
     symbol.setUnderln(un);
     symbol.setFamily(family);
+    symbol.setAlign(align);
     m.setSymbol(symbol);
     m.setSender(sender);
     /** necessario settare i decorators? **/

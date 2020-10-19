@@ -99,6 +99,7 @@ void socketManager::binaryMessageToServer(Message *m)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
+        bytemex.append(symbol.getAlign());
         bytemex.append(symbol.getFamily());
 
 
@@ -265,7 +266,7 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
 {
     QByteArray c;
     int tmp, d,sender;
-    QChar action;
+    QChar action,align;
     QChar tmpc;
     //Symbol *symbol = new Symbol();
     Symbol symbol;
@@ -316,6 +317,8 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         memcpy(&tmp,c,4);
         sender=tmp;
         i+=4;
+        align=bytemex.at(i);
+        i++;
         family=bytemex.right(bytemex.length()-i);
     }
 //    else if(bytemex.at(0)=='C'||bytemex.at(0)=='R'){
@@ -371,6 +374,7 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         symbol.setItalic(it);
         symbol.setUnderln(un);
         symbol.setFamily(family);
+        symbol.setAlign(align);
         m->setSymbol(symbol);
 
 

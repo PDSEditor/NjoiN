@@ -23,6 +23,7 @@ private:
     bool italic;
     bool underln;
     qreal size;
+    QChar align;
 
 
 public:
@@ -41,6 +42,8 @@ public:
     void setUnderln(bool u);
     void setSize(qreal s);
 
+    QChar getAlign();
+    void setAlign(QChar);
     std::vector<int> getPosition() const;
     void setPosition(const std::vector<int> &value);
     int getSiteId() const;

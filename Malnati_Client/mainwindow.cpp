@@ -81,6 +81,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te = new TextEdit(this);
     emit(newTextEdit(te,siteId));
     te->setFileName(openURI.left(openURI.lastIndexOf('_')));
+    te->setSiteid(siteId);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
     te->show();
@@ -192,6 +193,7 @@ void MainWindow::receiveTitle(QString title)
    // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
     te->setFileName(title);
     te->setURI(title+"_"+username);
+    te->setSiteid(siteId);
     addElementforUser(title+"_"+username);
     te->fileNew();
     connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);

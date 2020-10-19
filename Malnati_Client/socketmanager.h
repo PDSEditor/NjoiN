@@ -13,7 +13,7 @@
 
 class socketManager : public QObject
 {
-    Q_OBJECT    
+    Q_OBJECT
 
 public:
     explicit socketManager(const QUrl &url, QObject *parent = nullptr);
@@ -28,6 +28,7 @@ signals:
     void receivedURIerror();
     void loggedin(bool);
     void receiveRegistration(Message);
+    void receiveAllign(Message);
 
 public slots:
     void receiveImage(QByteArray im);

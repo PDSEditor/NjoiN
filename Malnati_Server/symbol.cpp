@@ -42,7 +42,15 @@ void Symbol::setSiteId(int value)
 {
     siteId = value;
 }
+QChar Symbol::getAlign()
+{
+    return align;
+}
 
+void Symbol::setAlign(QChar a)
+{
+    align=a;
+}
 int Symbol::getCounter() const
 {
     return counter;
