@@ -426,17 +426,36 @@ void Server::updateUsersOnDocument(Message mes)
     QString documentId=mes.getParams()[0];
     mes.setAction('A');
 
-    QVector<QString> params = this->acMan->getAccountsPerFile()[documentId].toVector();
+    QVector<QString> onlineUsers = this->acMan->getAccountsPerFile()[documentId].toVector();
+    QVector<QString> onlineUsers_siteId;
 
-    params.append("___");           // separator beetween online and offline users
+    auto siteIdUser = this->socketMan->getSiteIdUser();
+
+    for(auto user: onlineUsers){
+
+        for (auto it = siteIdUser.begin(); it !=siteIdUser.end(); it++) {
+            if(it.value() == user)
+                onlineUsers_siteId.append(user+"_"+QString::number(it.key()));
+        }
+    }
+
+    onlineUsers_siteId.append("___");           // separator beetween online and offline users
+
+    QVector<QString> offlineUsers_siteId;
 
     for(auto user : this->dbMan->getDocument(documentId).getUserAllowed()) {
-        if(!params.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
-            params.append(user);
+        if(!onlineUsers.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
+
+            for (auto it = siteIdUser.begin(); it != siteIdUser.end(); it++) {
+                if(it.value() == user)
+                    offlineUsers_siteId.append(user+"_"+QString::number(it.key()));
+            }
 
     }
 
-    mes.setParams(params);
+    onlineUsers_siteId.append(offlineUsers_siteId);
+
+    mes.setParams(onlineUsers_siteId);
 
     //socketMan->messageToUser(mes, mes.getSender());
     this->dispatchMessage(mes);

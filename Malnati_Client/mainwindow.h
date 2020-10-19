@@ -10,6 +10,7 @@
 #include <QListWidgetItem>
 #include <inserturi.h>
 #include <inserttitle.h>
+#include <texteditwindow.h>
 
 
 
@@ -87,7 +88,7 @@ private:
     InsertTitle *it;
     /*************/
 
-    QWidget* teWindow;
+    TextEditWindow* teWindow;
     QWidget* usersWindow;
     QDockWidget* dockOnline;
     QListWidget *onlineUsers;

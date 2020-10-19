@@ -35,7 +35,8 @@ SOURCES += \
     sidebarusers.cpp \
     symbol.cpp \
     textedit.cpp \
-    socketmanager.cpp
+    socketmanager.cpp \
+    texteditwindow.cpp
 
 HEADERS += \
     accountinterface.h \
@@ -52,7 +53,8 @@ HEADERS += \
     sidebarusers.h \
     symbol.h \
     textedit.h \
-    socketmanager.h
+    socketmanager.h \
+    texteditwindow.h
 
 FORMS += \
     accountinterface.ui \
