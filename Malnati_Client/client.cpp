@@ -68,7 +68,7 @@ bool Client::Login()
     connect(sockm, &socketManager::receivedURIerror, mw, &MainWindow::receiveURIerror);
     connect(sockm, &socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
     connect(sockm, &socketManager::showUsers, mw, &MainWindow::showUsers);
-//    connect(sockm, &socketManager::receiveNewImage, mw->getAccountGui, &AccountInterface::receiveNewImage);
+    connect(sockm, &socketManager::receiveNewImage, mw, &MainWindow::receiveNewImageMW);
 
     lw.exec();
 

@@ -66,7 +66,7 @@ void AccountInterface::on_changeImage_clicked()
         // Don't send message
         return;
     } else if (img.size() > 2000000){
-        QMessageBox::warning(this, "Warning", "The file's dimension is greater than 2MB!");
+        QMessageBox::critical(this, "Warning", "The file's dimension is greater than 2MB!");
         return;
     }
 
@@ -78,6 +78,7 @@ void AccountInterface::on_changeImage_clicked()
     QByteArray encoded = buffer.data().toBase64();
 
     emit changeImage(encoded);
+    this->probImage = pix;
 }
 
 void AccountInterface::receiveNewImage(Message &m){
@@ -86,5 +87,5 @@ void AccountInterface::receiveNewImage(Message &m){
         return;
     }else QMessageBox::information(this, "Success", "Immagine cambiata correttamente!");
 
-    return;
+    this->setImagePic(this->probImage);
 }

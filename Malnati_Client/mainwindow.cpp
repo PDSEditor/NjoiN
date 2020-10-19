@@ -246,10 +246,16 @@ void MainWindow::on_actionAccount_triggered()
     ai.setUsername(username);
     ai.setImagePic(image);
    connect(&ai, &AccountInterface::changeImage, this, &MainWindow::sendNewImage);
+   connect(this, &MainWindow::receivedNewImage, &ai, &AccountInterface::receiveNewImage);
 //   connect(&ai, &AccountInterface::changePassword, this, &MainWindow::sendNewPwd);
     //
     ai.exec();
 
+}
+
+void MainWindow::receiveNewImageMW(Message &m){
+    emit(receivedNewImage(m));
+    return;
 }
 
 void MainWindow::on_actionClose_triggered()

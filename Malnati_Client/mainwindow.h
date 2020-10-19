@@ -47,6 +47,7 @@ public slots:
 
     void closeMw();
     void showUsers(Message);
+    void receiveNewImageMW(Message &m);
 
 signals:
     void newTextEdit(TextEdit* t,int s);
@@ -55,6 +56,7 @@ signals:
     void sendNewPwd(Message *);
     void sendMessage(Message* mex);
     void sendTextMessage(Message* mex);
+    void receivedNewImage(Message &);
 
 
 private slots:

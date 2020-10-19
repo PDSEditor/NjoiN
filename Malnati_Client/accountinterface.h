@@ -30,6 +30,7 @@ private slots:
 private:
     Ui::AccountInterface *ui;
     ChangePwd *changePwdDialog = nullptr;
+    QPixmap probImage;
 
 signals:
     void changeImage(QByteArray&);
