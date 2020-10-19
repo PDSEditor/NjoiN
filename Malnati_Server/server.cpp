@@ -142,7 +142,7 @@ void Server::processMessage(Message &mesIn) {
      * ACCOUNTS ON FILE -> A
     */
 
-    QChar action = mesIn.getAction();
+    QChar action = mesIn.getAction(),type;
     char first =  action.toLatin1();
     QString nomeFile;
     QList<Symbol> document;
@@ -154,7 +154,7 @@ void Server::processMessage(Message &mesIn) {
     QVector<QString> params;
     QString username;
     QList<QString> userAllowed;
-    int start, end, type;
+    int start, end;
 
     switch (first){
     case 'I':
@@ -397,7 +397,7 @@ void Server::processMessage(Message &mesIn) {
 
         start = mesIn.getParams()[0].toInt();
         end = mesIn.getParams()[1].toInt();
-        type = mesIn.getParams()[2].toInt();
+        type = mesIn.getParams()[2].at(0);
 
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
 
@@ -406,7 +406,7 @@ void Server::processMessage(Message &mesIn) {
         document = this->dbMan->retrieveSymbolsOfDocument(documentId);
 
         for (int i=start; i<= end; i++) {
-           symbols[i].setAlign(type);
+           document[i].setAlign(type);
         }
 
         this->dbMan->setSymbolsOfDocument(documentId, document);

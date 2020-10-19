@@ -116,8 +116,7 @@ TextEdit::TextEdit(QWidget *parent)
     textEdit = new QTextEdit(this);
     externAction=false;
     //symbols = new std::vector<Symbol>();
-    //QTextDocument document = textEdit->document();
-
+//    QTextDocument document = textEdit->document();
 
     connect(textEdit, &QTextEdit::currentCharFormatChanged,
             this, &TextEdit::currentCharFormatChanged);
@@ -537,6 +536,7 @@ void TextEdit::fileNew()
 
 void TextEdit::receiveSymbol(Message *m)
 {
+
     externAction=true;
    QTextCursor curs = textEdit->textCursor(),oldcurs;
        //QTextCursor curs ,oldcurs=textEdit->textCursor();
@@ -574,12 +574,6 @@ void TextEdit::receiveSymbol(Message *m)
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);
-        if(insertalign(m->getSymbol().getAlign().toLatin1())!=textEdit->alignment()){
-//            textEdit->setAlignment(insertalign( m->getSymbol().getAlign().toLatin1()));
-            textEdit->setAlignment(Qt::AlignRight);
-            //chiamare lo slot receiveallign
-            externAction=true;
-        }
         if(tmp.getValue()=='\0')
              curs.insertText((QChar)'\n',qform);
         else
@@ -601,6 +595,7 @@ void TextEdit::receiveSymbol(Message *m)
 
 void TextEdit::receiveAllign(Message m)
 {
+    QTextCursor c=textEdit->textCursor();
     int start,end;
     QChar a;
     Qt::Alignment al;
@@ -611,7 +606,10 @@ void TextEdit::receiveAllign(Message m)
     for(int i=0;i<=end;i++){
         crdt->getSymbols().at(i).setAlign(a);
     }
-    textEdit->textCursor().setPosition(start);
+    c.setPosition(start);
+    textEdit->setTextCursor(c);
+    alignAction=false;
+    externAction=true;
     textEdit->setAlignment(al);
 
 }
@@ -913,7 +911,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
         Message m;
         m.setAction('B');
-        m.setParams({QString::number(min),QString::number(max),});
+        m.setSender(siteid);
+        m.setParams({QString::number(min),QString::number(max),findalign(textEdit->alignment())});
         emit(sendTextMessage(&m));
 
 

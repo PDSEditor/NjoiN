@@ -260,6 +260,8 @@ void socketManager::onTextMessageReceived(QString message)
         emit(showUsers(m));
         break;
 
+    case 'B':
+        emit(receiveAllign(m));
     default:
         qDebug() << "default";
         break;
