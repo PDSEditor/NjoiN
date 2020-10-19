@@ -80,12 +80,54 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
 }
 
 void MainWindow::receivedFile(QList<Symbol> tmp){
-    te = new TextEdit(this);
+
+    this->teWindow = new TextEditWindow();
+    connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
+    this->teWindow->setUri(openURI);
+
+    this->usersWindow = new QWidget();
+    layout =new QHBoxLayout();
+    layoutUsers = new QVBoxLayout();
+
+    te = new TextEdit();
+
+    layout->addWidget(te);
+    layout->addWidget(usersWindow);
+
+    //this->dockOnline->setf
+
+    this->dockOnline = new QDockWidget(tr("Utenti online"));
+    this->dockOnline->setParent(this->usersWindow);
+
+    dockOnline->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    onlineUsers = new QListWidget(dockOnline);
+
+    dockOnline->setWidget(onlineUsers);
+    addDockWidget(Qt::RightDockWidgetArea, dockOnline);
+
+    layoutUsers->addWidget(dockOnline);
+
+    this->dockOffline = new QDockWidget(tr("Utenti offline"));
+    this->dockOffline->setParent(this->usersWindow);
+
+    dockOffline->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    offlineUsers = new QListWidget(dockOffline);
+
+    dockOffline->setWidget(offlineUsers);
+    addDockWidget(Qt::RightDockWidgetArea, dockOffline);
+
+    layoutUsers->addWidget(dockOffline);
+
     emit(newTextEdit(te,siteId));
     te->setFileName(openURI.left(openURI.lastIndexOf('_')));
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
-    te->show();
+
+
+    layoutUsers->addStretch();
+    layout->addLayout(layoutUsers);
+    this->teWindow->setLayout(layout);
+    this->teWindow->show();
     te->loadFile(tmp);
     this->hide();
 
@@ -107,6 +149,50 @@ void MainWindow::receiveURIerror()
 void MainWindow::closeMw()
 {
     on_actionClose_triggered();
+}
+
+void MainWindow::showUsers(Message m)
+{
+    this->onlineUsers->clear();
+    this->offlineUsers->clear();
+    std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
+
+    bool online = true;
+
+
+    for (auto user_siteId : m.getParams()) {
+
+        if(user_siteId == "___")
+            online = false;
+        else {
+
+            QStringList list = user_siteId.split("_");
+            QString user = list.at(0);
+            int siteId = list.at(1).toInt();
+
+            QColor q;
+
+            if(siteId == this->getSiteId())
+                q = Qt::black;
+
+            else {
+                int pos=siteId%5;
+                q=listcolor.at(pos);
+            }
+
+
+            if(online) {
+                this->onlineUsers->addItem(user);
+                this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
+            }
+            else{
+                this->offlineUsers->addItem(user);
+                this->offlineUsers->item(this->offlineUsers->count()-1)->setForeground(q);
+            }
+        }
+
+    }
+
 }
 
 void MainWindow::setImage(QPixmap im){
@@ -183,7 +269,45 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::receiveTitle(QString title)
 {
     this->hide();
-    te = new TextEdit(this);
+
+    this->teWindow = new TextEditWindow();
+    connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
+    this->teWindow->setUri(title+"_"+username);
+
+    this->usersWindow = new QWidget();
+    layout =new QHBoxLayout();
+    layoutUsers = new QVBoxLayout();
+
+    te = new TextEdit();
+
+    layout->addWidget(te);
+    layout->addWidget(usersWindow);
+
+    //this->dockOnline->setStyle()
+
+    this->dockOnline = new QDockWidget(tr("Utenti online"));
+    this->dockOnline->setParent(this->usersWindow);
+
+    dockOnline->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    onlineUsers = new QListWidget(dockOnline);
+    onlineUsers->addItem(this->username);
+
+    dockOnline->setWidget(onlineUsers);
+    addDockWidget(Qt::RightDockWidgetArea, dockOnline);
+
+    layoutUsers->addWidget(dockOnline);
+
+    this->dockOffline = new QDockWidget(tr("Utenti offline"));
+    this->dockOffline->setParent(this->usersWindow);
+
+    dockOffline->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    offlineUsers = new QListWidget(dockOffline);
+
+    dockOffline->setWidget(offlineUsers);
+    addDockWidget(Qt::RightDockWidgetArea, dockOffline);
+
+    layoutUsers->addWidget(dockOffline);
+
 
     const QRect availableGeometry = QApplication::desktop()->availableGeometry(te);
     te->resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
@@ -206,7 +330,13 @@ void MainWindow::receiveTitle(QString title)
     m.setSender(siteId);
     emit(sendTextMessage(&m));
     emit(newTextEdit(te,siteId));
-    te->show();
+    //te->show();
+
+
+    layoutUsers->addStretch();
+    layout->addLayout(layoutUsers);
+    this->teWindow->setLayout(layout);
+    this->teWindow->show();
 }
 
 void MainWindow::openMw(QString fileName)

@@ -36,6 +36,8 @@ public:
     void setFileName(QString fileName);
     void setURI(QString);
     QString getURI();
+    Qt::Alignment insertalign(QChar c);
+    QChar findalign(Qt::Alignment);
 
 public slots:
     void fileNew();
@@ -44,6 +46,7 @@ public slots:
 
 signals:
     void sendMessage(Message *m);
+    void sendTextMessage(Message *m);
     void openMW(QString);
     void closeDocument(QString fileName);
 
@@ -91,7 +94,7 @@ private:
     void colorChanged(const QColor &c);
     void alignmentChanged(Qt::Alignment a);
     Symbol searchSymbolToErase(char c);
-    bool externAction, flagc=false;
+    bool externAction, flagc=false,alignAction;
     QMap<int,QColor> colors;
     std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
     int contcolor=0;

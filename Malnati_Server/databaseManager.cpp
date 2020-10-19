@@ -431,6 +431,45 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
         return orderedSymbols;
 }
 
+bool DatabaseManager::setSymbolsOfDocument(QString documentId, QList<Symbol> document)
+{
+    //cancella i symbols associati a documentId se esistono e dopo inserisci la lista document
+
+    mongocxx::collection symbols = (this->db)["symbol"];
+    bsoncxx::stdx::optional<mongocxx::result::delete_result> result;
+
+    try {
+        result = symbols.delete_many(bsoncxx::builder::stream::document{}
+                                    << "document_id"
+                                    << documentId.toStdString()
+                                    << bsoncxx::builder::stream::finalize);
+    }
+    catch (mongocxx::query_exception &e) {
+            qDebug() << "[ERROR][DatabaseManager::setSymbolsOfDocument] delete_many error, connection to db failed";
+            qDebug() << e.what();
+            throw std::exception();
+        }
+    if(result) {
+        for(auto symbol : document) {
+            Message m;
+            m.setParams({documentId});
+            m.setSymbol(symbol);
+            try {
+                this->insertSymbol(m);
+            }
+            catch (std::exception e) {
+                    throw std::exception();
+                }
+        }
+    }
+    else {
+        qDebug() <<QString( "i caratteri che andavano sostituiti non sono stati trovati nel db, documento : ") + documentId;
+    }
+
+
+
+}
+
 QList<SharedDocument> DatabaseManager::getAllMyDocuments(QString username)
 {
     QList<SharedDocument> documentsToReturn;
