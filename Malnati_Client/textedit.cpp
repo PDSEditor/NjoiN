@@ -132,6 +132,7 @@ TextEdit::TextEdit(QWidget *parent)
     setupEditActions();
     setupTextActions();
     setupUriActions();
+    setupSidebarUser();
 
     {
         QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
@@ -445,6 +446,14 @@ void TextEdit::setupUriActions()
     QAction *a = menu->addAction(newIcon, tr("&showUri"), this, &TextEdit::showUriWindow);
     tb->addAction(a);
     a->setPriority(QAction::LowPriority);
+
+}
+
+void TextEdit::setupSidebarUser()
+{
+    sb->show();
+    //QToolBar *tb = new QToolBar(sb);
+    //addToolBar(tb);
 
 }
 

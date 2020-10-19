@@ -8,6 +8,7 @@
 #include <crdt.h>
 #include <QPrinter>
 #include <showuridialog.h>
+#include "sidebarusers.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -81,6 +82,7 @@ private:
     void setupEditActions();
     void setupTextActions();
     void setupUriActions();
+    void setupSidebarUser();
     bool maybeSave();
     void setCurrentFileName(const QString &fileName);
 
@@ -127,6 +129,7 @@ private:
     socketManager *sockm;
     std :: vector<Symbol> *symbols;
     ShowUriDialog *shu;
+    sidebarUsers *sb;
 
 };
 
