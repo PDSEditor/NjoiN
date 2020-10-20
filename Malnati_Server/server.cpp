@@ -337,6 +337,8 @@ void Server::processMessage(Message &mesIn) {
             acc = Account(username, mesIn.getSender());
 
             this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
+            auto a=this->socketMan->getSiteIdUser();
+            a[acc.getSiteId()]=username;
 
         }
         else {

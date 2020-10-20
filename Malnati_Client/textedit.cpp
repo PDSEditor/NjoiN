@@ -907,7 +907,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
         QChar c;
         int max,min, p=textEdit->textCursor().position();
         min=position;
-        max=min+charsAdded;
+        max=min+charsAdded-2;
 
         Message m;
         m.setAction('B');
@@ -1166,7 +1166,7 @@ QChar TextEdit::findalign(Qt::Alignment al){
     QChar c;
     if(al==Qt::AlignLeft || al==(Qt::AlignLeft | Qt::AlignAbsolute))
         c='L';
-    else if(al==Qt::AlignCenter || al==(Qt::AlignCenter | Qt::AlignAbsolute))
+    else if(al==Qt::AlignHCenter || al==(Qt::AlignCenter | Qt::AlignAbsolute))
         c='C';
     else if(al==Qt::AlignRight || al==(Qt::AlignRight | Qt::AlignAbsolute))
         c='R';
