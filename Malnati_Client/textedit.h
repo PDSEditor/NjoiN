@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
+#include <QTextCursor>
 #include <symbol.h>
 #include <crdt.h>
 #include <QPrinter>
@@ -38,6 +39,7 @@ public:
     QString getURI();
     Qt::Alignment insertalign(QChar c);
     QChar findalign(Qt::Alignment);
+    void moveCursor(int pos, int siteId);
 
 public slots:
     void fileNew();
@@ -49,6 +51,7 @@ signals:
     void sendTextMessage(Message *m);
     void openMW(QString);
     void closeDocument(QString fileName);
+    void cursorPositionChangedSignal(int position);
 
 
 protected:
@@ -133,6 +136,8 @@ private:
     std :: vector<Symbol> *symbols;
     ShowUriDialog *shu;
     sidebarUsers *sb;
+    QTextCursor *m_localCursor = nullptr;
+    Q_INVOKABLE void updateCursors();
 
 };
 
