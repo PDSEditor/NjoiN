@@ -603,8 +603,8 @@ void TextEdit::receiveAllign(Message m)
     end=m.getParams().at(1).toInt();
     a=m.getParams().at(2).toLatin1().at(0);
     al=insertalign(a);
-    for(int i=0;i<=end;i++){
-        crdt->getSymbols().at(i).setAlign(a);
+    for(int i=start;i<=end;i++){
+        crdt->getSymbols()[i].setAlign(a);
     }
     c.setPosition(start);
     textEdit->setTextCursor(c);
@@ -908,6 +908,9 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
         int max,min, p=textEdit->textCursor().position();
         min=position;
         max=min+charsAdded-2;
+        for(int i=0;i<max;i++){
+            crdt->getSymbols()[i].setAlign(findalign(textEdit->alignment()));
+        }
 
         Message m;
         m.setAction('B');
@@ -1111,13 +1114,14 @@ void TextEdit::loadFile(QList<Symbol> file)
 {
     setCurrentFileName(QString());
     QString tmp;
+    bool u=true;
+    QChar al;
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
     QTextCharFormat qform;
     QColor col;
     foreach(Symbol s,file){
         externAction=true;
-        //da aggiungere controllo sul proprio siteId
         if(s.getSiteId()==siteid)
             col=Qt::transparent;
         else
@@ -1129,14 +1133,19 @@ void TextEdit::loadFile(QList<Symbol> file)
         qform.setFontPointSize(s.getSize());
         if(s.getBold())
             qform.setFontWeight(QFont::Bold);
+        if(al!=s.getAlign()){
+            al=s.getAlign();
+            textEdit->setTextCursor(curs);
+            textEdit->setAlignment(insertalign(al));
+            externAction=true;
+
+        }
         if(s.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
         else
             curs.insertText(s.getValue(),qform);
-       // tmp.append(s.getValue());
         vtmp.push_back(s);
     }
-   // textEdit->setPlainText(tmp);
     crdt->setSymbols(vtmp);
 }
 
@@ -1147,7 +1156,7 @@ Qt::Alignment TextEdit::insertalign(QChar c){
         alline=Qt::AlignLeft;
         break;
     case 'C' :
-        alline= Qt::AlignCenter;
+        alline= Qt::AlignHCenter;
         break;
     case 'R' :
         alline= Qt::AlignRight;
