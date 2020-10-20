@@ -128,6 +128,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow->setLayout(layout);
     this->teWindow->show();
     te->loadFile(tmp);
+    addElementforUser(openURI);
     this->hide();
 
 }
