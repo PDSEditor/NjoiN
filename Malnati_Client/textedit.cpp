@@ -620,6 +620,11 @@ void TextEdit::setSiteid(int s)
 
 }
 
+void TextEdit::updateUsersOnTe(QList<QString> users)
+{
+    //this->m_onlineUsers = users;
+}
+
 
 
 void TextEdit::fileOpen()

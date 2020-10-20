@@ -121,6 +121,8 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te->setSiteid(siteId);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+
 
 
     layoutUsers->addStretch();
@@ -154,10 +156,11 @@ void MainWindow::showUsers(Message m)
 {
     this->onlineUsers->clear();
     this->offlineUsers->clear();
-    std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
+    std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
 
     bool online = true;
 
+    QList<QString> onlineUserTE;
 
     for (auto user_siteId : m.getParams()) {
 
@@ -183,6 +186,7 @@ void MainWindow::showUsers(Message m)
             if(online) {
                 this->onlineUsers->addItem(user);
                 this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
+                onlineUserTE.append(user);
             }
             else{
                 this->offlineUsers->addItem(user);
@@ -191,6 +195,8 @@ void MainWindow::showUsers(Message m)
         }
 
     }
+
+    emit(updateUsersOnTe(onlineUserTE));
 
 }
 
@@ -322,6 +328,7 @@ void MainWindow::receiveTitle(QString title)
     te->fileNew();
     connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
 
     Message m;
     m.setAction('C');
