@@ -43,7 +43,6 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QByteArray image = img.readAll();
 
 //    Account account(name, 1, image);
-//    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass))
 //        qDebug() << "inserted" ;
 
@@ -142,7 +141,7 @@ void Server::processMessage(Message &mesIn) {
      * ACCOUNTS ON FILE -> A
     */
 
-    QChar action = mesIn.getAction();
+    QChar action = mesIn.getAction(),type;
     char first =  action.toLatin1();
     QString nomeFile;
     QList<Symbol> document;
@@ -154,7 +153,7 @@ void Server::processMessage(Message &mesIn) {
     QVector<QString> params;
     QString username;
     QList<QString> userAllowed;
-    int start, end, type;
+    int start, end;
 
     switch (first){
     case 'I':
@@ -337,6 +336,9 @@ void Server::processMessage(Message &mesIn) {
             acc = Account(username, mesIn.getSender());
 
             this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
+            auto a=this->socketMan->getSiteIdUser();
+            a[acc.getSiteId()]=username;
+            this->socketMan->setSiteIdUser(a);
 
         }
         else {
@@ -397,7 +399,7 @@ void Server::processMessage(Message &mesIn) {
 
         start = mesIn.getParams()[0].toInt();
         end = mesIn.getParams()[1].toInt();
-        type = mesIn.getParams()[2].toInt();
+        type = mesIn.getParams()[2].at(0);
 
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
 
@@ -406,7 +408,7 @@ void Server::processMessage(Message &mesIn) {
         document = this->dbMan->retrieveSymbolsOfDocument(documentId);
 
         for (int i=start; i<= end; i++) {
-           symbols[i].setAlign(type);
+           document[i].setAlign(type);
         }
 
         this->dbMan->setSymbolsOfDocument(documentId, document);
@@ -430,6 +432,9 @@ void Server::updateUsersOnDocument(Message mes)
     QVector<QString> onlineUsers_siteId;
 
     auto siteIdUser = this->socketMan->getSiteIdUser();
+
+    if(!onlineUsers.contains(siteIdUser[mes.getSender()]))
+        onlineUsers.append(siteIdUser[mes.getSender()]);
 
     for(auto user: onlineUsers){
 

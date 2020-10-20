@@ -55,6 +55,7 @@ signals:
     void sendImage(QByteArray& image);
     void sendMessage(Message* mex);
     void sendTextMessage(Message* mex);
+    void updateUsersOnTe(QList<QString>);
 
 
 private slots:
