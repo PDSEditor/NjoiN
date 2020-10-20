@@ -43,7 +43,6 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QByteArray image = img.readAll();
 
 //    Account account(name, 1, image);
-//    account.setDocumentUris({"hello", "ciao"});
 //    if(this->dbMan.get()->registerAccount(account, pass))
 //        qDebug() << "inserted" ;
 
@@ -339,6 +338,7 @@ void Server::processMessage(Message &mesIn) {
             this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
             auto a=this->socketMan->getSiteIdUser();
             a[acc.getSiteId()]=username;
+            this->socketMan->setSiteIdUser(a);
 
         }
         else {
@@ -432,6 +432,9 @@ void Server::updateUsersOnDocument(Message mes)
     QVector<QString> onlineUsers_siteId;
 
     auto siteIdUser = this->socketMan->getSiteIdUser();
+
+    if(!onlineUsers.contains(siteIdUser[mes.getSender()]))
+        onlineUsers.append(siteIdUser[mes.getSender()]);
 
     for(auto user: onlineUsers){
 
