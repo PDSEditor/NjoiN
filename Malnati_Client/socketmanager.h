@@ -30,6 +30,7 @@ signals:
     void receiveRegistration(Message);
     void showUsers(Message);
     void receiveNewImage(Message &m);
+    void receiveNewPsw(Message &m);
 
 public slots:
     void onConnected();

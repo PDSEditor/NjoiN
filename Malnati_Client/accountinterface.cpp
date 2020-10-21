@@ -12,8 +12,6 @@ AccountInterface::AccountInterface(QWidget *parent) :
     ui->setupUi(this);
     this->changePwdDialog = new ChangePwd(this);
     setWindowTitle("Profile");
-
-//    connect(changePwdDialog, &ChangePwd::pwdUpdate, this, &AccountInterface::changePassword);
 }
 
 AccountInterface::~AccountInterface()
@@ -33,10 +31,6 @@ void AccountInterface::setImagePic(const QPixmap &imagePic)
 
 void AccountInterface::on_changePassword_clicked()
 {
-//    QString pwd;
-//    this->changePwdDialog->show();
-//    emit(changePassword(pwd));
-
     changePwdDialog->exec();
 
     QString newPwd, oldPwd;
@@ -88,4 +82,11 @@ void AccountInterface::receiveNewImage(Message &m){
     }else QMessageBox::information(this, "Success", "Immagine cambiata correttamente!");
 
     this->setImagePic(this->probImage);
+}
+
+void AccountInterface::receiveNewPsw(Message &m){
+    if(m.getError()){
+            QMessageBox::critical(this,"Error","Errore nel cambio password, riprova");
+            return;
+        }else QMessageBox::information(this, "Success", "Password cambiata con successo!");
 }

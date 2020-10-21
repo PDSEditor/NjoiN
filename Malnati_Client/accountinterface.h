@@ -22,6 +22,7 @@ public:
 
 public slots:
     void receiveNewImage(Message &);
+    void receiveNewPsw(Message &);
 
 private slots:
     void on_changePassword_clicked();
@@ -34,7 +35,7 @@ private:
 
 signals:
     void changeImage(QByteArray&);
-    void changePassword(QString, QString);
+    void changePassword(QString&, QString&);
 };
 
 #endif // ACCOUNTINTERFACE_H

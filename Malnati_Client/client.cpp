@@ -69,6 +69,7 @@ bool Client::Login()
     connect(sockm, &socketManager::setSiteId,&lw,&LoginWindow::receivedSiteId);
     connect(sockm, &socketManager::showUsers, mw, &MainWindow::showUsers);
     connect(sockm, &socketManager::receiveNewImage, mw, &MainWindow::receiveNewImageMW);
+    connect(sockm, &socketManager::receiveNewPsw, mw, &MainWindow::receiveNewPswMW);
 
     lw.exec();
 
@@ -101,7 +102,7 @@ bool Client::Login()
 
 //         connect(mw, &MainWindow::sendImage,sockm,&socketManager::receiveImage);
          connect(mw, &MainWindow::sendImage,sockm,&socketManager::messageToServer);
-//         connect(mw, &MainWindow::sendNewPwd,sockm,&socketManager::messageToServer);
+         connect(mw, &MainWindow::sendPwd, sockm, &socketManager::messageToServer);
          connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
          connect(mw,&MainWindow::sendTextMessage,sockm,&socketManager::messageToServer);
          return true;

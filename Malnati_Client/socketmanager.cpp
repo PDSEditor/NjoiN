@@ -268,7 +268,7 @@ void socketManager::onTextMessageReceived(QString message)
     }
     case 'P':{
         //ricevo risultato del cambio password
-//        emit(receiveNewPassword(m));
+        emit(receiveNewPsw(m));
         break;
     }
 

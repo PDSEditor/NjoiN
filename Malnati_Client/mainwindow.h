@@ -48,15 +48,16 @@ public slots:
     void closeMw();
     void showUsers(Message);
     void receiveNewImageMW(Message &m);
+    void receiveNewPswMW(Message &m);
 
 signals:
     void newTextEdit(TextEdit* t,int s);
-    // prova
     void sendImage(Message *);
-    void sendNewPwd(Message *);
+    void sendPwd(Message *);
     void sendMessage(Message* mex);
     void sendTextMessage(Message* mex);
     void receivedNewImage(Message &);
+    void receivedNewPsw(Message &);
 
 
 private slots:
@@ -75,7 +76,7 @@ private slots:
     void documentClosed(QString);
 
     void sendNewImage(QByteArray &bArray);
-    void sendNewPwd(QString oldPwd, QString newPwd);
+    void sendNewPwd(QString &oldPwd, QString &newPwd);
 
 private:
     Ui::MainWindow *ui;

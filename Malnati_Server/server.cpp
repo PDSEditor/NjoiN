@@ -448,10 +448,11 @@ void Server::processMessage(Message &mesIn) {
         break;
     }
     case 'P':{
+        //cambio password
         username = mesIn.getParams()[0];
         QString oldPsw = mesIn.getParams()[1];
         QString newPsw = mesIn.getParams()[2];
-        mesOut.setAction('G');
+        mesOut.setAction('P');
         mesOut.setSender(mesIn.getSender());
 
         Account acc(this->dbMan->getAccount(username));
