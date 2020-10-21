@@ -45,7 +45,6 @@ public slots:
     void receivedFile(QList<Symbol>);
     void sendUri(Message);
     void receiveURIerror();
-
     void closeMw();
     void showUsers(Message);
 
