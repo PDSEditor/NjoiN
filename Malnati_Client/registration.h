@@ -3,8 +3,10 @@
 
 #include <QDialog>
 #include <QAbstractButton>
-#include<QMessageBox>
+#include <QMessageBox>
 #include <message.h>
+#include <QFileDialog>
+#include <QBuffer>
 
 namespace Ui {
 class Registration;
@@ -17,22 +19,26 @@ class Registration : public QDialog
 public:
     explicit Registration(QWidget *parent = nullptr);
     ~Registration();
-    void setiteId(int s);
+    void setSiteId(int s);
 
 public slots:
     void receiveRegistration(Message);
-     void openRw(int);
-     void closeRw();
+    void openRw(int);
+    void closeRw();
+
 signals:
     void sendMessage(Message*);
     void sendError(QString);
+
 private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
+    void on_pushButton_3_clicked();
 
 private:
     Ui::Registration *ui;
     int sId;
+    QByteArray img;
 };
 
 #endif // REGISTRATION_H

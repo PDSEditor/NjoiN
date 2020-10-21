@@ -188,7 +188,7 @@ void SocketManager::processTextMessage(QString message)
 
 void SocketManager::processBinaryMessage(const QByteArray &bytemex)
 {
-    qDebug()<<bytemex;
+    //qDebug()<<bytemex;
     //Qui devo differenziare i byte tra action param e symbol
     /*
      * Messaggio:
@@ -355,7 +355,6 @@ void SocketManager::onNewConnection()
     m.setParams({s});
     m.setSender(SocketManager::siteId);
     messageToUser(m,SocketManager::siteId);
-    Account acc;
 
     SocketManager::siteId++;
 }

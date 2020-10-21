@@ -620,6 +620,11 @@ void TextEdit::setSiteid(int s)
 
 }
 
+void TextEdit::updateUsersOnTe(QList<QString> users)
+{
+    //this->m_onlineUsers = users;
+}
+
 
 
 void TextEdit::fileOpen()
@@ -891,7 +896,6 @@ void TextEdit::showUriWindow()
    shu = new ShowUriDialog(this);
    shu->setUriDialog(URI);
    shu->exec();
-
 }
 
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)

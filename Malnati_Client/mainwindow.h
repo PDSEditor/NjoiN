@@ -47,17 +47,20 @@ public slots:
     void receiveURIerror();
     void closeMw();
     void showUsers(Message);
+    void receiveNewImageMW(Message &m);
+    void receiveNewPswMW(Message &m);
 
 signals:
     void newTextEdit(TextEdit* t,int s);
-    // prova
-    void sendImage(QByteArray& image);
+    void sendImage(Message *);
+    void sendPwd(Message *);
     void sendMessage(Message* mex);
     void sendTextMessage(Message* mex);
-
+    void receivedNewImage(Message &);
+    void receivedNewPsw(Message &);
+    void updateUsersOnTe(QList<QString>);
 
 private slots:
-    void receiveimage(QPixmap& im);
     void on_pushButton_clicked();
     void addElementforUser(QString);
     void on_actionNew_triggered();
@@ -72,15 +75,19 @@ private slots:
     void openMw(QString);
     void documentClosed(QString);
 
+    void sendNewImage(QByteArray &bArray);
+    void sendNewPwd(QString &oldPwd, QString &newPwd);
+
 private:
     Ui::MainWindow *ui;
     TextEdit *te;
     AccountInterface *accountGui = nullptr;
     void newFile();
     bool flaglocal=0;
+
     /** Account **/
     QPixmap image;
-    QString username,openURI;
+    QString username, openURI;
     QList<QString> documents;
     int siteId;
     Inserturi *i;

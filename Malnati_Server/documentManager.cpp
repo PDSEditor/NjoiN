@@ -7,6 +7,7 @@ DocumentManager::DocumentManager(QObject *parent) : QObject(parent)
 
 bool DocumentManager::saveToServer(QString documentId)
 {
+    //todo: da testare
     for(auto it : openDocuments){
         QString name = it.getName();
         QString creator = it.getCreator();

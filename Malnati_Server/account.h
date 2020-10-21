@@ -30,7 +30,8 @@ public:
     QList<QString> getDocumentUris() const;
     void setDocumentUris(const QList<QString> value);
     void setImage(QPixmap Pix);
-    QPixmap getImage() const;
+    QByteArray getImage() const;
+    QPixmap toPix(QByteArray &image);
 };
 
 #endif // ACCOUNT_H

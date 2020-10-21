@@ -30,6 +30,8 @@ Server::Server(QObject *parent) : QObject(parent)
 
     }
     catch(std::exception& e){
+        qDebug() << "error, " << e.what();
+        throw e;
     }
 
     /***************************
@@ -39,8 +41,8 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QString name = "test";
 //    QString pass = "test";
 
-//    QFile img("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-//    QByteArray image = img.readAll();
+//    QFile img1("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image = img1.readAll();
 
 //    Account account(name, 1, image);
 //    if(this->dbMan.get()->registerAccount(account, pass))
@@ -50,8 +52,8 @@ Server::Server(QObject *parent) : QObject(parent)
 //    QString pass1 = "prova";
 
 
-//    QFile img1("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
-//    QByteArray image1 = img.readAll();
+//    QFile img2("/home/pepos/projects/progett_malnati/Malnati_Server/draft.jpeg");
+//    QByteArray image1 = img2.readAll();
 
 //    Account account1(name1, 5, image1);
 
@@ -139,6 +141,8 @@ void Server::processMessage(Message &mesIn) {
      * LOG-IN -> L
      * LOGOUT -> O
      * ACCOUNTS ON FILE -> A
+     * CAMBIO IMMAGINE ACCOUNT -> G
+     * CAMBIO PASSWORD ACCOUNT -> P
     */
 
     QChar action = mesIn.getAction(),type;
@@ -166,7 +170,7 @@ void Server::processMessage(Message &mesIn) {
 //        for(auto i : document){
 //            qDebug() << i.getValue();
 //        }
-
+    {
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
         documentId = this->acMan->getUsernameDocumentMap()[username];
         mesIn.setParams({documentId});
@@ -174,7 +178,8 @@ void Server::processMessage(Message &mesIn) {
         this->dispatchMessage(mesIn);
 //        remoteInsert(mesIn.getSymbol());
         break;
-    case 'D':
+    }
+    case 'D':{
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
         documentId = this->acMan->getUsernameDocumentMap()[username];
         mesIn.setParams({documentId});
@@ -183,10 +188,9 @@ void Server::processMessage(Message &mesIn) {
         this->dispatchMessage(mesIn);
 //        remoteDelete(mesIn.getSymbol());
         break;
+    }
 
-
-
-    case 'R' :
+    case 'R' :{
 
         documentId = mesIn.getParams()[0];
         username = mesIn.getParams()[1];
@@ -220,8 +224,7 @@ void Server::processMessage(Message &mesIn) {
         this->updateUsersOnDocument(mesIn);
 
         break;
-
-
+    }
 
     case 'C' :
     {
@@ -257,7 +260,7 @@ void Server::processMessage(Message &mesIn) {
         break;
     }
 
-    case 'X' :
+    case 'X' :{
         //gestire chiusura del file
         //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
         username = mesIn.getParams()[1];
@@ -269,11 +272,10 @@ void Server::processMessage(Message &mesIn) {
             // per ora commentato
             //this->docMan->saveToServer(documentId);
         }
-
-
         break;
+    }
 
-    case 'U' :
+    case 'U' :{
         // l'utente ha inserito un URI nell'apposito form, bisogna aggiungere il documento alla lista dei suoi documenti
         //( se esiste), aggiungere l'user negli user allowed di quel documento e caricare il documento tra quelli disponibili
         // nella pagina di scelta
@@ -320,20 +322,24 @@ void Server::processMessage(Message &mesIn) {
         this->updateUsersOnDocument(mesIn);
 
         break;
+    }
 
-    case 'E' :
+    case 'E' :{
         //rEgister
 
         username = mesIn.getParams()[0];
         mesOut.setAction('E');
         mesOut.setSender(mesIn.getSender());
 
-        acc = this->dbMan->getAccount(username);
+        QByteArray img = mesIn.getParams()[2].toLatin1();
+
+        Account acc(this->dbMan->getAccount(username));
 
         if( acc.getSiteId()< 0) {               // non esiste un account con questo username
             mesOut.setError(false);
 
-            acc = Account(username, mesIn.getSender());
+//            acc = Account(username, mesIn.getSender());
+            acc = Account(username, mesIn.getSender(), img);
 
             this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
             auto a=this->socketMan->getSiteIdUser();
@@ -348,23 +354,28 @@ void Server::processMessage(Message &mesIn) {
         socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
+    }
 
-    case 'L' :
+    case 'L' :{
         //Login
 
         mesOut.setAction('L');
         mesOut.setSender(mesIn.getSender());
-        if(dbMan->checkAccountPsw(mesIn.getParams()[0], mesIn.getParams()[1])){
 
-            Account acc(dbMan->getAccount(mesIn.getParams()[0]));
+        auto username = mesIn.getParams()[0];
+        auto password = mesIn.getParams()[1];
+
+        if(dbMan->checkAccountPsw(username, password)){
+
+            Account acc(dbMan->getAccount(username));
 
             if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
-                params = {acc.getUsername(), QString::number(acc.getSiteId())/*, acc.getImage()*/};
+                params = {acc.getUsername(), QString::number(acc.getSiteId()), acc.getImage()};
                 params.append(acc.getDocumentUris().toVector());
                 mesOut.setParams(params);
                 mesOut.setError(false);
-                mesOut.setSender(acc.getSiteId());           }
-            else {                                                                      //utente era già collegato da un altro client
+                mesOut.setSender(acc.getSiteId());
+            }else {                                                                      //utente era già collegato da un altro client
                 mesOut.setError(true);
                 qDebug() << "autenticazione di un utente già online";
                 mesOut.setParams({"2"});
@@ -379,16 +390,17 @@ void Server::processMessage(Message &mesIn) {
 
         socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
                                                                                     // e dentro il siteId ci metto il sender "ufficiale"
-
         break;
+    }
 
-    case 'O' :
+    case 'O' :{
         //Logout
         this->acMan->removeOnlineAccounts(mesIn.getSender());                       // il metodo si occupa di cancellare l'account da tutte le liste di account online
 
         break;
+    }
 
-    case 'A' :
+    case 'A' :{
        //Recupera la lista degli utenti attualmente in lavorazione sul file
 
         this->updateUsersOnDocument(mesIn);
@@ -416,9 +428,52 @@ void Server::processMessage(Message &mesIn) {
         this->dispatchMessage(mesIn);
 
         break;
+    }
 
-    default:
+    case 'G':{
+        //cambio immagine
+        username = mesIn.getParams()[0];
+        mesOut.setAction('G');
+        mesOut.setSender(mesIn.getSender());
+
+        QByteArray img = mesIn.getParams()[1].toLatin1();
+
+        Account acc(this->dbMan->getAccount(username));
+
+        if(acc.getSiteId()<0)
+            mesOut.setError(true);
+
+        if(this->dbMan->changeImage(username, img)){
+            mesOut.setError(false);
+        }else mesOut.setError(true);
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
+        break;
+    }
+    case 'P':{
+        //cambio password
+        username = mesIn.getParams()[0];
+        QString oldPsw = mesIn.getParams()[1];
+        QString newPsw = mesIn.getParams()[2];
+        mesOut.setAction('P');
+        mesOut.setSender(mesIn.getSender());
+
+        Account acc(this->dbMan->getAccount(username));
+
+        if(acc.getSiteId()<0)
+            mesOut.setError(true);
+
+        if(this->dbMan->changePassword(username, oldPsw, newPsw))
+            mesOut.setError(false);
+        else mesOut.setError(true);
+
+        socketMan->messageToUser(mesOut, mesOut.getSender());
+        break;
+    }
+
+    default:{
         this->socketMan.get()->sendError("01 - Azione richiesta non riconosciuta");
+    }
     }
 
 }
@@ -494,7 +549,7 @@ int compare(Symbol s1, Symbol s2){
     return res;
 }
 
-int Server::remoteInsert(Symbol symbol){
+/*int Server::remoteInsert(Symbol symbol){
     int min=0;
     int max = this->symbols.size()-1;
     int middle=(max+min)/2 , pos;
@@ -569,7 +624,7 @@ int Server::remoteDelete(Symbol s){
     }
     return middle;
 
-}
+}*/
 
 
 

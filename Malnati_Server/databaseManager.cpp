@@ -20,8 +20,12 @@ bool DatabaseManager::registerAccount(Account &account, QString password){
 
     QString hashpsw = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex();
 
+    auto image = account.getImage();
 
-    QByteArray image = QByteArray();
+    if(image == nullptr){
+        qDebug() << "sono qui";
+        return false;
+    }
 
     std::vector<unsigned char> vector(image.begin(), image.end());
     bsoncxx::types::b_binary img {bsoncxx::binary_sub_type::k_binary,
@@ -81,19 +85,24 @@ Account DatabaseManager::getAccount(QString username){
         for (auto i : documentJ["documentUris"].toArray()){
             documentUris.push_back(i.toString());
         }
-        QString accountString = QString::fromStdString(bsoncxx::to_json(result->view()));
-        QJsonDocument document = QJsonDocument::fromJson(accountString.toUtf8());
-        auto array = document["image"].toString().toLatin1();
-        Account account(document["_id"].toString(), document["siteId"].toInt(), array, documentUris);
+
+        auto imageJ = result->view()["image"];
+        long size = imageJ.length();
+        auto *bytes = const_cast<uint8_t*>(imageJ.get_binary().bytes);
+
+        QByteArray image;
+        for(int i=0; i<size; i++){
+            image.append(static_cast<char>(bytes[i]));
+        }
+
+        Account account(documentJ["_id"].toString(), documentJ["siteId"].toInt(), image, documentUris);
         return account;
     }
     else {
         Account account = Account();
         account.setSiteId(-1);
         return account;
-
     }
-
 }
 
 QList<Account> DatabaseManager::getAllAccounts()
@@ -105,7 +114,6 @@ QList<Account> DatabaseManager::getAllAccounts()
      try{
          mongocxx::cursor cursor = userCollection.find({});
 
-
          for(auto cur : cursor) {
              QString string = QString::fromStdString(bsoncxx::to_json(cur));
              QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
@@ -116,10 +124,9 @@ QList<Account> DatabaseManager::getAllAccounts()
              for (auto i : document["documentUris"].toArray()){
                  documentUris.push_back(i.toString());
              }
+
              Account account = Account(document["_id"].toString(), document["siteId"].toInt(), array, documentUris);
-
              list.append(account);
-
          }
 
      }catch (mongocxx::query_exception &e){
@@ -127,7 +134,6 @@ QList<Account> DatabaseManager::getAllAccounts()
          qDebug() << e.what();
          throw std::exception();
      }
-
      return list;
 }
 

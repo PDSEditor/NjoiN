@@ -14,6 +14,10 @@ class ChangePwd : public QDialog
 public:
     explicit ChangePwd(QWidget *parent = nullptr);
     ~ChangePwd();
+    QString getNewPassword();
+    QString getOldPassword();
+    void setOldPwd(const QString &value);
+    void setNewPwd(const QString &value);
 
 private slots:
     void on_buttonBox_accepted();
@@ -24,6 +28,8 @@ signals:
 
 private:
     Ui::ChangePwd *ui = nullptr;
+    QString newPwd;
+    QString oldPwd;
 };
 
 #endif // CHANGEPWD_H

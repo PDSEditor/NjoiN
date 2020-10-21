@@ -56,13 +56,27 @@ QString MainWindow::getURI()
     return openURI;
 }
 
-void MainWindow::receiveimage(QPixmap& q){
-    QByteArray bArray;
-    QBuffer buffer(&bArray);
-    buffer.open(QIODevice::WriteOnly);
-    q.save(&buffer,"PNG");
-    emit sendImage(bArray);
+void MainWindow::sendNewImage(QByteArray &bArray){
+//    QByteArray bArray;
+//    QBuffer buffer(&bArray);
+//    buffer.open(QIODevice::WriteOnly);
+//    q.save(&buffer,"PNG");
 
+    Message m;
+    m.setAction('G');
+    m.setSender(siteId);
+    m.setParams({username, bArray});
+//    emit sendMessage(&m);
+    emit sendImage(&m);
+
+}
+
+void MainWindow::sendNewPwd(QString &oldPsw, QString &newPwd){
+    Message m;
+    m.setAction('P');
+    m.setSender(siteId);
+    m.setParams({username, oldPsw, newPwd});
+    emit (sendPwd(&m));
 }
 
 void MainWindow::open_file_on_server(QListWidgetItem* s){
@@ -121,6 +135,8 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te->setSiteid(siteId);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+
 
 
     layoutUsers->addStretch();
@@ -156,10 +172,11 @@ void MainWindow::showUsers(Message m)
 {
     this->onlineUsers->clear();
     this->offlineUsers->clear();
-    std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
+    std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
 
     bool online = true;
 
+    QList<QString> onlineUserTE;
 
     for (auto user_siteId : m.getParams()) {
 
@@ -185,6 +202,7 @@ void MainWindow::showUsers(Message m)
             if(online) {
                 this->onlineUsers->addItem(user);
                 this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
+                onlineUserTE.append(user);
             }
             else{
                 this->offlineUsers->addItem(user);
@@ -193,6 +211,8 @@ void MainWindow::showUsers(Message m)
         }
 
     }
+
+    emit(updateUsersOnTe(onlineUserTE));
 
 }
 
@@ -217,16 +237,27 @@ void MainWindow::setList(QList<QString> l){
 }
 
 void MainWindow::receivedInfoAccount(Message& m){
-   setUsername(m.getParams().at(0));
-   setSiteId(m.getSender());
-   //setImage(m.getParams().at(2));
-   QList<QString> tmp;
-   for(int i=2;i<m.getParams().size();i++){
-       documents.append(m.getParams().at(i));
-       addElementforUser(m.getParams().at(i));
-   }
+    QString username = m.getParams().at(0);
+    int siteId = m.getSender();
 
+    QByteArray barray;
+    barray = m.getParams().at(2).toLatin1(); //in base64
+
+    QPixmap image;
+    image.loadFromData(QByteArray::fromBase64(barray), "PNG");
+
+    setUsername(username);
+    setSiteId(siteId);
+    setImage(image);
+
+    QList<QString> tmp;
+    long size = m.getParams().size();
+    for(int i=3; i<size; i++){
+        documents.append(m.getParams().at(i));
+        addElementforUser(m.getParams().at(i));
+    }
 }
+
 void MainWindow::on_pushButton_clicked()
 {
     newFile();
@@ -247,10 +278,22 @@ void MainWindow::on_actionAccount_triggered()
     AccountInterface ai;
     //
     ai.setUsername(username);
-   connect(&ai,&AccountInterface::changeImage,this,&MainWindow::receiveimage);
+    ai.setImagePic(image);
+   connect(&ai, &AccountInterface::changeImage, this, &MainWindow::sendNewImage);
+   connect(this, &MainWindow::receivedNewImage, &ai, &AccountInterface::receiveNewImage);
+   connect(&ai, &AccountInterface::changePassword, this, &MainWindow::sendNewPwd);
+   connect(this, &MainWindow::receivedNewPsw, &ai, &AccountInterface::receiveNewPsw);
     //
     ai.exec();
 
+}
+
+void MainWindow::receiveNewImageMW(Message &m){
+    emit(receivedNewImage(m));
+    return;
+}
+void MainWindow::receiveNewPswMW(Message &m){
+    emit(receivedNewPsw(m));
 }
 
 void MainWindow::on_actionClose_triggered()
@@ -324,6 +367,7 @@ void MainWindow::receiveTitle(QString title)
     te->fileNew();
     connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
 
     Message m;
     m.setAction('C');
@@ -351,9 +395,7 @@ void MainWindow::openMw(QString fileName)
         m.setSender(this->getSiteId());
         m.setParams({fileName, this->username});
         emit(sendTextMessage(&m));
-
     }
-
 }
 
 void MainWindow::documentClosed(QString fileName)

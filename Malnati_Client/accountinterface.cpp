@@ -11,9 +11,7 @@ AccountInterface::AccountInterface(QWidget *parent) :
 {
     ui->setupUi(this);
     this->changePwdDialog = new ChangePwd(this);
-        setWindowTitle("Profile");
-
-        connect(changePwdDialog, &ChangePwd::pwdUpdate, this, &AccountInterface::changePassword);
+    setWindowTitle("Profile");
 }
 
 AccountInterface::~AccountInterface()
@@ -33,7 +31,15 @@ void AccountInterface::setImagePic(const QPixmap &imagePic)
 
 void AccountInterface::on_changePassword_clicked()
 {
-    this->changePwdDialog->show();
+    changePwdDialog->exec();
+
+    QString newPwd, oldPwd;
+//    if(changePwdDialog->exec()){
+        newPwd = changePwdDialog->getNewPassword();
+        oldPwd = changePwdDialog->getOldPassword();
+//    }
+    emit(changePassword(oldPwd, newPwd));
+    return;
 }
 
 void AccountInterface::on_changeImage_clicked()
@@ -54,9 +60,33 @@ void AccountInterface::on_changeImage_clicked()
         // Don't send message
         return;
     } else if (img.size() > 2000000){
-        QMessageBox::warning(this, "Warning", "The file's dimension is greater than 2MB!");
+        QMessageBox::critical(this, "Warning", "The file's dimension is greater than 2MB!");
         return;
     }
 
-    emit changeImage(pix);
+    QByteArray bArray;
+    QBuffer buffer(&bArray);
+    buffer.open(QIODevice::WriteOnly);
+    pix.save(&buffer,"PNG");
+
+    QByteArray encoded = buffer.data().toBase64();
+
+    emit changeImage(encoded);
+    this->probImage = pix;
+}
+
+void AccountInterface::receiveNewImage(Message &m){
+    if(m.getError()){
+        QMessageBox::critical(this,"Error","Errore nel cambio immagine, riprova");
+        return;
+    }else QMessageBox::information(this, "Success", "Immagine cambiata correttamente!");
+
+    this->setImagePic(this->probImage);
+}
+
+void AccountInterface::receiveNewPsw(Message &m){
+    if(m.getError()){
+            QMessageBox::critical(this,"Error","Errore nel cambio password, riprova");
+            return;
+        }else QMessageBox::information(this, "Success", "Password cambiata con successo!");
 }
