@@ -283,6 +283,7 @@ bool DatabaseManager::insertSymbol(Message &mes) {
             << "italic" << symbol.getItalic()
             << "underln" << symbol.getUnderln()
             << "size" << symbol.getSize()
+            << "align" << symbol.getAlign().toLatin1()
             << bsoncxx::builder::stream::finalize;
 
     bsoncxx::document::view view = symbolToInsert.view();

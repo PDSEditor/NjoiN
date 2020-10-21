@@ -145,7 +145,7 @@ void Server::processMessage(Message &mesIn) {
      * CAMBIO PASSWORD ACCOUNT -> P
     */
 
-    QChar action = mesIn.getAction();
+    QChar action = mesIn.getAction(),type;
     char first =  action.toLatin1();
     QString nomeFile;
     QList<Symbol> document;
@@ -157,7 +157,7 @@ void Server::processMessage(Message &mesIn) {
     QVector<QString> params;
     QString username;
     QList<QString> userAllowed;
-    int start, end, type;
+    int start, end;
 
     switch (first){
     case 'I':
@@ -342,6 +342,9 @@ void Server::processMessage(Message &mesIn) {
             acc = Account(username, mesIn.getSender(), img);
 
             this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
+            auto a=this->socketMan->getSiteIdUser();
+            a[acc.getSiteId()]=username;
+            this->socketMan->setSiteIdUser(a);
 
         }
         else {
@@ -408,7 +411,7 @@ void Server::processMessage(Message &mesIn) {
 
         start = mesIn.getParams()[0].toInt();
         end = mesIn.getParams()[1].toInt();
-        type = mesIn.getParams()[2].toInt();
+        type = mesIn.getParams()[2].at(0);
 
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
 
@@ -417,7 +420,7 @@ void Server::processMessage(Message &mesIn) {
         document = this->dbMan->retrieveSymbolsOfDocument(documentId);
 
         for (int i=start; i<= end; i++) {
-           symbols[i].setAlign(type);
+           document[i].setAlign(type);
         }
 
         this->dbMan->setSymbolsOfDocument(documentId, document);
@@ -480,17 +483,39 @@ void Server::updateUsersOnDocument(Message mes)
     QString documentId=mes.getParams()[0];
     mes.setAction('A');
 
-    QVector<QString> params = this->acMan->getAccountsPerFile()[documentId].toVector();
+    QVector<QString> onlineUsers = this->acMan->getAccountsPerFile()[documentId].toVector();
+    QVector<QString> onlineUsers_siteId;
 
-    params.append("___");           // separator beetween online and offline users
+    auto siteIdUser = this->socketMan->getSiteIdUser();
+
+    if(!onlineUsers.contains(siteIdUser[mes.getSender()]))
+        onlineUsers.append(siteIdUser[mes.getSender()]);
+
+    for(auto user: onlineUsers){
+
+        for (auto it = siteIdUser.begin(); it !=siteIdUser.end(); it++) {
+            if(it.value() == user)
+                onlineUsers_siteId.append(user+"_"+QString::number(it.key()));
+        }
+    }
+
+    onlineUsers_siteId.append("___");           // separator beetween online and offline users
+
+    QVector<QString> offlineUsers_siteId;
 
     for(auto user : this->dbMan->getDocument(documentId).getUserAllowed()) {
-        if(!params.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
-            params.append(user);
+        if(!onlineUsers.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
+
+            for (auto it = siteIdUser.begin(); it != siteIdUser.end(); it++) {
+                if(it.value() == user)
+                    offlineUsers_siteId.append(user+"_"+QString::number(it.key()));
+            }
 
     }
 
-    mes.setParams(params);
+    onlineUsers_siteId.append(offlineUsers_siteId);
+
+    mes.setParams(onlineUsers_siteId);
 
     //socketMan->messageToUser(mes, mes.getSender());
     this->dispatchMessage(mes);

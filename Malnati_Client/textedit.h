@@ -41,6 +41,8 @@ public:
 public slots:
     void fileNew();
     void receiveSymbol(Message *m);
+    void receiveAllign(Message m);
+    void setSiteid(int);
 
 
 signals:
@@ -97,6 +99,7 @@ private:
     QMap<int,QColor> colors;
     std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
     int contcolor=0;
+    int siteid;
 
     //local format
     bool localb,locall,localu;

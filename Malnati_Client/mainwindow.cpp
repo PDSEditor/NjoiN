@@ -93,7 +93,10 @@ void MainWindow::open_file_on_server(QListWidgetItem* s){
 
 void MainWindow::receivedFile(QList<Symbol> tmp){
 
-    this->teWindow = new QWidget();
+    this->teWindow = new TextEditWindow();
+    connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
+    this->teWindow->setUri(openURI);
+
     this->usersWindow = new QWidget();
     layout =new QHBoxLayout();
     layoutUsers = new QVBoxLayout();
@@ -129,6 +132,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
 
     emit(newTextEdit(te,siteId));
     te->setFileName(openURI.left(openURI.lastIndexOf('_')));
+    te->setSiteid(siteId);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
 
@@ -138,6 +142,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow->setLayout(layout);
     this->teWindow->show();
     te->loadFile(tmp);
+    addElementforUser(openURI);
     this->hide();
 
 }
@@ -164,18 +169,40 @@ void MainWindow::showUsers(Message m)
 {
     this->onlineUsers->clear();
     this->offlineUsers->clear();
+    std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
 
     bool online = true;
 
-    for (auto user : m.getParams()) {
 
-        if(user == "___")
+    for (auto user_siteId : m.getParams()) {
+
+        if(user_siteId == "___")
             online = false;
         else {
-            if(online)
+
+            QStringList list = user_siteId.split("_");
+            QString user = list.at(0);
+            int siteId = list.at(1).toInt();
+
+            QColor q;
+
+            if(siteId == this->getSiteId())
+                q = Qt::black;
+
+            else {
+                int pos=siteId%5;
+                q=listcolor.at(pos);
+            }
+
+
+            if(online) {
                 this->onlineUsers->addItem(user);
-            else
+                this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
+            }
+            else{
                 this->offlineUsers->addItem(user);
+                this->offlineUsers->item(this->offlineUsers->count()-1)->setForeground(q);
+            }
         }
 
     }
@@ -280,7 +307,10 @@ void MainWindow::receiveTitle(QString title)
 {
     this->hide();
 
-    this->teWindow = new QWidget();
+    this->teWindow = new TextEditWindow();
+    connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
+    this->teWindow->setUri(title+"_"+username);
+
     this->usersWindow = new QWidget();
     layout =new QHBoxLayout();
     layoutUsers = new QVBoxLayout();
@@ -325,6 +355,7 @@ void MainWindow::receiveTitle(QString title)
    // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
     te->setFileName(title);
     te->setURI(title+"_"+username);
+    te->setSiteid(siteId);
     addElementforUser(title+"_"+username);
     te->fileNew();
     connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);

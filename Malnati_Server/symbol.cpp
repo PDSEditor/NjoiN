@@ -2,15 +2,6 @@
 
 
 
-QChar Symbol::getAlign() const
-{
-    return align;
-}
-
-void Symbol::setAlign(const QChar &value)
-{
-    align = value;
-}
 
 Symbol::Symbol(std::vector<int> &position, int siteId, int counter)
 {
@@ -53,6 +44,15 @@ void Symbol::setSiteId(int value)
     siteId = value;
 }
 
+QChar Symbol::getAlign()
+{
+    return align;
+}
+
+void Symbol::setAlign(QChar a)
+{
+    align=a;
+}
 int Symbol::getCounter() const
 {
     return counter;
