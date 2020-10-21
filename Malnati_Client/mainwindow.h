@@ -59,7 +59,7 @@ signals:
     void sendTextMessage(Message* mex);
     void receivedNewImage(Message &);
     void receivedNewPsw(Message &);
-
+    void updateUsersOnTe(QList<QString>);
 
 private slots:
     void on_pushButton_clicked();

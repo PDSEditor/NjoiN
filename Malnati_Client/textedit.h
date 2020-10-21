@@ -43,6 +43,7 @@ public slots:
     void receiveSymbol(Message *m);
     void receiveAllign(Message m);
     void setSiteid(int);
+    void updateUsersOnTe(QList<QString>);
 
 
 signals:
@@ -97,7 +98,7 @@ private:
     Symbol searchSymbolToErase(char c);
     bool externAction, flagc=false,alignAction;
     QMap<int,QColor> colors;
-    std::vector<QColor> listcolor={Qt::red,Qt::cyan,Qt::yellow,Qt::green,Qt::gray};
+    std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
     int contcolor=0;
     int siteid;
 
