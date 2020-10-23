@@ -51,8 +51,8 @@ bool Client::Login()
     LoginWindow lw;
     Registration rw;
     AccountInterface ai;
-//    sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
-    sockm = new socketManager(QUrl(QStringLiteral("ws://93.51.19.124:8080")));
+    sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
+//    sockm = new socketManager(QUrl(QStringLiteral("ws://93.51.19.124:8080")));
     mw = new MainWindow();
 
     connect(&lw,&LoginWindow::closeMw,mw,&MainWindow::closeMw);
