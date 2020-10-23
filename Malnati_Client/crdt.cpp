@@ -63,7 +63,6 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
  * ******************************/
 Message Crdt::localInsert(QChar value, int precedingC, int followingC){
     //mi da la dimensione del mio vettore di simboli
-    //int symbolsSize = this.symbols.size();
     size_t symbolsSize = this->symbols.size();
 
     std::vector<int> following;
@@ -157,7 +156,7 @@ bool exists(int index, std::vector<int> vector){
     else return false;
 }
 
-Message Crdt::localErase(int position){
+/*Message Crdt::localErase(int position){
     Message m;
     Symbol tmp;
     std::vector<Symbol>::iterator i = this->symbols.begin()+position;
@@ -172,7 +171,27 @@ Message Crdt::localErase(int position){
     this->symbols.erase(i);
 
     return m;
+}*/
+Message Crdt::localErase(int position){ //la riscrivo il 22/10 per ricerca idempotenza
+    std::vector<Symbol>::iterator i = this->symbols.begin()+position;
+    //symbolo da eliminare
+    Symbol symbol(i->getValue(), i->getPosizione(), i->getSiteId(), i->getCounter());
+    /* creo messaggio */
+    Message m;
+    m.setAction('D');
+    m.setSymbol(symbol);
+    /********************/
+
+    //incremento counter delle operazioni del crdt
+    this->incrementCounter();
+
+    //elimino localmente
+    this->symbols.erase(i);
+
+    //invio messaggio al server
+    return m;
 }
+
 
 int Crdt::getSiteId(){
     return this->siteId;
@@ -198,6 +217,10 @@ void Crdt::setSymbols(std::vector<Symbol> vect)
 
 int Crdt::getCounterAndIncrement(){
     return ++Crdt::counter;
+}
+
+void Crdt::incrementCounter(){
+    Crdt::counter++;
 }
 
 

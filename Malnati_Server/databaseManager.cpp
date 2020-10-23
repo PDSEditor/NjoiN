@@ -274,7 +274,7 @@ bool DatabaseManager::insertSymbol(Message &mes) {
     bsoncxx::document::value symbolToInsert = builder
             /*<< "_id" << ? */
             << "document_id" << documentId.toUtf8().constData()
-            << "value" << symbol.getValue().toLatin1()
+            << "value"  << symbol.getValue().toLatin1()
             << "siteId" << symbol.getSiteId()
             << "counter" << symbol.getCounter()
             << "position" << array_builder
@@ -317,7 +317,7 @@ bool DatabaseManager::deleteSymbol(Message &mes)
                     << "document_id" << documentName.toUtf8().constData()
                     << "value" << symbol.getValue().toLatin1()
                     << "siteId" << symbol.getSiteId()
-                    //<< "counter" << symbol.getCounter()
+                    << "counter" << symbol.getCounter()
                     << "position" << array_builder
 
 //                    << "family" << symbol.getFamily().toUtf8().constData()
@@ -464,7 +464,7 @@ bool DatabaseManager::setSymbolsOfDocument(QString documentId, QList<Symbol> doc
             try {
                 this->insertSymbol(m);
             }
-            catch (std::exception e) {
+            catch (std::exception &e) {
                     throw std::exception();
                 }
         }

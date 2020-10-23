@@ -14,15 +14,17 @@ private:
     std::vector<int> position;
     int siteId;
     int counter;
-    //informazioni del testo
+
+    /**informazioni del testo**/
     QString family;
     bool bold;
     bool italic;
     bool underln;
     qreal size;
     QChar align;
-public:
+    /***********************/
 
+public:
     QString getFamily();
     bool getBold();
     bool getItalic();
