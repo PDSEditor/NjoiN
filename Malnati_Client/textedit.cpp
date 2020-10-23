@@ -578,9 +578,6 @@ void TextEdit::receiveSymbol(Message *m)
              curs.insertText((QChar)'\n',qform);
         else
              curs.insertText((QChar)tmp.getValue(),qform);
-//        alignAction=true;
-//        textEdit->setAlignment(Qt::AlignRight);
-//        alignAction=false;
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -932,7 +929,7 @@ else{
        QTextCursor  cursor = textEdit->textCursor();
 
         qDebug() << "position: " << position;
-        qDebug() << "charater: " << textEdit->document()->characterAt(position).toLatin1();
+        qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
 
         if(charsRemoved!=0 && charsAdded==0){
             for(int i=0; i<charsRemoved; i++){
@@ -942,31 +939,52 @@ else{
         }else
         if(charsAdded!= 0){
             if(charsAdded==charsRemoved){
-                if(alignAction==true){
 
+                //                dati da passare
+
+                int pos=cursor.selectionStart();
+                for(int i=0;i<charsAdded;i++){
+                    Message mc,mi;
+                    Symbol s=crdt->getSymbols().at(pos+i);
+                    //eliminazione vecchio carattere
+                    mc.setSymbol(s);
+                    mc.setAction('D');
+                    emit(sendMessage(&mc));
+                    //invio carattere modificato
+                    mi.setAction('I');
+                    s.setBold(actionTextBold->isChecked());
+                    s.setItalic(actionTextItalic->isChecked());
+                    s.setUnderln(actionTextUnderline->isChecked());
+                    s.setFamily(localFamily);
+                    s.setSize(localsize);
+                    s.setAlign(findalign(textEdit->alignment()));
+                    mi.setSymbol(s);
+                    emit(sendMessage(&mi));
                 }
-//                dati da passare
-                else{
-                    int pos=cursor.selectionStart();
-                    for(int i=0;i<charsAdded;i++){
-                        Message mc,mi;
-                        Symbol s=crdt->getSymbols().at(pos+i);
-                        //eliminazione vecchio carattere
-                        mc.setSymbol(s);
-                        mc.setAction('D');
-                        emit(sendMessage(&mc));
-                        //invio carattere modificato
-                        mi.setAction('I');
-                        s.setBold(actionTextBold->isChecked());
-                        s.setItalic(actionTextItalic->isChecked());
-                        s.setUnderln(actionTextUnderline->isChecked());
-                        s.setFamily(localFamily);
-                        s.setSize(localsize);
-                        s.setAlign(findalign(textEdit->alignment()));
-                        mi.setSymbol(s);
-                        emit(sendMessage(&mi));
+            }
+            else if(charsRemoved!=charsAdded){
+                int pos=cursor.selectionStart()-charsAdded;
+                for(int i=0;i<charsRemoved;i++){
+                    Message mc;
+                    Symbol s=crdt->getSymbols().at(pos+i);
+                    //eliminazione vecchio carattere
+                    mc.setSymbol(s);
+                    mc.setAction('D');
+                    emit(sendMessage(&mc));
                 }
-                //
+                for(int i=0;i<charsAdded;i++){
+                    Message mi=crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
+                    Symbol s=mi.getSymbol();
+                    mi.setAction('I');
+                    s.setBold(actionTextBold->isChecked());
+                    s.setItalic(actionTextItalic->isChecked());
+                    s.setUnderln(actionTextUnderline->isChecked());
+                    s.setFamily(localFamily);
+                    s.setSize(localsize);
+                    s.setAlign(findalign(textEdit->alignment()));
+                    mi.setSymbol(s);
+                    position+=1;
+                    emit(sendMessage(&mi));
                 }
             }
             else{
@@ -974,7 +992,7 @@ else{
                 charsAdded--;
             for(int i=0; i<charsAdded; i++){
                 qDebug() << "char: " << textEdit->document()->characterAt(position);
-                Message m = crdt->localInsert(textEdit->document()->characterAt(position).toLatin1(), position-1, position);
+                Message m = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
                 Symbol s=m.getSymbol();
                 s.setSize(textEdit->fontPointSize());
                 s.setFamily(textEdit->fontFamily());
@@ -1119,7 +1137,7 @@ void TextEdit::loadFile(QList<Symbol> file)
     setCurrentFileName(QString());
     QString tmp;
     bool u=true;
-    QChar al;
+    QChar al,q;
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
     QTextCharFormat qform;
@@ -1142,7 +1160,6 @@ void TextEdit::loadFile(QList<Symbol> file)
             textEdit->setTextCursor(curs);
             textEdit->setAlignment(insertalign(al));
             externAction=true;
-
         }
         if(s.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
