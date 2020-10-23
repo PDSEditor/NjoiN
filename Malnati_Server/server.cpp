@@ -193,8 +193,9 @@ void Server::processMessage(Message &mesIn) {
         mesOut.setAction('R');
         mesOut.setSender(mesIn.getSender());
 
+        doc = this->dbMan->getDocument(documentId);
 
-        if(this->dbMan->getDocument(documentId).getUserAllowed().contains(username)){
+        if(doc.getUserAllowed().contains(username)){
             auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
             for(auto symbol : symbols) {
                 mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
@@ -207,6 +208,8 @@ void Server::processMessage(Message &mesIn) {
             accPerFile[documentId].append(username);
             accPerFile.insert (documentId, accPerFile[documentId]);
             this->acMan->setAccountsPerFile(accPerFile);
+
+            this->docMan->openDocument(doc);
 
         }
         else{
@@ -251,6 +254,8 @@ void Server::processMessage(Message &mesIn) {
         this->acMan->setAccountsPerFile(accPerFile);
 
         this->acMan->updateAccountOnDocument(username, (nomeFile +"_"+username));
+
+        this->docMan->openDocument(doc);
 
         //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
         //tanto non c'è differenza lato server tra creatore e contributori
@@ -318,6 +323,7 @@ void Server::processMessage(Message &mesIn) {
         socketMan->messageToUser(mesOut, mesOut.getSender());
 
         this->updateUsersOnDocument(mesIn);
+        this->docMan->openDocument(doc);
 
         break;
 
