@@ -1147,7 +1147,7 @@ void TextEdit::loadFile(QList<Symbol> file)
         if(s.getSiteId()==siteid)
             col=Qt::transparent;
         else
-            col=listcolor.at(s.getSiteId()%5);
+            col=listcolor.at(s.getSiteId()%11);
         qform.setBackground(col);
         qform.setFontFamily(s.getFamily());
         qform.setFontItalic(s.getItalic());

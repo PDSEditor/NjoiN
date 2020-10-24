@@ -197,7 +197,7 @@ void MainWindow::showUsers(Message m)
                 q = Qt::black;
 
             else {
-                int pos=siteId%5;
+                int pos=siteId%11;
                 q=listcolor.at(pos);
             }
 
