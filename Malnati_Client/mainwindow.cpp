@@ -96,6 +96,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow = new TextEditWindow();
     connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
     this->teWindow->setUri(openURI);
+    this->teWindow->setWindowTitle(openURI.left(openURI.lastIndexOf('_'))+".txt");
 
     this->usersWindow = new QWidget();
     layout =new QHBoxLayout();
@@ -144,7 +145,9 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow->setLayout(layout);
     this->teWindow->show();
     te->loadFile(tmp);
-    addElementforUser(openURI);
+    QList<QListWidgetItem*> q=ui->listWidget->findItems(openURI,Qt::MatchExactly);
+    if(q.size()==0)
+        addElementforUser(openURI);
     this->hide();
 
 }
@@ -161,6 +164,7 @@ void MainWindow::receiveURIerror()
 {
     QMessageBox::information(this,"ERRORE","URI non corretta");
 }
+
 
 void MainWindow::closeMw()
 {
@@ -316,6 +320,7 @@ void MainWindow::receiveTitle(QString title)
     this->teWindow = new TextEditWindow();
     connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
     this->teWindow->setUri(title+"_"+username);
+    this->teWindow->setWindowTitle(title+".txt");
 
     this->usersWindow = new QWidget();
     layout =new QHBoxLayout();

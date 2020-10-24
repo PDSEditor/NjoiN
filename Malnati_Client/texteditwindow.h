@@ -2,6 +2,7 @@
 #define TEXTEDITWINDOW_H
 
 #include <QWidget>
+#include <message.h>
 
 class TextEditWindow : public QWidget
 {

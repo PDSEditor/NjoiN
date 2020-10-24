@@ -139,7 +139,7 @@ Symbol Symbol::fromJson(const QJsonDocument &charJD){
 QJsonDocument Symbol::toJson()
 {
     QJsonObject json_obj;
-    json_obj["value"] = this->value.toLatin1();
+    json_obj["value"] = this->value.unicode();
     json_obj["siteId"] = this->siteId;
     json_obj["counter"] = this->counter;
     json_obj["family"] = this->family;
