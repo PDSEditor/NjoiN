@@ -341,6 +341,14 @@ int Crdt::compare(Symbol s1, Symbol s2){
         if(len1<len2){
             res=-1;
         }
+//        if(s1.getSiteId()<s2.getSiteId())
+//            res=1;
+//        else if(s1.getSiteId()>s2.getSiteId())
+//            res = -1;
+//        else if(s1.getSiteId()==s2.getSiteId()){
+//            qDebug() << "Errore nell'inserimento remoto!";
+//            res = -2;
+//        }
 
     }
     return res;

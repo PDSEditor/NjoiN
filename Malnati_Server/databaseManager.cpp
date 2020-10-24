@@ -23,7 +23,7 @@ bool DatabaseManager::registerAccount(Account &account, QString password){
     auto image = account.getImage();
 
     if(image == nullptr){
-        qDebug() << "sono qui";
+        qDebug() << "immagine null";
         return false;
     }
 
