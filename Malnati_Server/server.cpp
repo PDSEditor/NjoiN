@@ -215,6 +215,7 @@ void Server::processMessage(Message &mesIn) {
 
             this->docMan->openDocument(doc);
 
+            this->updateUsersOnDocument(mesIn);
         }
         else{
             mesOut.setError(true);              //Non autorizzato
@@ -224,7 +225,7 @@ void Server::processMessage(Message &mesIn) {
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
 
-        this->updateUsersOnDocument(mesIn);
+
 
         break;
     }
@@ -316,6 +317,9 @@ void Server::processMessage(Message &mesIn) {
             accPerFile.insert (documentId, accPerFile[documentId]);
             this->acMan->setAccountsPerFile(accPerFile);
 
+            this->updateUsersOnDocument(mesIn);
+            this->docMan->openDocument(doc);
+
         }
         catch(std::exception& e){
             qDebug() << "Documento non esistente";
@@ -323,9 +327,6 @@ void Server::processMessage(Message &mesIn) {
         }
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
-
-        this->updateUsersOnDocument(mesIn);
-        this->docMan->openDocument(doc);
 
         break;
     }
@@ -518,22 +519,28 @@ void Server::updateUsersOnDocument(Message mes)
 
     QVector<QString> offlineUsers_siteId;
 
-    for(auto user : this->dbMan->getDocument(documentId).getUserAllowed()) {
-        if(!onlineUsers.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
+    try {
+        auto userAllowed = this->dbMan->getDocument(documentId).getUserAllowed();
+        for(auto user : userAllowed ) {
+            if(!onlineUsers.contains(user))          //se lo user non è tra quelli online (params) allora lo aggiungo tra quelli offline
 
-            for (auto it = siteIdUser.begin(); it != siteIdUser.end(); it++) {
-                if(it.value() == user)
-                    offlineUsers_siteId.append(user+"_"+QString::number(it.key()));
-            }
+                for (auto it = siteIdUser.begin(); it != siteIdUser.end(); it++) {
+                    if(it.value() == user)
+                        offlineUsers_siteId.append(user+"_"+QString::number(it.key()));
+                }
 
+        }
+
+        onlineUsers_siteId.append(offlineUsers_siteId);
+
+        mes.setParams(onlineUsers_siteId);
+
+        //socketMan->messageToUser(mes, mes.getSender());
+        this->dispatchMessage(mes);
+
+    }catch(std::exception& e){
+        qDebug() << "Documento non esistente";
     }
-
-    onlineUsers_siteId.append(offlineUsers_siteId);
-
-    mes.setParams(onlineUsers_siteId);
-
-    //socketMan->messageToUser(mes, mes.getSender());
-    this->dispatchMessage(mes);
 
 }
 
