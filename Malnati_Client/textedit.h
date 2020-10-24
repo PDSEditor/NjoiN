@@ -54,7 +54,7 @@ signals:
 
 
 protected:
-    void closeEvent(QCloseEvent *e) override;
+//    void closeEvent(QCloseEvent *e) override;
 
 private slots:
     void fileOpen();
@@ -83,6 +83,7 @@ private slots:
     void printPreview(QPrinter *);
 
 private:
+    void closeEvent(QCloseEvent *e) override;
     void setupFileActions();
     void setupEditActions();
     void setupTextActions();

@@ -7,6 +7,9 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     //connect(webSocket, &QWebSocket::disconnected, this, &socketManager::closed);
     //webSocket= new QWebSocket();
     webSocket.open(QUrl(url));
+    if(webSocket.isValid())
+        this->setServerOn(true);
+    else this->setServerOn(false);
     //qDebug()<<webSocket.isValid();
 
 
@@ -19,21 +22,22 @@ socketManager::~socketManager()
 
 void socketManager::messageToServer(Message *m)
 {
-    //QString tmp = m->getAction();
-    //webSocket.sendTextMessage(tmp);
-
-    if(server_on==0){
-        emit(loggedin(0));
+    if(!this->getServerOn()){
+        qDebug() << "Server is down!";
+        emit(loggedin(false));
     }
 
     webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
-
-    //qDebug()<<"Testo inviato: sia m diu ";
 }
 
-void socketManager::receiveImage(QByteArray image){
-    //    int i=0;
-    image=0;
+bool socketManager::getServerOn() const
+{
+    return serverOn;
+}
+
+void socketManager::setServerOn(bool value)
+{
+    serverOn = value;
 }
 
 
@@ -177,8 +181,6 @@ void socketManager::onConnected()
     //webSocket.sendTextMessage(QStringLiteral("Hello, world!"));
 
     QByteArray a("Test start");
-    long long n = 0;
-    //n = webSocket.sendBinaryMessage(a);
 
     Message *m = new Message(QChar('I'));
     //    Symbol *symbol = new Symbol();
@@ -199,7 +201,7 @@ void socketManager::onConnected()
     v.push_back(3);
     symbol.setPosizione(v);
     m->setSymbol(symbol);
-    server_on=1;
+    serverOn=true;
     //binaryMessageToServer(m);
     //qDebug() << "Numero byte inviati: "<< n;
 
@@ -216,7 +218,7 @@ void socketManager::onTextMessageReceived(QString message)
     case 'L':
         if(m.getError()){
             if( m.getParams().length()!=0 && m.getParams().at(0)=="2" )
-                emit(loggedin(1));
+                emit(loggedin(true));
             else
                 emit(receivedLogin(false));
         }
@@ -253,18 +255,31 @@ void socketManager::onTextMessageReceived(QString message)
             emit(receivedURIerror());
         }
         break;
-        //
 
-    case 'A':
+    case 'G':{
+        // ricevo risultato del cambio immagine
+        emit(receiveNewImage(m));
+        break;
+    }
+
+    case 'A':{
         //aggiorna gli utenti online e offline sul documento aperto dal client
         emit(showUsers(m));
         break;
-
-    case 'B':
+    }
+    case 'P':{
+        //ricevo risultato del cambio password
+        emit(receiveNewPsw(m));
+        break;
+    }
+    case 'B':{
         emit(receiveAllign(m));
-    default:
+        break;
+    }
+    default:{
         qDebug() << "default";
         break;
+    }
     }
 }
 
@@ -383,10 +398,6 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         symbol.setFamily(family);
         symbol.setAlign(align);
         m->setSymbol(symbol);
-
-
-
-
 
         emit newMessage(m);
     }

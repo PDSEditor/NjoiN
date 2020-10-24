@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     }
 
     Client client;
+
     bool res=client.Login();
    if(res)
        return a.exec();

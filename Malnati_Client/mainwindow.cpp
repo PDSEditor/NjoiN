@@ -56,13 +56,27 @@ QString MainWindow::getURI()
     return openURI;
 }
 
-void MainWindow::receiveimage(QPixmap& q){
-    QByteArray bArray;
-    QBuffer buffer(&bArray);
-    buffer.open(QIODevice::WriteOnly);
-    q.save(&buffer,"PNG");
-    emit sendImage(bArray);
+void MainWindow::sendNewImage(QByteArray &bArray){
+//    QByteArray bArray;
+//    QBuffer buffer(&bArray);
+//    buffer.open(QIODevice::WriteOnly);
+//    q.save(&buffer,"PNG");
 
+    Message m;
+    m.setAction('G');
+    m.setSender(siteId);
+    m.setParams({username, bArray});
+//    emit sendMessage(&m);
+    emit sendImage(&m);
+
+}
+
+void MainWindow::sendNewPwd(QString &oldPsw, QString &newPwd){
+    Message m;
+    m.setAction('P');
+    m.setSender(siteId);
+    m.setParams({username, oldPsw, newPwd});
+    emit (sendPwd(&m));
 }
 
 void MainWindow::open_file_on_server(QListWidgetItem* s){
@@ -82,6 +96,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow = new TextEditWindow();
     connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
     this->teWindow->setUri(openURI);
+    this->teWindow->setWindowTitle(openURI.left(openURI.lastIndexOf('_'))+".txt");
 
     this->usersWindow = new QWidget();
     layout =new QHBoxLayout();
@@ -130,6 +145,9 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow->setLayout(layout);
     this->teWindow->show();
     te->loadFile(tmp);
+    QList<QListWidgetItem*> q=ui->listWidget->findItems(openURI,Qt::MatchExactly);
+    if(q.size()==0)
+        addElementforUser(openURI);
     this->hide();
 
 }
@@ -146,6 +164,7 @@ void MainWindow::receiveURIerror()
 {
     QMessageBox::information(this,"ERRORE","URI non corretta");
 }
+
 
 void MainWindow::closeMw()
 {
@@ -221,16 +240,27 @@ void MainWindow::setList(QList<QString> l){
 }
 
 void MainWindow::receivedInfoAccount(Message& m){
-   setUsername(m.getParams().at(0));
-   setSiteId(m.getSender());
-   //setImage(m.getParams().at(2));
-   QList<QString> tmp;
-   for(int i=2;i<m.getParams().size();i++){
-       documents.append(m.getParams().at(i));
-       addElementforUser(m.getParams().at(i));
-   }
+    QString username = m.getParams().at(0);
+    int siteId = m.getSender();
 
+    QByteArray barray;
+    barray = m.getParams().at(2).toLatin1(); //in base64
+
+    QPixmap image;
+    image.loadFromData(QByteArray::fromBase64(barray), "PNG");
+
+    setUsername(username);
+    setSiteId(siteId);
+    setImage(image);
+
+    QList<QString> tmp;
+    long size = m.getParams().size();
+    for(int i=3; i<size; i++){
+        documents.append(m.getParams().at(i));
+        addElementforUser(m.getParams().at(i));
+    }
 }
+
 void MainWindow::on_pushButton_clicked()
 {
     newFile();
@@ -251,10 +281,22 @@ void MainWindow::on_actionAccount_triggered()
     AccountInterface ai;
     //
     ai.setUsername(username);
-   connect(&ai,&AccountInterface::changeImage,this,&MainWindow::receiveimage);
+    ai.setImagePic(image);
+   connect(&ai, &AccountInterface::changeImage, this, &MainWindow::sendNewImage);
+   connect(this, &MainWindow::receivedNewImage, &ai, &AccountInterface::receiveNewImage);
+   connect(&ai, &AccountInterface::changePassword, this, &MainWindow::sendNewPwd);
+   connect(this, &MainWindow::receivedNewPsw, &ai, &AccountInterface::receiveNewPsw);
     //
     ai.exec();
 
+}
+
+void MainWindow::receiveNewImageMW(Message &m){
+    emit(receivedNewImage(m));
+    return;
+}
+void MainWindow::receiveNewPswMW(Message &m){
+    emit(receivedNewPsw(m));
 }
 
 void MainWindow::on_actionClose_triggered()
@@ -278,6 +320,7 @@ void MainWindow::receiveTitle(QString title)
     this->teWindow = new TextEditWindow();
     connect(teWindow,&TextEditWindow::openMW,this,&MainWindow::openMw);
     this->teWindow->setUri(title+"_"+username);
+    this->teWindow->setWindowTitle(title+".txt");
 
     this->usersWindow = new QWidget();
     layout =new QHBoxLayout();
@@ -356,9 +399,7 @@ void MainWindow::openMw(QString fileName)
         m.setSender(this->getSiteId());
         m.setParams({fileName, this->username});
         emit(sendTextMessage(&m));
-
     }
-
 }
 
 void MainWindow::documentClosed(QString fileName)
