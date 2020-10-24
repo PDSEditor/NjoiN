@@ -113,7 +113,7 @@ void Server::dispatchMessage(Message &mes) {
     QString documentId = this->acMan->getUsernameDocumentMap()[user];
 
     for(it=clients.begin(); it!= clients.end(); it++) {
-        if(it.key() != sender || mes.getAction()=='A') {
+        if(it.key() != sender || mes.getAction()=='A' || mes.getAction()=='P') {
 
             QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
 
@@ -418,6 +418,12 @@ void Server::processMessage(Message &mesIn) {
         }
 
         this->dbMan->setSymbolsOfDocument(documentId, document);
+
+        this->dispatchMessage(mesIn);
+
+        break;
+
+    case 'P' :
 
         this->dispatchMessage(mesIn);
 
