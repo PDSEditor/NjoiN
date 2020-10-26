@@ -203,13 +203,19 @@ void MainWindow::showUsers(Message m)
 
 
             if(online) {
-                this->onlineUsers->addItem(user);
-                this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
-                onlineUserTE.append(user);
+                QList<QListWidgetItem*> a=this->onlineUsers->findItems(user,Qt::MatchExactly);
+                if(a.size()==0){
+                    this->onlineUsers->addItem(user);
+                    this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
+                    onlineUserTE.append(user);
+                }
             }
             else{
-                this->offlineUsers->addItem(user);
-                this->offlineUsers->item(this->offlineUsers->count()-1)->setForeground(q);
+                QList<QListWidgetItem*> a=this->offlineUsers->findItems(user,Qt::MatchExactly);
+                if(a.size()==0){
+                    this->offlineUsers->addItem(user);
+                    this->offlineUsers->item(this->offlineUsers->count()-1)->setForeground(q);
+                }
             }
         }
 
@@ -269,6 +275,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::addElementforUser(QString string){   
     ui->listWidget->addItem(string);
+    //ui->tableWidget->setItem(0,1,string);
 }
 
 void MainWindow::on_actionNew_triggered()

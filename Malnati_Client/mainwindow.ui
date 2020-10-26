@@ -26,34 +26,28 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="6">
-     <spacer name="horizontalSpacer_2">
+    <item row="3" column="4">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Aggiungi Documento</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <spacer name="horizontalSpacer_3">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>100</width>
+        <width>55</width>
         <height>20</height>
        </size>
       </property>
      </spacer>
-    </item>
-    <item row="3" column="1" colspan="2">
-     <widget class="QPushButton" name="pushButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Nuovo Documento</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="7">
-     <widget class="QListWidget" name="listWidget"/>
     </item>
     <item row="3" column="0">
      <spacer name="horizontalSpacer">
@@ -68,17 +62,23 @@
       </property>
      </spacer>
     </item>
-    <item row="3" column="5">
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="enabled">
-       <bool>true</bool>
+    <item row="2" column="3">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-      <property name="text">
-       <string>Aggiungi Documento</string>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
       </property>
-     </widget>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>218</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
     </item>
-    <item row="0" column="0" colspan="7">
+    <item row="0" column="0" colspan="6">
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
@@ -119,34 +119,34 @@
       </item>
      </layout>
     </item>
-    <item row="3" column="3">
-     <spacer name="horizontalSpacer_3">
+    <item row="3" column="5">
+     <spacer name="horizontalSpacer_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>55</width>
+        <width>100</width>
         <height>20</height>
        </size>
       </property>
      </spacer>
     </item>
-    <item row="2" column="3">
-     <spacer name="verticalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+    <item row="3" column="1" colspan="2">
+     <widget class="QPushButton" name="pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
+      <property name="text">
+       <string>Nuovo Documento</string>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>218</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="6">
+     <widget class="QListWidget" name="listWidget"/>
     </item>
    </layout>
   </widget>
