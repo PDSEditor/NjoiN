@@ -32,11 +32,11 @@ SOURCES += \
     message.cpp \
     registration.cpp \
     showuridialog.cpp \
-    sidebarusers.cpp \
     symbol.cpp \
     textedit.cpp \
     socketmanager.cpp \
     texteditwindow.cpp
+
 
 HEADERS += \
     accountinterface.h \
@@ -50,7 +50,6 @@ HEADERS += \
     message.h \
     registration.h \
     showuridialog.h \
-    sidebarusers.h \
     symbol.h \
     textedit.h \
     socketmanager.h \
@@ -62,10 +61,8 @@ FORMS += \
     inserturi.ui \
     inserttitle.ui \
     loginwindow.ui \
-    mainwindow.ui \
     registration.ui \
-    showuridialog.ui \
-    sidebarusers.ui
+    showuridialog.ui
 
 RESOURCES += textedit.qrc
 build_all:!build_pass {

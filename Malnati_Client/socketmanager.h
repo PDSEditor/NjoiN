@@ -32,6 +32,7 @@ signals:
     void showUsers(Message);
     void receiveNewImage(Message &m);
     void receiveNewPsw(Message &m);
+    void updateCursor(int pos, QString userId);
 
 
 public slots:

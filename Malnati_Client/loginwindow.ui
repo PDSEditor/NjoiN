@@ -108,8 +108,19 @@
         <height>201</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Noto Sans Adlam</family>
+        <pointsize>22</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="text">
-       <string/>
+       <string>N Joi' N</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
       </property>
      </widget>
     </widget>

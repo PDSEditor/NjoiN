@@ -4,10 +4,15 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
+#include <QTextCursor>
 #include <symbol.h>
 #include <crdt.h>
 #include <QPrinter>
+#include <QLabel>
 #include <showuridialog.h>
+
+
+#define DEFAULT_SIZE 12
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -20,6 +25,12 @@ class QPrinter;
 QT_END_NAMESPACE
 
 
+struct User
+{
+    QString user;
+    QLabel *label;
+    QTextCursor cursor;
+};
 
 
 class TextEdit : public QMainWindow
@@ -37,6 +48,7 @@ public:
     QString getURI();
     Qt::Alignment insertalign(QChar c);
     QChar findalign(Qt::Alignment);
+   // void moveCursor(int pos, QString userId);
 
 public slots:
     void fileNew();
@@ -44,6 +56,7 @@ public slots:
     void receiveAllign(Message m);
     void setSiteid(int);
     void updateUsersOnTe(QList<QString>);
+    void moveCursor(int pos, QString userId);
 
 
 signals:
@@ -51,6 +64,7 @@ signals:
     void sendTextMessage(Message *m);
     void openMW(QString);
     void closeDocument(QString fileName);
+    void cursorPositionChangedSignal(int position);
 
 
 protected:
@@ -135,6 +149,11 @@ private:
     socketManager *sockm;
     std :: vector<Symbol> *symbols;
     ShowUriDialog *shu;
+    QTextCursor *m_localCursor = nullptr;
+    QList<QString> m_onlineUsers;
+    Q_INVOKABLE void updateCursors();
+    bool handlingOperation;
+    bool localOperation;
 
 };
 

@@ -1,5 +1,6 @@
 #include "showuridialog.h"
 #include "ui_showuridialog.h"
+#include <QCloseEvent>
 
 ShowUriDialog::ShowUriDialog(QWidget *parent) :
     QDialog(parent),
@@ -23,3 +24,4 @@ ShowUriDialog::~ShowUriDialog()
 {
     delete ui;
 }
+
