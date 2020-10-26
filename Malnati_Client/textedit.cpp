@@ -187,7 +187,8 @@ TextEdit::TextEdit(QWidget *parent)
             Message m;
             m.setAction('Z');
             m.setSender(siteid);
-            m.setParams({QString(pos)});
+            QString userName = URI.right(URI.lastIndexOf('_'));
+            m.setParams({QString(pos),userName});
             emit sendTextMessage(&m);
         }
 
@@ -513,7 +514,7 @@ void TextEdit::setSocketM(socketManager *sockclient)
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
     connect(this, &TextEdit::sendTextMessage, sockm, &socketManager::messageToServer);
     connect(sockm,&socketManager::receiveAllign,this,&TextEdit::receiveAllign);
-    //connect()
+    connect(sockm, &socketManager::updateCursor,this,&TextEdit::updateCursors);
 }
 
 void TextEdit::setFileName(QString fileName)

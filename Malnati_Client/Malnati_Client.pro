@@ -54,6 +54,7 @@ HEADERS += \
     sidebarusers.h \
     symbol.h \
     textedit.h \
+    socketmanager.h \
     texteditwindow.h
 
 FORMS += \

@@ -48,7 +48,7 @@ public:
     QString getURI();
     Qt::Alignment insertalign(QChar c);
     QChar findalign(Qt::Alignment);
-    void moveCursor(int pos, QString userId);
+   // void moveCursor(int pos, QString userId);
 
 public slots:
     void fileNew();
@@ -56,6 +56,7 @@ public slots:
     void receiveAllign(Message m);
     void setSiteid(int);
     void updateUsersOnTe(QList<QString>);
+    void moveCursor(int pos, QString userId);
 
 
 signals:
