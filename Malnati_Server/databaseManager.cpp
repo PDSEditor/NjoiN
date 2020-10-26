@@ -316,7 +316,7 @@ bool DatabaseManager::deleteSymbol(Message &mes)
             builder
                     << "document_id" << documentName.toUtf8().constData()
                     << "value" << symbol.getValue().unicode()
-                    << "siteId" << symbol.getSiteId()
+//                    << "siteId" << symbol.getSiteId()
                     << "counter" << symbol.getCounter()
                     << "position" << array_builder
 
