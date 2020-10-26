@@ -508,7 +508,7 @@ void TextEdit::setSocketM(socketManager *sockclient)
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
     connect(this, &TextEdit::sendTextMessage, sockm, &socketManager::messageToServer);
     connect(sockm,&socketManager::receiveAllign,this,&TextEdit::receiveAllign);
-    connect(sockm, &socketManager::updateCursor,this,&TextEdit::updateCursors);
+    connect(sockm, &socketManager::updateCursor,this,&TextEdit::moveCursor);
 }
 
 void TextEdit::setFileName(QString fileName)
