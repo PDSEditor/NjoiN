@@ -181,13 +181,13 @@ TextEdit::TextEdit(QWidget *parent)
     connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
         int pos = textEdit->textCursor().position();
         //resetActionToggle();
-        if (localOperation )//|| handlingOperation)
+        if (!localOperation )//|| handlingOperation)
             localOperation = false;
         else{
             Message m;
             m.setAction('Z');
             m.setSender(siteid);
-            QString userName = URI.right(URI.lastIndexOf('_'));
+            QString userName = URI.split("_").takeLast();
             m.setParams({QString(pos),userName});
             emit sendTextMessage(&m);
         }
@@ -1076,6 +1076,11 @@ void TextEdit::cursorPositionChanged()
     textEdit->setFontItalic(textEdit->fontItalic());
     textEdit->setFontUnderline(textEdit->fontUnderline());
     textEdit->setFontWeight(textEdit->fontWeight());
+    if(externAction){
+      localOperation=false;
+    }else{
+      localOperation=true;
+    }
 
     }
 
