@@ -30,10 +30,11 @@ signals:
     void receiveRegistration(Message);
     void receiveAllign(Message);
     void showUsers(Message);
+    void receiveNewImage(Message &m);
+    void receiveNewPsw(Message &m);
 
 
 public slots:
-    void receiveImage(QByteArray im);
     void onConnected();
     void onTextMessageReceived(QString message);
     void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal
@@ -47,12 +48,16 @@ public:
 
 
 
+    bool getServerOn() const;
+    void setServerOn(bool value);
+
 private:
     QWebSocket webSocket;
     QUrl url;
     int i=100;
     int siteId;
-    bool server_on=0;
+    bool serverOn = false;
+
 };
 
 #endif // SOCKETMANAGER_H

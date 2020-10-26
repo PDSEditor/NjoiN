@@ -7,6 +7,7 @@
 #include "socketmanager.h"
 #include "loginwindow.h"
 #include "crdt.h"
+#include "accountinterface.h"
 
 class Client: public QObject
 {

@@ -42,11 +42,11 @@ AccountManager::AccountManager(QObject *parent) : QObject(parent)
 bool AccountManager::closeDocumentByUser(QString username, QString documentId)
 {
     if(this->accountsPerFile.contains(documentId)){
-        auto list = this->accountsPerFile[documentId];
-        if(list.contains(username)){
-            list.removeOne(username);
+        QList<QString>* it = &this->accountsPerFile[documentId];
+        if(it->contains(username)){
+            it->removeOne(username);
 
-            if(list.count()==0) {
+            if(it->count()==0) {
                 //bisogna salvare il documento
                 return false;
             }

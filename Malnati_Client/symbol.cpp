@@ -4,10 +4,7 @@
 
 Symbol::Symbol(QChar value, std::vector<int> position, int siteId, int counter): value(value), siteId(siteId), counter(counter)
 {
-    //this->value = value;
     this->position = std::move(position);
-    //this->siteId = siteId;
-    //this->counter = counter;
 }
 Symbol::Symbol(){
 
@@ -142,7 +139,7 @@ Symbol Symbol::fromJson(const QJsonDocument &charJD){
 QJsonDocument Symbol::toJson()
 {
     QJsonObject json_obj;
-    json_obj["value"] = this->value.toLatin1();
+    json_obj["value"] = this->value.unicode();
     json_obj["siteId"] = this->siteId;
     json_obj["counter"] = this->counter;
     json_obj["family"] = this->family;

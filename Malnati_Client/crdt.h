@@ -40,6 +40,7 @@ public:
     void setSiteId(int);
     int getCounter();
     int getCounterAndIncrement();
+    void incrementCounter();
     int remoteinsert(Symbol s);
     int remotedelete(Symbol s);
 

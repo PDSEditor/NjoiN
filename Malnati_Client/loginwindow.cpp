@@ -15,8 +15,6 @@ LoginWindow::LoginWindow(QWidget *parent) :
 
     this->ui->logo1->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center;color:red");
     setWindowTitle("Login");
-
-
 }
 
 
@@ -34,7 +32,7 @@ void LoginWindow::on_pushButton_login_clicked()
     QString password = ui->lineEdit_password->text();
 
     if ( username.size() == 0 || password.size() == 0 ) {
-            QMessageBox::warning(this, "Login Error", "Username and password cannot be empty");
+            QMessageBox::warning(this, "Errore login", "Username e password non possono essere vuoti");
     } else {
         Message m;
         m.setAction('L');
@@ -75,7 +73,7 @@ void LoginWindow::receivedLogin(bool resp){
 
     if(resp){
         isLogin=true;                              //sostituire con Islogin==1!!!!!!
-            QMessageBox::information(this,"Login","Username e password corretti");
+            QMessageBox::information(this,"Login success","Username e password corretti");
            // mw = new MainWindow(this);
             setIsLogin(true);
            // TextEdit te;
@@ -94,7 +92,7 @@ void LoginWindow::receivedLogin(bool resp){
            // hide();
     }
     else {
-        QMessageBox::information(this,"Login","Username e password non sono corretti");
+        QMessageBox::information(this,"Errore login","Username e password non sono corretti");
         qDebug() << "errore login";
         isLogin=false;
     }
@@ -119,42 +117,39 @@ void LoginWindow::receiveRegistration(Message m)
 
 void LoginWindow::loggedin(bool c)
 {
-    if(c==1)
-        QMessageBox::information(this,"Login","Utente già loggato");
+    if(c)
+        QMessageBox::information(this,"Errore login","Utente già loggato");
     else
-        QMessageBox::information(this,"ERRORE","Impossibile connettersi al server");
+        QMessageBox::warning(this,"ERRORE","Impossibile connettersi al server");
 }
 
 void LoginWindow::receiveErrorReg(QString s)
 {
-    if(s=="password"){
+    if(QString::compare(s, "password", Qt::CaseSensitive)==0){
         QMessageBox::information(this,"Errore password","Le due password non coincidono");
         emit(openRw(siteId));
-    }else if(s=="username"){
+    }else if(QString::compare(s, "username_", Qt::CaseSensitive)==0){
         QMessageBox::information(this,"Errore username","Carattere '_' proibito");
+        emit(openRw(siteId));
+    }else if(QString::compare(s, "usernameNull", Qt::CaseSensitive)==0){
+        QMessageBox::information(this,"Errore username","Inserisci un username valido");
+        emit(openRw(siteId));
+    }else if(QString::compare(s, "immagine", Qt::CaseSensitive)==0){
+        QMessageBox::information(this, "Errore immagine", "Caricare un'immagine valida");
         emit(openRw(siteId));
     }
 }
 
-
-
-
 bool LoginWindow::getIsLogin() const{
     return isLogin;
 }
-void LoginWindow::setIsLogin(int isLogin){
+
+void LoginWindow::setIsLogin(bool isLogin){
    this->isLogin = isLogin;
 }
 
 void LoginWindow::on_pushButton_signup_clicked(){
-
-
     emit(openRw(siteId));
-
-
-
-
-
 }
 
 
