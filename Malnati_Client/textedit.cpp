@@ -183,8 +183,14 @@ TextEdit::TextEdit(QWidget *parent)
         //resetActionToggle();
         if (localOperation )//|| handlingOperation)
             localOperation = false;
-        else
-            emit cursorPositionChangedSignal(pos);
+        else{
+            Message m;
+            m.setAction('Z');
+            m.setSender(siteid);
+            m.setParams({QString(pos)});
+            emit sendTextMessage(&m);
+        }
+
     });
 
 
