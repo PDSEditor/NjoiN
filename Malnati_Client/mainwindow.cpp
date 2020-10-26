@@ -367,3 +367,10 @@ void MainWindow::documentClosed(QString fileName)
 {
 
 }
+
+void MainWindow::on_actionOpen_triggered()
+{
+    i = new Inserturi();
+    connect(i,&Inserturi::sendUri,this,&MainWindow::sendUri);
+    i->exec();
+}

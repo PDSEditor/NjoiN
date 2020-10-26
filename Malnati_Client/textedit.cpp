@@ -156,6 +156,7 @@ TextEdit::TextEdit(QWidget *parent)
     textEdit->currentCharFormat().setFontItalic(false);
     textEdit->currentCharFormat().setFontUnderline(false);
     //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    this->localOperation = false;
 
 
     connect(textEdit->document(), &QTextDocument::modificationChanged,
@@ -168,6 +169,23 @@ TextEdit::TextEdit(QWidget *parent)
             actionRedo, &QAction::setEnabled);
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
+
+    connect(textEdit->document(), &QTextDocument::cursorPositionChanged, this, [&](){
+        int line = textEdit->textCursor().blockNumber()+1;
+        int pos = textEdit->textCursor().columnNumber()+1;
+        int TLines = textEdit->document()->blockCount();
+
+        //statusbar->showMessage(QString("Line:%1 Col:%2 TotLines:%3").arg(line).arg(pos).arg(TLines));
+    });
+
+    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
+        int pos = textEdit->textCursor().position();
+        //resetActionToggle();
+        if (localOperation )//|| handlingOperation)
+            localOperation = false;
+        else
+            emit cursorPositionChangedSignal(pos);
+    });
 
 
 
@@ -489,6 +507,7 @@ void TextEdit::setSocketM(socketManager *sockclient)
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
     connect(this, &TextEdit::sendTextMessage, sockm, &socketManager::messageToServer);
     connect(sockm,&socketManager::receiveAllign,this,&TextEdit::receiveAllign);
+    //connect()
 }
 
 void TextEdit::setFileName(QString fileName)
@@ -554,6 +573,7 @@ void TextEdit::receiveSymbol(Message *m)
 {
 
     externAction=true;
+    localOperation = false;
    QTextCursor curs = textEdit->textCursor(),oldcurs;
        //QTextCursor curs ,oldcurs=textEdit->textCursor();
        //textEdit->setTextCursor(curs);
@@ -638,7 +658,7 @@ void TextEdit::setSiteid(int s)
 
 void TextEdit::updateUsersOnTe(QList<QString> users)
 {
-    //this->m_onlineUsers = users;
+    this->m_onlineUsers = users;
 }
 
 
@@ -1004,6 +1024,7 @@ else{
         }
    }
 externAction=false;
+localOperation=true;
     }
 
 }
@@ -1126,6 +1147,29 @@ void TextEdit::alignmentChanged(Qt::Alignment a)
         actionAlignJustify->setChecked(true);
 }
 
+void TextEdit::updateCursors()
+{
+    for (auto it = m_onlineUsers.begin(); it != m_onlineUsers.end(); it++) {
+        User user;
+        user.user = *it;
+        QRect remoteCoord = textEdit->cursorRect(user.cursor);
+        int height = remoteCoord.bottom()-remoteCoord.top();
+        user.label->resize(1000, height+5);
+
+        /* update label dimension according to remote cursor position */
+        QFont l_font=user.label->font();
+        QTextCharFormat fmt=user.cursor.charFormat();
+        int font_size=static_cast<int>(fmt.fontPointSize());
+        if(font_size==0)
+            font_size=DEFAULT_SIZE;
+        QFont new_font(l_font.family(),static_cast<int>((font_size/2)+3),QFont::Bold);
+        user.label->setFont(new_font);
+
+        user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3));
+        user.label->setVisible(true);
+    }
+}
+
 
 
 void TextEdit::loadFile(QList<Symbol> file)
@@ -1194,4 +1238,28 @@ QChar TextEdit::findalign(Qt::Alignment al){
     else if(al==Qt::AlignJustify || al==(Qt::AlignJustify | Qt::AlignAbsolute))
         c='J';
     return c;
+}
+
+void TextEdit::moveCursor(int pos, QString userId)
+{
+    if(m_onlineUsers.contains(userId)){
+    User user ;
+    user.user = userId;
+    user.cursor.setPosition(pos);
+    QRect remoteCoord = textEdit->cursorRect(user.cursor);
+    int height = remoteCoord.bottom()-remoteCoord.top();
+    user.label->resize(1000, height+5);
+
+    /* update label dimension according to remote cursor position */
+    QFont l_font=user.label->font();
+    QTextCharFormat fmt=user.cursor.charFormat();
+    int font_size=static_cast<int>(fmt.fontPointSize());
+    if(font_size==0)
+        font_size=DEFAULT_SIZE;
+    QFont new_font(l_font.family(),static_cast<int>((font_size/2)+3),QFont::Bold);
+    user.label->setFont(new_font);
+
+    user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3));
+    user.label->setVisible(true);
+    }
 }

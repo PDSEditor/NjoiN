@@ -74,6 +74,8 @@ private slots:
     void openMw(QString);
     void documentClosed(QString);
 
+    void on_actionOpen_triggered();
+
 private:
     Ui::MainWindow *ui;
     TextEdit *te;

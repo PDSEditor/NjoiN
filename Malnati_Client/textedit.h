@@ -8,8 +8,11 @@
 #include <symbol.h>
 #include <crdt.h>
 #include <QPrinter>
+#include <QLabel>
 #include <showuridialog.h>
 #include "sidebarusers.h"
+
+#define DEFAULT_SIZE 12
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -22,6 +25,12 @@ class QPrinter;
 QT_END_NAMESPACE
 
 
+struct User
+{
+    QString user;
+    QLabel *label;
+    QTextCursor cursor;
+};
 
 
 class TextEdit : public QMainWindow
@@ -39,7 +48,7 @@ public:
     QString getURI();
     Qt::Alignment insertalign(QChar c);
     QChar findalign(Qt::Alignment);
-    void moveCursor(int pos, int siteId);
+    void moveCursor(int pos, QString userId);
 
 public slots:
     void fileNew();
@@ -141,7 +150,10 @@ private:
     ShowUriDialog *shu;
     sidebarUsers *sb;
     QTextCursor *m_localCursor = nullptr;
+    QList<QString> m_onlineUsers;
     Q_INVOKABLE void updateCursors();
+    bool handlingOperation;
+    bool localOperation;
 
 };
 
