@@ -12,12 +12,16 @@ sidebarUsers::sidebarUsers(QList<QString> userOn, QList<QString> userOff, QWidge
 
     for(auto user : this->onlineUsers) {
          QListWidgetItem* item = new QListWidgetItem(user);
-         ui->onlineUsersUI->addItem(item);
+         QList<QListWidgetItem*> q=ui->onlineUsersUI->findItems(item->text(),Qt::MatchExactly);
+         if(q.size()==0)
+            ui->onlineUsersUI->addItem(item);
     }
 
     for(auto user : this->offlineUsers) {
          QListWidgetItem* item = new QListWidgetItem(user);
-         ui->offlineUsersUI->addItem(item);
+         QList<QListWidgetItem*> q=ui->offlineUsersUI->findItems(item->text(),Qt::MatchExactly);
+         if(q.size()==0)
+            ui->offlineUsersUI->addItem(item);
     }
 }
 
