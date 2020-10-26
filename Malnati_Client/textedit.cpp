@@ -131,7 +131,7 @@ TextEdit::TextEdit(QWidget *parent)
     setupEditActions();
     setupTextActions();
     setupUriActions();
-    setupSidebarUser();
+
 
     {
         QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
@@ -473,13 +473,7 @@ void TextEdit::setupUriActions()
 
 }
 
-void TextEdit::setupSidebarUser()
-{
-    sb->show();
-    //QToolBar *tb = new QToolBar(sb);
-    //addToolBar(tb);
 
-}
 
 bool TextEdit::load(const QString &f)
 {

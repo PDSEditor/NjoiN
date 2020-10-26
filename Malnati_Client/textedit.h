@@ -10,7 +10,7 @@
 #include <QPrinter>
 #include <QLabel>
 #include <showuridialog.h>
-#include "sidebarusers.h"
+
 
 #define DEFAULT_SIZE 12
 
@@ -102,7 +102,6 @@ private:
     void setupEditActions();
     void setupTextActions();
     void setupUriActions();
-    void setupSidebarUser();
     bool maybeSave();
     void setCurrentFileName(const QString &fileName);
 
@@ -150,7 +149,6 @@ private:
     socketManager *sockm;
     std :: vector<Symbol> *symbols;
     ShowUriDialog *shu;
-    sidebarUsers *sb;
     QTextCursor *m_localCursor = nullptr;
     QList<QString> m_onlineUsers;
     Q_INVOKABLE void updateCursors();
