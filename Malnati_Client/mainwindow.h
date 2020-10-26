@@ -75,8 +75,10 @@ private slots:
     void openMw(QString);
     void documentClosed(QString);
 
+    void on_actionOpen_triggered();
     void sendNewImage(QByteArray &bArray);
     void sendNewPwd(QString &oldPwd, QString &newPwd);
+
 
 private:
     Ui::MainWindow *ui;

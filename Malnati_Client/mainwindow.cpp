@@ -14,7 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 {
     ui->setupUi(this);
-    ui->label->setStyleSheet("QLabel { background-color : green; color : black; }");
+    ui->label->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center; text-align:top; color:yellow;");
+    setWindowTitle("N Joi' N");
+
      connect(ui->listWidget, &QListWidget::itemClicked, this, &MainWindow::open_file_on_server);
 //sock=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 }
@@ -197,7 +199,7 @@ void MainWindow::showUsers(Message m)
                 q = Qt::black;
 
             else {
-                int pos=siteId%5;
+                int pos=siteId%11;
                 q=listcolor.at(pos);
             }
 
@@ -412,4 +414,11 @@ void MainWindow::openMw(QString fileName)
 void MainWindow::documentClosed(QString fileName)
 {
 
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    i = new Inserturi();
+    connect(i,&Inserturi::sendUri,this,&MainWindow::sendUri);
+    i->exec();
 }

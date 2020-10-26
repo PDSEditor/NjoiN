@@ -4,10 +4,7 @@
 
 Symbol::Symbol(QChar value, std::vector<int> position, int siteId, int counter): value(value), siteId(siteId), counter(counter)
 {
-    //this->value = value;
     this->position = std::move(position);
-    //this->siteId = siteId;
-    //this->counter = counter;
 }
 Symbol::Symbol(){
 

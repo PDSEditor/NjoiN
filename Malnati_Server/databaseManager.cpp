@@ -23,7 +23,7 @@ bool DatabaseManager::registerAccount(Account &account, QString password){
     auto image = account.getImage();
 
     if(image == nullptr){
-        qDebug() << "sono qui";
+        qDebug() << "immagine null";
         return false;
     }
 
@@ -316,8 +316,8 @@ bool DatabaseManager::deleteSymbol(Message &mes)
             builder
                     << "document_id" << documentName.toUtf8().constData()
                     << "value" << symbol.getValue().unicode()
-                    << "siteId" << symbol.getSiteId()
-                    //<< "counter" << symbol.getCounter()
+//                    << "siteId" << symbol.getSiteId()
+                    << "counter" << symbol.getCounter()
                     << "position" << array_builder
 
 //                    << "family" << symbol.getFamily().toUtf8().constData()
@@ -464,7 +464,7 @@ bool DatabaseManager::setSymbolsOfDocument(QString documentId, QList<Symbol> doc
             try {
                 this->insertSymbol(m);
             }
-            catch (std::exception e) {
+            catch (std::exception &e) {
                     throw std::exception();
                 }
         }

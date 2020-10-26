@@ -53,12 +53,8 @@ void socketManager::binaryMessageToServer(Message *m)
     QVector<QString> params;
     m->setSender(this->siteId);
 
-
-
     Symbol symbol = m->getSymbol();
     //  symbol.setSiteId(socketManager::siteId);
-
-
 
     if(action==('I')||action==("D")){
         if(action==('I')){
@@ -84,7 +80,7 @@ void socketManager::binaryMessageToServer(Message *m)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        tmp=(symbol.getCounter());
+//        tmp=(symbol.getCounter());
         tmpc=symbol.getValue();
         bytemex.append(tmpc.cell());
         bytemex.append(tmpc.row());
@@ -274,6 +270,12 @@ void socketManager::onTextMessageReceived(QString message)
     }
     case 'B':{
         emit(receiveAllign(m));
+        break;
+    }
+    case 'Z':{
+        int pos = m.getParams()[0].toUInt();
+        QString userId =m.getParams()[1];
+        emit(updateCursor(pos,userId));
         break;
     }
     default:{
