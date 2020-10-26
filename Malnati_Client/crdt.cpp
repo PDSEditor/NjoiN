@@ -235,6 +235,7 @@ int Crdt::remoteinsert(Symbol s){
     //controllo se è vuoto
     if(symbols.size()==0){
         symbols.push_back(s);
+        return 0;
     }
     //controllo se è ultimo
     else if(this->compare(s,symbols[max])>0){
