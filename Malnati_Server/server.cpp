@@ -215,7 +215,7 @@ void Server::processMessage(Message &mesIn) {
 
             this->docMan->openDocument(doc);
 
-            this->updateUsersOnDocument(mesIn);
+
         }
         else{
             mesOut.setError(true);              //Non autorizzato
@@ -224,8 +224,9 @@ void Server::processMessage(Message &mesIn) {
 
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
-
-
+       if(!mesOut.getError()){
+            this->updateUsersOnDocument(mesIn);
+        }
 
         break;
     }
@@ -317,7 +318,7 @@ void Server::processMessage(Message &mesIn) {
             accPerFile.insert (documentId, accPerFile[documentId]);
             this->acMan->setAccountsPerFile(accPerFile);
 
-            this->updateUsersOnDocument(mesIn);
+
             this->docMan->openDocument(doc);
 
         }
@@ -327,6 +328,10 @@ void Server::processMessage(Message &mesIn) {
         }
 
         socketMan->messageToUser(mesOut, mesOut.getSender());
+
+        if(!mesOut.getError()){
+             this->updateUsersOnDocument(mesIn);
+         }
 
         break;
     }

@@ -26,113 +26,69 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="3" column="6">
-     <spacer name="horizontalSpacer_2">
+    <item row="0" column="0" colspan="2">
+     <spacer name="horizontalSpacer_4">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>100</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
      </spacer>
     </item>
-    <item row="3" column="1" colspan="2">
-     <widget class="QPushButton" name="pushButton">
+    <item row="0" column="2" colspan="3">
+     <widget class="QLabel" name="label">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>22</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
       <property name="text">
-       <string>Nuovo Documento</string>
+       <string>N Joi' N</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <property name="margin">
+       <number>12</number>
+      </property>
+      <property name="indent">
+       <number>0</number>
       </property>
      </widget>
     </item>
-    <item row="4" column="0" colspan="7">
-     <widget class="QListWidget" name="listWidget"/>
-    </item>
-    <item row="3" column="0">
-     <spacer name="horizontalSpacer">
+    <item row="0" column="5" colspan="2">
+     <spacer name="horizontalSpacer_5">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>100</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
      </spacer>
     </item>
-    <item row="3" column="5">
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>Aggiungi Documento</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="7">
-     <layout class="QGridLayout" name="gridLayout_3">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetDefaultConstraint</enum>
-      </property>
-      <property name="leftMargin">
-       <number>20</number>
-      </property>
-      <property name="topMargin">
-       <number>20</number>
-      </property>
-      <property name="rightMargin">
-       <number>20</number>
-      </property>
-      <property name="bottomMargin">
-       <number>20</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Nome applicativo</string>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::PlainText</enum>
-        </property>
-        <property name="margin">
-         <number>12</number>
-        </property>
-        <property name="indent">
-         <number>0</number>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="3" column="3">
-     <spacer name="horizontalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>55</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="3">
+    <item row="1" column="3">
      <spacer name="verticalSpacer_2">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -147,6 +103,71 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="2" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>100</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="1" colspan="2">
+     <widget class="QPushButton" name="pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Nuovo Documento</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>55</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="4" colspan="2">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Aggiungi Documento</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="6">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>100</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="0" colspan="7">
+     <widget class="QListWidget" name="listWidget"/>
     </item>
    </layout>
   </widget>

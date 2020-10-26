@@ -272,6 +272,12 @@ void socketManager::onTextMessageReceived(QString message)
         emit(receiveAllign(m));
         break;
     }
+    case 'Z':{
+        int pos = m.getParams()[0].toUInt();
+        QString userId =m.getParams()[1];
+        emit(updateCursor(pos,userId));
+        break;
+    }
     default:{
         qDebug() << "default";
         break;
