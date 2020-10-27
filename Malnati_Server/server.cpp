@@ -175,9 +175,13 @@ void Server::processMessage(Message &mesIn) {
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
         documentId = this->acMan->getUsernameDocumentMap()[username];
         mesIn.setParams({documentId});
-        this->dbMan.get()->insertSymbol(mesIn);
+        try {
+            this->dbMan.get()->insertSymbol(mesIn);
+        } catch (std::exception& e) {
+            qDebug()<<"Fallito inserimento di simbolo";
+        }
+
         this->dispatchMessage(mesIn);
-//        remoteInsert(mesIn.getSymbol());
         break;
     }
     case 'D':{
@@ -185,9 +189,13 @@ void Server::processMessage(Message &mesIn) {
         documentId = this->acMan->getUsernameDocumentMap()[username];
         mesIn.setParams({documentId});
 
-        this->dbMan.get()->deleteSymbol(mesIn);
+        try {
+            this->dbMan.get()->deleteSymbol(mesIn);
+        } catch (std::exception& e) {
+            qDebug()<<"Fallita cancellazione del simbolo";
+        }
+
         this->dispatchMessage(mesIn);
-//        remoteDelete(mesIn.getSymbol());
         break;
     }
 
@@ -198,35 +206,41 @@ void Server::processMessage(Message &mesIn) {
         mesOut.setAction('R');
         mesOut.setSender(mesIn.getSender());
 
-        doc = this->dbMan->getDocument(documentId);
+        try {
+            doc = this->dbMan->getDocument(documentId);
 
-        if(doc.getUserAllowed().contains(username)){
-            auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
-            for(auto symbol : symbols) {
-                mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+            if(doc.getUserAllowed().contains(username)){
+                auto symbols = this->dbMan.get()->retrieveSymbolsOfDocument(documentId);
+                for(auto symbol : symbols) {
+                    mesOut.addParam(symbol.toJson().toJson(QJsonDocument::Compact));
+                }
+                mesOut.setError(false);
+
+                this->acMan->updateAccountOnDocument(username, documentId);
+
+                auto accPerFile = this->acMan->getAccountsPerFile();
+                accPerFile[documentId].append(username);
+                accPerFile.insert (documentId, accPerFile[documentId]);
+                this->acMan->setAccountsPerFile(accPerFile);
+
+                this->docMan->openDocument(doc);
+
+
             }
-            mesOut.setError(false);
-
-            this->acMan->updateAccountOnDocument(username, documentId);
-
-            auto accPerFile = this->acMan->getAccountsPerFile();
-            accPerFile[documentId].append(username);
-            accPerFile.insert (documentId, accPerFile[documentId]);
-            this->acMan->setAccountsPerFile(accPerFile);
-
-            this->docMan->openDocument(doc);
-
-
-        }
-        else{
-            mesOut.setError(true);              //Non autorizzato
-        }
+            else{
+                mesOut.setError(true);              //Non autorizzato
+            }
 
 
 
-        socketMan->messageToUser(mesOut, mesOut.getSender());
-       if(!mesOut.getError()){
-            this->updateUsersOnDocument(mesIn);
+            socketMan->messageToUser(mesOut, mesOut.getSender());
+           if(!mesOut.getError()){
+                this->updateUsersOnDocument(mesIn);
+            }
+
+
+        } catch (std::exception& e) {
+            qDebug()<<"Errore nella retrieve del documento";
         }
 
         break;
@@ -249,22 +263,29 @@ void Server::processMessage(Message &mesIn) {
         userAllowed = {username};
         doc = SharedDocument(nomeFile, username, true, userAllowed);
 
-         if(!this->dbMan->insertDocument(doc)) {
-            qDebug()<< "Errore nella creazione del file.";
-            break;
+        try {
+            if(!this->dbMan->insertDocument(doc)) {
+               qDebug()<< "Errore nella creazione del file.";
+               break;
+           }
+
+           this->docMan->openDocument(doc);
+           auto accPerFile = this->acMan->getAccountsPerFile();
+           accPerFile.insert(doc.getUri(), userAllowed);
+           this->acMan->setAccountsPerFile(accPerFile);
+
+           this->acMan->updateAccountOnDocument(username, (nomeFile +"_"+username));
+
+           this->docMan->openDocument(doc);
+
+           //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
+           //tanto non c'è differenza lato server tra creatore e contributori
+
+        } catch (std::exception& e) {
+            qDebug()<< "Errore nella create del file".
         }
 
-        this->docMan->openDocument(doc);
-        auto accPerFile = this->acMan->getAccountsPerFile();
-        accPerFile.insert(doc.getUri(), userAllowed);
-        this->acMan->setAccountsPerFile(accPerFile);
 
-        this->acMan->updateAccountOnDocument(username, (nomeFile +"_"+username));
-
-        this->docMan->openDocument(doc);
-
-        //uso lo stesso metodo per aggiungere il creatore alla lista degli utenti associati,
-        //tanto non c'è differenza lato server tra creatore e contributori
         break;
     }
 
@@ -273,13 +294,19 @@ void Server::processMessage(Message &mesIn) {
         //check se il file è ancora aperto da qualcuno, se era l'unico ad averlo aperto, si procede al salvataggio su disco
         username = mesIn.getParams()[1];
         documentId = mesIn.getParams()[0];
-        if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
-            auto symbols = this->dbMan->retrieveSymbolsOfDocument(documentId);
-            if(!this->docMan->saveToServer(documentId, symbols)){
-                qDebug() << "Errore nel salvataggio in locale sul server del file";
+
+        try {
+            if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
+                auto symbols = this->dbMan->retrieveSymbolsOfDocument(documentId);
+                if(!this->docMan->saveToServer(documentId, symbols)){
+                    qDebug() << "Errore nel salvataggio in locale sul server del file";
+                }
+                this->docMan->closeDocument(documentId);
             }
-            this->docMan->closeDocument(documentId);
+        } catch (std::exception& e) {
+            qDebug()<< "Errore nella chiusura di un documento";
         }
+
         break;
     }
 
@@ -346,25 +373,30 @@ void Server::processMessage(Message &mesIn) {
 
         QByteArray img = mesIn.getParams()[2].toLatin1();
 
-        Account acc(this->dbMan->getAccount(username));
+        try {
+            Account acc(this->dbMan->getAccount(username));
 
-        if( acc.getSiteId()< 0) {               // non esiste un account con questo username
-            mesOut.setError(false);
+            if( acc.getSiteId()< 0) {               // non esiste un account con questo username
+                mesOut.setError(false);
 
-//            acc = Account(username, mesIn.getSender());
-            acc = Account(username, mesIn.getSender(), img);
+    //            acc = Account(username, mesIn.getSender());
+                acc = Account(username, mesIn.getSender(), img);
 
-            this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
-            auto a=this->socketMan->getSiteIdUser();
-            a[acc.getSiteId()]=username;
-            this->socketMan->setSiteIdUser(a);
+                this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
+                auto a=this->socketMan->getSiteIdUser();
+                a[acc.getSiteId()]=username;
+                this->socketMan->setSiteIdUser(a);
 
+            }
+            else {
+                mesOut.setError(true);
+            }
+
+            socketMan->messageToUser(mesOut, mesOut.getSender());
+
+        } catch (std::exception& e) {
+            qDebug()<<"Errore nella registrazione";
         }
-        else {
-            mesOut.setError(true);
-        }
-
-        socketMan->messageToUser(mesOut, mesOut.getSender());
 
         break;
     }
@@ -378,31 +410,37 @@ void Server::processMessage(Message &mesIn) {
         auto username = mesIn.getParams()[0];
         auto password = mesIn.getParams()[1];
 
-        if(dbMan->checkAccountPsw(username, password)){
+        try {
+            if(dbMan->checkAccountPsw(username, password)){
 
-            Account acc(dbMan->getAccount(username));
+                Account acc(dbMan->getAccount(username));
 
-            if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
-                params = {acc.getUsername(), QString::number(acc.getSiteId()), acc.getImage()};
-                params.append(acc.getDocumentUris().toVector());
-                mesOut.setParams(params);
-                mesOut.setError(false);
-                mesOut.setSender(acc.getSiteId());
-            }else {                                                                      //utente era già collegato da un altro client
+                if(this->acMan->updateOnlineAccounts(acc.getSiteId(), acc)) {               //utente collegato correttamente
+                    params = {acc.getUsername(), QString::number(acc.getSiteId()), acc.getImage()};
+                    params.append(acc.getDocumentUris().toVector());
+                    mesOut.setParams(params);
+                    mesOut.setError(false);
+                    mesOut.setSender(acc.getSiteId());
+                }else {                                                                      //utente era già collegato da un altro client
+                    mesOut.setError(true);
+                    qDebug() << "autenticazione di un utente già online";
+                    mesOut.setParams({"2"});
+                }
+
+            }
+            else {
                 mesOut.setError(true);
-                qDebug() << "autenticazione di un utente già online";
-                mesOut.setParams({"2"});
+                qDebug() << "autenticazione fallita";
+                mesOut.setParams({"1"});
             }
 
-        }
-        else {
-            mesOut.setError(true);
-            qDebug() << "autenticazione fallita";
-            mesOut.setParams({"1"});
+            socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
+                                                                                        // e dentro il siteId ci metto il sender "ufficiale"
+        } catch (std::exception& e) {
+            qDebug()<< "Errore nella Login";
         }
 
-        socketMan->messageToUser(mesOut, mesIn.getSender());                       // qui mando il mesOut con dentro il sender temporaneo
-                                                                                    // e dentro il siteId ci metto il sender "ufficiale"
+
         break;
     }
 
@@ -427,19 +465,25 @@ void Server::processMessage(Message &mesIn) {
         end = mesIn.getParams()[1].toInt();
         type = mesIn.getParams()[2].at(0);
 
-        username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
+        try {
+            username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
 
-        documentId = this->acMan->getUsernameDocumentMap()[username];
+            documentId = this->acMan->getUsernameDocumentMap()[username];
 
-        document = this->dbMan->retrieveSymbolsOfDocument(documentId);
+            document = this->dbMan->retrieveSymbolsOfDocument(documentId);
 
-        for (int i=start; i<= end; i++) {
-           document[i].setAlign(type);
+            for (int i=start; i<= end; i++) {
+               document[i].setAlign(type);
+            }
+
+            this->dbMan->setSymbolsOfDocument(documentId, document);
+
+            this->dispatchMessage(mesIn);
+
+        } catch (std::exception) {
+            qDebug() <<"Errore nel tentativo di allineare una selezione";
         }
 
-        this->dbMan->setSymbolsOfDocument(documentId, document);
-
-        this->dispatchMessage(mesIn);
 
         break;
     }
@@ -460,16 +504,22 @@ void Server::processMessage(Message &mesIn) {
 
         QByteArray img = mesIn.getParams()[1].toLatin1();
 
-        Account acc(this->dbMan->getAccount(username));
+        try {
+            Account acc(this->dbMan->getAccount(username));
 
-        if(acc.getSiteId()<0)
-            mesOut.setError(true);
+            if(acc.getSiteId()<0)
+                mesOut.setError(true);
 
-        if(this->dbMan->changeImage(username, img)){
-            mesOut.setError(false);
-        }else mesOut.setError(true);
+            if(this->dbMan->changeImage(username, img)){
+                mesOut.setError(false);
+            }else mesOut.setError(true);
 
-        socketMan->messageToUser(mesOut, mesOut.getSender());
+            socketMan->messageToUser(mesOut, mesOut.getSender());
+        } catch (std::exception& e) {
+            qDebug()<<"Errore nel cambiamento dell'immagine";
+        }
+
+
         break;
     }
     case 'P':{
@@ -480,16 +530,21 @@ void Server::processMessage(Message &mesIn) {
         mesOut.setAction('P');
         mesOut.setSender(mesIn.getSender());
 
-        Account acc(this->dbMan->getAccount(username));
+        try {
+            Account acc(this->dbMan->getAccount(username));
 
-        if(acc.getSiteId()<0)
-            mesOut.setError(true);
+            if(acc.getSiteId()<0)
+                mesOut.setError(true);
 
-        if(this->dbMan->changePassword(username, oldPsw, newPsw))
-            mesOut.setError(false);
-        else mesOut.setError(true);
+            if(this->dbMan->changePassword(username, oldPsw, newPsw))
+                mesOut.setError(false);
+            else mesOut.setError(true);
 
-        socketMan->messageToUser(mesOut, mesOut.getSender());
+            socketMan->messageToUser(mesOut, mesOut.getSender());
+        } catch (std::exception& e) {
+            qDebug()<<"Errore nel cambiamento della password";
+        }
+
         break;
     }
 
