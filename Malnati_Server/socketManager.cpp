@@ -307,7 +307,7 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     /** necessario settare i decorators? **/
 
 
-    m.debugPrint();
+//    m.debugPrint();
     //
 //    this->binaryMessageToUser(m,0);
 

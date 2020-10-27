@@ -32,6 +32,13 @@ void AccountManager::setUsernameDocumentMap(const QMap<QString, QString> &value)
     usernameDocumentMap = value;
 }
 
+bool AccountManager::removeUsernameFromMap(QString username)
+{
+    if(this->usernameDocumentMap.remove(username))
+            return true;
+    else return false;
+}
+
 AccountManager::AccountManager(QObject *parent) : QObject(parent)
 {
     
