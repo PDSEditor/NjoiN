@@ -20,11 +20,10 @@ bool Client::Login()
     LoginWindow lw;
     Registration rw;
     AccountInterface ai;
+
     sockm = new socketManager(QUrl(QStringLiteral("ws://angelofloridia.ddns.net:8080")));
     //localhost:1234
     //ws://angelofloridia.ddns.net:8080
-//    sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
-
 
     mw = new MainWindow();
 

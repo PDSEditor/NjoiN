@@ -105,7 +105,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     layoutUsers = new QVBoxLayout();
 
     te = new TextEdit();
-
+    te->setUsername(username);
     layout->addWidget(te);
     layout->addWidget(usersWindow);
 
@@ -210,6 +210,8 @@ void MainWindow::showUsers(Message m)
                     this->onlineUsers->addItem(user);
                     this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
                     onlineUserTE.append(user);
+                    if(user!=username)
+                        onlineUserColor.insert(user,q);
                 }
             }
             else{
@@ -223,7 +225,7 @@ void MainWindow::showUsers(Message m)
 
     }
 
-    emit(updateUsersOnTe(onlineUserTE));
+    emit(updateUsersOnTe(onlineUserColor));
 
 }
 
@@ -336,7 +338,7 @@ void MainWindow::receiveTitle(QString title)
     layoutUsers = new QVBoxLayout();
 
     te = new TextEdit();
-
+    te->setUsername(username);
     layout->addWidget(te);
     layout->addWidget(usersWindow);
 
@@ -403,11 +405,16 @@ void MainWindow::openMw(QString fileName)
     this->show();
 
     if (fileName!="") {
-        Message m;
+        Message m,mc;
         m.setAction('X');
         m.setSender(this->getSiteId());
         m.setParams({fileName, this->username});
         emit(sendTextMessage(&m));
+        //messaggio per cursore
+        mc.setAction('Z');
+        mc.setSender(this->getSiteId());
+        mc.setParams({QString::number(-24),username});
+        emit(sendTextMessage(&mc));
     }
 }
 

@@ -48,6 +48,7 @@ public:
     QString getURI();
     Qt::Alignment insertalign(QChar c);
     QChar findalign(Qt::Alignment);
+    void setUsername(QString usern);
    // void moveCursor(int pos, QString userId);
 
 public slots:
@@ -55,7 +56,7 @@ public slots:
     void receiveSymbol(Message *m);
     void receiveAllign(Message m);
     void setSiteid(int);
-    void updateUsersOnTe(QList<QString>);
+    void updateUsersOnTe(QMap<QString,QColor>);
     void moveCursor(int pos, QString userId);
 
 
@@ -105,6 +106,7 @@ private:
     bool maybeSave();
     void setCurrentFileName(const QString &fileName);
 
+
     void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
     void fontChanged(const QFont &f);
     void colorChanged(const QColor &c);
@@ -143,14 +145,14 @@ private:
     QComboBox *comboSize;
 
     QToolBar *tb;
-    QString fileName,URI;
+    QString fileName,URI,username;
     QTextEdit *textEdit;
     Crdt *crdt;
     socketManager *sockm;
     std :: vector<Symbol> *symbols;
     ShowUriDialog *shu;
     QTextCursor *m_localCursor = nullptr;
-    QList<QString> m_onlineUsers;
+    QMap<QString,User> m_onlineUsers;
     Q_INVOKABLE void updateCursors();
     bool handlingOperation;
     bool localOperation;
