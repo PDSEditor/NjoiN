@@ -257,6 +257,9 @@ int Crdt::remoteinsert(Symbol s){
        else if(pos<0){
            max=middle;
        }
+       else if(pos == 0) {
+           qDebug()<<"errore: inserimento stesso carattere";
+       }
        middle=(max+min)/2;
     }
     it=symbols.begin();
@@ -342,13 +345,12 @@ int Crdt::compare(Symbol s1, Symbol s2){
         if(len1<len2){
             res=-1;
         }
-        else if(s1.getSiteId()<s2.getSiteId())
+        else if(s1.getSiteId()<s2.getSiteId())          //da gestire
             res=1;
         else if(s1.getSiteId()>s2.getSiteId())
             res = -1;
         else if(s1.getSiteId()==s2.getSiteId()){
-            qDebug() << "Errore nell'inserimento remoto!";
-            res = -2;
+            res = 0;
         }
 
 
