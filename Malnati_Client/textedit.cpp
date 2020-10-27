@@ -393,7 +393,7 @@ void TextEdit::receiveSymbol(Message *m)
     QColor col;
     QTextCharFormat qform, preqform;
     if(colors.find(m->getSymbol().getSiteId())==colors.end()){
-        int pos=m->getSymbol().getSiteId()%5;
+        int pos=m->getSymbol().getSiteId()%11;
         QColor q=listcolor.at(pos);
         colors.insert(m->getSymbol().getSiteId(),q);
     }
