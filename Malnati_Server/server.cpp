@@ -282,7 +282,7 @@ void Server::processMessage(Message &mesIn) {
            //tanto non c'è differenza lato server tra creatore e contributori
 
         } catch (std::exception& e) {
-            qDebug()<< "Errore nella create del file".
+            qDebug()<< "Errore nella create del file";
         }
 
 
