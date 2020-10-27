@@ -474,7 +474,6 @@ void TextEdit::setupUriActions()
 }
 
 
-
 bool TextEdit::load(const QString &f)
 {
     if (!QFile::exists(f))
