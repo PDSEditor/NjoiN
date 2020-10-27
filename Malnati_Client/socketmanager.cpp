@@ -285,7 +285,7 @@ void socketManager::onTextMessageReceived(QString message)
         break;
     }
     case 'Z':{
-        int pos = m.getParams()[0].toUInt();
+        int pos = m.getParams()[0].toInt();
         QString userId =m.getParams()[1];
         emit(updateCursor(pos,userId));
         break;
