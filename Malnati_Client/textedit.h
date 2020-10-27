@@ -55,7 +55,7 @@ public slots:
     void receiveSymbol(Message *m);
     void receiveAllign(Message m);
     void setSiteid(int);
-    void updateUsersOnTe(QList<QString>);
+    void updateUsersOnTe(QMap<QString,QColor>);
     void moveCursor(int pos, QString userId);
 
 
@@ -150,7 +150,7 @@ private:
     std :: vector<Symbol> *symbols;
     ShowUriDialog *shu;
     QTextCursor *m_localCursor = nullptr;
-    QList<QString> m_onlineUsers;
+    QMap<QString,User> m_onlineUsers;
     Q_INVOKABLE void updateCursors();
     bool handlingOperation;
     bool localOperation;

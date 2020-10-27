@@ -210,6 +210,7 @@ void MainWindow::showUsers(Message m)
                     this->onlineUsers->addItem(user);
                     this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
                     onlineUserTE.append(user);
+                    onlineUserColor.insert(user,q);
                 }
             }
             else{
@@ -223,7 +224,7 @@ void MainWindow::showUsers(Message m)
 
     }
 
-    emit(updateUsersOnTe(onlineUserTE));
+    emit(updateUsersOnTe(onlineUserColor));
 
 }
 

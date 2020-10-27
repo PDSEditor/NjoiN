@@ -58,7 +58,7 @@ signals:
     void sendTextMessage(Message* mex);
     void receivedNewImage(Message &);
     void receivedNewPsw(Message &);
-    void updateUsersOnTe(QList<QString>);
+    void updateUsersOnTe(QMap<QString,QColor>);
 
 private slots:
     void on_pushButton_clicked();
@@ -106,5 +106,6 @@ private:
 
     QVBoxLayout* layoutUsers;
     QHBoxLayout* layout;
+    QMap<QString,QColor> onlineUserColor;
 };
 #endif // MAINWINDOW_H
