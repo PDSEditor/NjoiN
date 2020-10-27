@@ -8,6 +8,7 @@
 
 class SharedDocument
 {
+private:
     QString uri;
     QString name;
     QList<QString> userAllowed;

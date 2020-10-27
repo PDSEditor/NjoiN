@@ -25,6 +25,7 @@ class SocketManager : public QObject
 
 public:
     explicit SocketManager(QObject *parent = nullptr);
+    ~SocketManager();
     void sendError (std::string); //da fare con le classi apposite per gli errori
 
     QMap<int, QWebSocket *> getClients() const;

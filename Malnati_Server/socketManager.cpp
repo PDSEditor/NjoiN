@@ -399,3 +399,10 @@ void SocketManager::setSiteIdUser(const QMap<int, QString> &value)
     siteIdUser = value;
 }
 
+SocketManager::~SocketManager(){
+
+    for( auto i : clients){
+        i->deleteLater();
+    }
+    this->qWebSocketServer->close();
+}
