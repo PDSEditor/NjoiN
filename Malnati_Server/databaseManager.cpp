@@ -260,6 +260,7 @@ bool DatabaseManager::changeImage(QString _id, QByteArray &image){
 bool DatabaseManager::insertSymbol(Message &mes) {
     Symbol symbol = mes.getSymbol();
     QVector<QString> params = mes.getParams();
+    if(params.size() == 0) return false;
     QString documentId = params.at(0); //controllare se il documento esiste?
     mongocxx::collection symbolCollection = (this->db)["symbol"];
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
@@ -301,6 +302,7 @@ bool DatabaseManager::deleteSymbol(Message &mes)
 {
     Symbol symbol = mes.getSymbol();
     QVector<QString> params = mes.getParams();
+    if(params.size() == 0) return false;
     QString documentName = params.at(0);
     mongocxx::collection symbolCollection = (this->db)["symbol"];
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
