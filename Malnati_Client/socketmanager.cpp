@@ -86,7 +86,7 @@ void socketManager::binaryMessageToServer(Message *m)
         }
 
         bytemex.append('}');
-        bytemex.append(m->getSender());//dimensione massima
+        bytemex.append(m->getSymbol().getSiteId());//dimensione massima
         tmp=(symbol.getCounter());
 
         for(int p=0;p<4;p++){
