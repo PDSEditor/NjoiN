@@ -4,8 +4,15 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
 {
     //url = *(new QUrl("localhost:1234"));
     connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
-    //connect(webSocket, &QWebSocket::disconnected, this, &socketManager::closed);
+    //connect(&webSocket, &QWebSocket::disconnected, this, &socketManager::closed);
     //webSocket= new QWebSocket();
+
+//    connect(webSocket, &QWebSocket::error, [=](QAbstractSocket::SocketError error)
+//    {
+//        // Handle error here...
+//        qDebug() << webSocket.errorString();
+//    });
+
     webSocket.open(QUrl(url));
     if(webSocket.isValid())
         this->setServerOn(true);
@@ -28,6 +35,11 @@ void socketManager::messageToServer(Message *m)
     }
 
     webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
+}
+
+void socketManager::closingSock(char* error)
+{
+    qDebug()<<"chiudendo socket";
 }
 
 bool socketManager::getServerOn() const

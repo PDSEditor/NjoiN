@@ -41,14 +41,11 @@ public slots:
     void onBinaryMessageReceived(QByteArray bytemex); //Received binary message from server and emit a signal
     void binaryMessageToServer (Message* m);
     void messageToServer (Message* m);
-    //
+    void closingSock(char* error);
 
 
 //
 public:
-
-
-
     bool getServerOn() const;
     void setServerOn(bool value);
 

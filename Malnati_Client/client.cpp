@@ -25,6 +25,8 @@ bool Client::Login()
     //93.51.19.124:8080
     //ws://angelofloridia.ddns.net:8080
 //    sockm = new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
+
+
     mw = new MainWindow();
 
     connect(&lw,&LoginWindow::closeMw,mw,&MainWindow::closeMw);
