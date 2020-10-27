@@ -556,32 +556,6 @@ void TextEdit::filePrintPdf()
     else
         curs.insertText(u,qform);
 }
-//    QString string=textEdit->toPlainText();
-//    QList<QString> liststring=string.split("");
-//    tmp.setDocument(textEdit->document());
-//    QTextCharFormat qform;
-//    qform.setBackground(Qt::transparent);
-//    tmp.selectAll();
-//    tmp.mergeCurrentCharFormat(qform);
-//    QTextCursor curs=tmp.textCursor();
-//    QChar al;
-//    QTextCharFormat qform;
-//    std::vector<Symbol> list=crdt->getSymbols();
-//    for (unsigned long i=0;i<list.size();i++) {
-//        qform.setFontFamily(crdt->getSymbols()[i].getFamily());
-//        qform.setFontItalic(crdt->getSymbols()[i].getItalic());
-//        qform.setFontUnderline(crdt->getSymbols()[i].getUnderln());
-//        qform.setFontPointSize(crdt->getSymbols()[i].getSize());
-//        if(crdt->getSymbols()[i].getBold())
-//            qform.setFontWeight(QFont::Bold);
-//        if(al!=crdt->getSymbols()[i].getAlign()){
-//            al=crdt->getSymbols()[i].getAlign();
-//            tmp.setTextCursor(curs);
-//            tmp.setAlignment(insertalign(al));
-//        }
-//        Symbol s=list[i];
-//        curs.insertText(liststring[i+1],qform);
-//    }
     tmp.document()->print(&printer);
     statusBar()->showMessage(tr("Exported \"%1\"")
                              .arg(QDir::toNativeSeparators(fileName)));
