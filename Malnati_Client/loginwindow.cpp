@@ -92,7 +92,7 @@ void LoginWindow::receivedLogin(bool resp){
            // hide();
     }
     else {
-        QMessageBox::information(this,"Errore login","Username e password non sono corretti");
+        QMessageBox::critical(this,"Errore login","Username e password non sono corretti");
         qDebug() << "errore login";
         isLogin=false;
     }
@@ -106,11 +106,11 @@ void LoginWindow::receivedSiteId(int siteid){
 void LoginWindow::receiveRegistration(Message m)
 {
     if(m.getError()){
-        QMessageBox::information(this,"Errore","Username già presente, utilizzarne un altro");
+        QMessageBox::warning(this,"Errore","Username già presente, utilizzarne un altro");
         emit(openRw(siteId));
     }
     else{
-        QMessageBox::information(this,"Registrazione avvenuta","La registrazione è avvenuta correttamente");
+        QMessageBox::information(this,"Registrazione avvenuta","La registrazione è avvenuta correttamente.\nEsegui il login!");
         emit(closeRw());
     }
 }
@@ -118,24 +118,24 @@ void LoginWindow::receiveRegistration(Message m)
 void LoginWindow::loggedin(bool c)
 {
     if(c)
-        QMessageBox::information(this,"Errore login","Utente già loggato");
+        QMessageBox::warning(this,"Errore login","Utente già loggato");
     else
-        QMessageBox::warning(this,"ERRORE","Impossibile connettersi al server");
+        QMessageBox::critical(this,"ERRORE","Impossibile connettersi al server");
 }
 
 void LoginWindow::receiveErrorReg(QString s)
 {
     if(QString::compare(s, "password", Qt::CaseSensitive)==0){
-        QMessageBox::information(this,"Errore password","Le due password non coincidono");
+        QMessageBox::critical(this,"Errore password","Le due password non coincidono");
         emit(openRw(siteId));
     }else if(QString::compare(s, "username_", Qt::CaseSensitive)==0){
-        QMessageBox::information(this,"Errore username","Carattere '_' proibito");
+        QMessageBox::critical(this,"Errore username","Carattere '_' proibito");
         emit(openRw(siteId));
     }else if(QString::compare(s, "usernameNull", Qt::CaseSensitive)==0){
-        QMessageBox::information(this,"Errore username","Inserisci un username valido");
+        QMessageBox::critical(this,"Errore username","Inserisci un username valido");
         emit(openRw(siteId));
     }else if(QString::compare(s, "immagine", Qt::CaseSensitive)==0){
-        QMessageBox::information(this, "Errore immagine", "Caricare un'immagine valida");
+        QMessageBox::critical(this, "Errore immagine", "Caricare un'immagine valida");
         emit(openRw(siteId));
     }
 }

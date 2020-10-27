@@ -191,8 +191,7 @@ TextEdit::TextEdit(QWidget *parent)
             m.setParams({QString(pos),userName});
             emit sendTextMessage(&m);
         }
-
-    });
+ });
 
 
 
@@ -509,6 +508,7 @@ void TextEdit::setSocketM(socketManager *sockclient)
     connect(this, &TextEdit::sendTextMessage, sockm, &socketManager::messageToServer);
     connect(sockm,&socketManager::receiveAllign,this,&TextEdit::receiveAllign);
     connect(sockm, &socketManager::updateCursor,this,&TextEdit::moveCursor);
+
 }
 
 void TextEdit::setFileName(QString fileName)
@@ -605,9 +605,7 @@ void TextEdit::receiveSymbol(Message *m)
 
     int position,oldposition;
     oldposition=textEdit->textCursor().position();
-    Symbol tmp;
-    tmp.setValue(m->getSymbol().getValue());
-    tmp.setPosizione(m->getSymbol().getPosizione());
+    Symbol tmp = m->getSymbol();
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);
