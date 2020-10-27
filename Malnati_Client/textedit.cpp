@@ -605,9 +605,7 @@ void TextEdit::receiveSymbol(Message *m)
 
     int position,oldposition;
     oldposition=textEdit->textCursor().position();
-    Symbol tmp;
-    tmp.setValue(m->getSymbol().getValue());
-    tmp.setPosizione(m->getSymbol().getPosizione());
+    Symbol tmp = m->getSymbol();
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);
