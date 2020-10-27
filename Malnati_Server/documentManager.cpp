@@ -13,7 +13,7 @@ bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
         //        QString name = it.getName();
         //        QString creator = it.getCreator();
         //        if((name+'_'+creator) == documentId) {
-        QFile file("/home/pepos/projects/progetto_malnati/Malnati_Server/backup" + documentId+ ".bin"); //uri? o name? o id?
+        QFile file("/home/pepos/projects/progetto_malnati/Malnati_Server/backup/" + documentId+ ".bin"); //uri? o name? o id?
         if (!file.open(QFile::WriteOnly | QIODevice::Text)) return false;
         QByteArray bArray;
         for(auto i : symbols){
