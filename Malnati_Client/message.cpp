@@ -85,9 +85,7 @@ QJsonDocument Message::toJson()
 {
     QJsonObject json_obj;
     json_obj["sender"] = this->sender;
-    //json_obj["symbol"] = this->symbol;    se stiamo inviando il symbol siamo nel caso binario e quindi non usiamo json
     json_obj["action"] = this->action.toLatin1();
-
     QJsonArray paramsj;
     for(QString param : this->params) {
         paramsj.append(param);

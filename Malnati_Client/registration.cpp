@@ -19,11 +19,6 @@ void Registration::setSiteId(int s)
     sId=s;
 }
 
-void Registration::receiveRegistration(Message m)
-{
-
-}
-
 
 void Registration::openRw(int s)
 {
@@ -97,6 +92,5 @@ void Registration::on_pushButton_3_clicked()
     auto const encoded = buffer.data().toBase64();
     this->img = encoded;
 
-//    emit uploadImage(pix);
 }
 

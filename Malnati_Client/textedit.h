@@ -72,9 +72,6 @@ protected:
 //    void closeEvent(QCloseEvent *e) override;
 
 private slots:
-    void fileOpen();
-    bool fileSave();
-    bool fileSaveAs();
     void filePrint();
     void filePrintPreview();
     void filePrintPdf();
@@ -103,13 +100,11 @@ private:
     void setupEditActions();
     void setupTextActions();
     void setupUriActions();
-    bool maybeSave();
-    void setCurrentFileName(const QString &fileName);
+    void setCurrentFileName();
 
 
     void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
     void fontChanged(const QFont &f);
-    void colorChanged(const QColor &c);
     void alignmentChanged(Qt::Alignment a);
     Symbol searchSymbolToErase(char c);
     bool externAction, flagc=false,alignAction;

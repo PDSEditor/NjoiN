@@ -26,7 +26,6 @@ void ChangePwd::on_buttonBox_accepted()
     }else if(QString::compare(newPwd, newPwd2, Qt::CaseSensitive) || newPwd.size()==0 || newPwd2.size()==0){
         QMessageBox::warning(this, "Password error", "Password non uguali o invalide");
     } else {
-//        emit pwdUpdate(pwd);
         this->setNewPwd(newPwd);
         this->setOldPwd(oldPwd);
         this->hide();

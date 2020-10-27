@@ -18,7 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("N Joi' N");
 
      connect(ui->listWidget, &QListWidget::itemClicked, this, &MainWindow::open_file_on_server);
-//sock=new socketManager(QUrl(QStringLiteral("ws://localhost:1234")));
 }
 
 MainWindow::~MainWindow()
@@ -34,8 +33,6 @@ void MainWindow::newFile(){
 
     it->exec();
 
-
-    // This is available in all editors.
 }
 
 int MainWindow::getSiteId() const
@@ -59,16 +56,11 @@ QString MainWindow::getURI()
 }
 
 void MainWindow::sendNewImage(QByteArray &bArray){
-//    QByteArray bArray;
-//    QBuffer buffer(&bArray);
-//    buffer.open(QIODevice::WriteOnly);
-//    q.save(&buffer,"PNG");
 
     Message m;
     m.setAction('G');
     m.setSender(siteId);
     m.setParams({username, bArray});
-//    emit sendMessage(&m);
     emit sendImage(&m);
 
 }
@@ -108,8 +100,6 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te->setUsername(username);
     layout->addWidget(te);
     layout->addWidget(usersWindow);
-
-    //this->dockOnline->setf
 
     this->dockOnline = new QDockWidget(tr("Utenti online"));
     this->dockOnline->setParent(this->usersWindow);
@@ -279,7 +269,6 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::addElementforUser(QString string){   
     ui->listWidget->addItem(string);
-    //ui->tableWidget->setItem(0,1,string);
 }
 
 void MainWindow::on_actionNew_triggered()
@@ -290,14 +279,12 @@ void MainWindow::on_actionNew_triggered()
 void MainWindow::on_actionAccount_triggered()
 {
     AccountInterface ai;
-    //
     ai.setUsername(username);
     ai.setImagePic(image);
-   connect(&ai, &AccountInterface::changeImage, this, &MainWindow::sendNewImage);
-   connect(this, &MainWindow::receivedNewImage, &ai, &AccountInterface::receiveNewImage);
-   connect(&ai, &AccountInterface::changePassword, this, &MainWindow::sendNewPwd);
-   connect(this, &MainWindow::receivedNewPsw, &ai, &AccountInterface::receiveNewPsw);
-    //
+    connect(&ai, &AccountInterface::changeImage, this, &MainWindow::sendNewImage);
+    connect(this, &MainWindow::receivedNewImage, &ai, &AccountInterface::receiveNewImage);
+    connect(&ai, &AccountInterface::changePassword, this, &MainWindow::sendNewPwd);
+    connect(this, &MainWindow::receivedNewPsw, &ai, &AccountInterface::receiveNewPsw);
     ai.exec();
 
 }
@@ -341,9 +328,6 @@ void MainWindow::receiveTitle(QString title)
     te->setUsername(username);
     layout->addWidget(te);
     layout->addWidget(usersWindow);
-
-    //this->dockOnline->setStyle()
-
     this->dockOnline = new QDockWidget(tr("Utenti online"));
     this->dockOnline->setParent(this->usersWindow);
 
@@ -372,9 +356,6 @@ void MainWindow::receiveTitle(QString title)
     te->resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);
     te->move((availableGeometry.width() - te->width()) / 2,
            (availableGeometry.height() - te->height()) / 2);
-
-    //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-   // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
     te->setFileName(title);
     te->setURI(title+"_"+username);
     te->setSiteid(siteId);
@@ -387,11 +368,9 @@ void MainWindow::receiveTitle(QString title)
     Message m;
     m.setAction('C');
     m.setParams({title, this->getUsername()});
-    //emit(sendMessage(&m));
     m.setSender(siteId);
     emit(sendTextMessage(&m));
     emit(newTextEdit(te,siteId));
-    //te->show();
 
 
     layoutUsers->addStretch();

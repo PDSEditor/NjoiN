@@ -18,7 +18,7 @@ void print(const std::vector<int>& input)
     }
 }
 
-Crdt::Crdt() //da prendere dal server?
+Crdt::Crdt()
 {
 
 
@@ -57,21 +57,15 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
     return tmp;
 }
 
-/*********************************
- * si può ancora EVITARE di avere i due vect temp following e preceding
- * passando this->symbols[precedingC].getPosizione() per valore
- * ******************************/
-Message Crdt::localInsert(QChar value, int precedingC, int followingC){
-    //mi da la dimensione del mio vettore di simboli
-    size_t symbolsSize = this->symbols.size();
 
+Message Crdt::localInsert(QChar value, int precedingC, int followingC){
+    //da la dimensione del vettore di simboli
+    size_t symbolsSize = this->symbols.size();
     std::vector<int> following;
     std::vector<int> preceding;
     std::vector<int> fractionalPos;
 
     //prendo il simbolo nuovo
-    //Symbol symbolToInsert(value, std::vector<int>{0}, this->getSiteId(), this->getCounter());
-
     if(precedingC==-1){
         qDebug() << "sono all'inserimento in testa";
 
@@ -80,7 +74,6 @@ Message Crdt::localInsert(QChar value, int precedingC, int followingC){
         }
         else{
             following = this->symbols[followingC].getPosizione();
-            //fractionalPos = createFractional({0}, following, tmp, Crdt::maxnum);
             createFractional({0}, following, fractionalPos, Crdt::maxnum);
         }
     }
@@ -88,51 +81,16 @@ Message Crdt::localInsert(QChar value, int precedingC, int followingC){
         if(followingC == (int)symbolsSize){         // inserimento in coda
                 preceding = this->symbols[precedingC].getPosizione();
                 following=std::vector<int>{maxnum};
-//                fractionalPos = createFractional(preceding, following, tmp, Crdt::maxnum);
                 createFractional(preceding, following, fractionalPos, Crdt::maxnum);
-                qDebug() << "fractionalpos: " << fractionalPos;
-                //symbolToInsert.setPosizione(fractionalPos);
-                //tmp.clear();
+                qDebug() << "fractionalpos: " << fractionalPos;;
         }
         else{ // cioè sono in mezzo
             //mi salvo le posizioni frazionarie di quello prima e di quello dopo
             preceding = this->symbols[precedingC].getPosizione();
             following = this->symbols[followingC].getPosizione();
-//            fractionalPos = createFractional(preceding, following, tmp, Crdt::maxnum);
             createFractional(preceding, following, fractionalPos, Crdt::maxnum);
-            /*
-            fractionalPos = createFractional({3,99}, {4,5}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,1}, {0,1,1}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,2}, {0,2,1}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,0}, {0,0,1}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,0}, {0,0,50}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,3,4,5}, {0,5,3,27}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,3,1}, {0,3,2}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,0}, {1,0}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0}, {0,2}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,1}, {1,2}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,0}, {0,0,3}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,5}, {2,5}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({0,0}, {0,0,0,3}, tmp, Crdt::maxnum);
-            tmp.clear();
-            fractionalPos = createFractional({2, 3, 4}, {3}, tmp, Crdt::maxnum); //{2,50}
-            tmp.clear();*/
 
             qDebug() << "fractionalpos: " << fractionalPos;
-            //symbolToInsert.setPosizione(fractionalPos);
-            //tmp.clear();
         }
     }
 
@@ -143,8 +101,6 @@ Message Crdt::localInsert(QChar value, int precedingC, int followingC){
     m.setAction('I');
 
     m.setSymbol(symbolToInsert);
-    //sock->messageToServer(m);
-    //sock->binaryMessageToServer(m);
     print(fractionalPos);
     return m;
 }
@@ -156,22 +112,6 @@ bool exists(int index, std::vector<int> vector){
     else return false;
 }
 
-/*Message Crdt::localErase(int position){
-    Message m;
-    Symbol tmp;
-    std::vector<Symbol>::iterator i = this->symbols.begin()+position;
-    m.setAction('D');
-    tmp.setValue(this->symbols.at(position).getValue());
-    tmp.setSiteId(this->symbols.at(position).getSiteId());
-    tmp.setPosizione(this->symbols.at(position).getPosizione());
-    // MODIFICA PER CONTATORE!!! se fa danni il crdt può essere questa
-    tmp.setCounter(this->getCounterAndIncrement());
-    //
-    m.setSymbol(tmp);
-    this->symbols.erase(i);
-
-    return m;
-}*/
 Message Crdt::localErase(int position){ //la riscrivo il 22/10 per ricerca idempotenza
     std::vector<Symbol>::iterator i = this->symbols.begin()+position;
     //symbolo da eliminare
@@ -180,14 +120,10 @@ Message Crdt::localErase(int position){ //la riscrivo il 22/10 per ricerca idemp
     Message m;
     m.setAction('D');
     m.setSymbol(symbol);
-    /********************/
-
     //incremento counter delle operazioni del crdt
     this->incrementCounter();
-
     //elimino localmente
     this->symbols.erase(i);
-
     //invio messaggio al server
     return m;
 }
@@ -222,9 +158,6 @@ int Crdt::getCounterAndIncrement(){
 void Crdt::incrementCounter(){
     Crdt::counter++;
 }
-
-
-//INIZIO PARTE LORENZO******************************************************//
 
 
 int Crdt::remoteinsert(Symbol s){
@@ -323,13 +256,6 @@ int Crdt::remotedelete(Symbol s){
     return middle;
 
 }
-
-/******************************************/
-/* bool operator==(Symbol s1, Symbol s2) */
-/* bool operator<=(Symbol s1, Symbol s2) */
-/****************************************/
-
-
 
 void Crdt::remoteM(Message *m)
 {

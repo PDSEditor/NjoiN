@@ -1,55 +1,4 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the demonstration applications of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include <QColor>
-
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -86,7 +35,6 @@
 #endif
 #endif
 #endif
-
 #include "textedit.h"
 #include<QDebug>
 #include "message.h"
@@ -115,8 +63,6 @@ TextEdit::TextEdit(QWidget *parent)
 
     textEdit = new QTextEdit(this);
     externAction=false;
-    //symbols = new std::vector<Symbol>();
-//    QTextDocument document = textEdit->document();
 
     connect(textEdit, &QTextEdit::currentCharFormatChanged,
             this, &TextEdit::currentCharFormatChanged);
@@ -140,27 +86,18 @@ TextEdit::TextEdit(QWidget *parent)
     }
 
     QFont textFont("Helvetica");
-    //
-    //
     textEdit->setFont(textFont);
     fontChanged(textEdit->font());
-    colorChanged(textEdit->textColor());
     alignmentChanged(textEdit->alignment());
-
-
-    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     textEdit->setFontFamily("kalapi");
     localFamily="kalapi";
     textEdit->setFontPointSize(12);
     localsize=12;
     textEdit->currentCharFormat().setFontItalic(false);
     textEdit->currentCharFormat().setFontUnderline(false);
-    //prova!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     this->localOperation = false;
 
 
-    connect(textEdit->document(), &QTextDocument::modificationChanged,
-            actionSave, &QAction::setEnabled);
     connect(textEdit->document(), &QTextDocument::modificationChanged,
             this, &QWidget::setWindowModified);
     connect(textEdit->document(), &QTextDocument::undoAvailable,
@@ -170,18 +107,10 @@ TextEdit::TextEdit(QWidget *parent)
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
 
-    connect(textEdit->document(), &QTextDocument::cursorPositionChanged, this, [&](){
-        int line = textEdit->textCursor().blockNumber()+1;
-        int pos = textEdit->textCursor().columnNumber()+1;
-        int TLines = textEdit->document()->blockCount();
-
-        //statusbar->showMessage(QString("Line:%1 Col:%2 TotLines:%3").arg(line).arg(pos).arg(TLines));
-    });
 
     connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
         int pos = textEdit->textCursor().position();
-        //resetActionToggle();
-        if (!localOperation || handlingOperation )//|| handlingOperation)
+        if (!localOperation || handlingOperation )
             localOperation = false;
         else{
             Message m;
@@ -195,7 +124,6 @@ TextEdit::TextEdit(QWidget *parent)
 
 
     setWindowModified(textEdit->document()->isModified());
-    actionSave->setEnabled(textEdit->document()->isModified());
     actionUndo->setEnabled(textEdit->document()->isUndoAvailable());
     actionRedo->setEnabled(textEdit->document()->isRedoAvailable());
     textEdit->textChanged();
@@ -209,7 +137,7 @@ TextEdit::TextEdit(QWidget *parent)
 #endif
 
     textEdit->setFocus();
-    setCurrentFileName(QString());
+    setCurrentFileName();
 
 #ifdef Q_OS_MACOS
     // Use dark text on light background on macOS, also in dark mode.
@@ -224,22 +152,9 @@ TextEdit::TextEdit(QWidget *parent)
 
 
 
-void TextEdit::closeEvent(QCloseEvent *e)
+void TextEdit::closeEvent(QCloseEvent */* unused */)
 {
-
-    if (maybeSave() && e != nullptr)
-
-        e->accept();
-    else{
-     if(e!=nullptr)
-        e->ignore();
-
-    }
-
-
     emit(openMW(this->getURI()));
-
-    //emit(closeDocument(this->fileName));
 
 }
 
@@ -248,32 +163,9 @@ void TextEdit::setupFileActions()
     QToolBar *tb = addToolBar(tr("File Actions"));
     QMenu *menu = menuBar()->addMenu(tr("&File"));
 
-    const QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
-    QAction *a = menu->addAction(newIcon,  tr("&New"), this, &TextEdit::fileNew);
-    tb->addAction(a);
-    a->setPriority(QAction::LowPriority);
-    a->setShortcut(QKeySequence::New);
-
-    const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png"));
-    a = menu->addAction(openIcon, tr("&Open..."), this, &TextEdit::fileOpen);
-    a->setShortcut(QKeySequence::Open);
-    tb->addAction(a);
-
-    menu->addSeparator();
-
-    const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(rsrcPath + "/filesave.png"));
-    actionSave = menu->addAction(saveIcon, tr("&Save"), this, &TextEdit::fileSave);
-    actionSave->setShortcut(QKeySequence::Save);
-    actionSave->setEnabled(false);
-    tb->addAction(actionSave);
-
-    a = menu->addAction(tr("Save &As..."), this, &TextEdit::fileSaveAs);
-    a->setPriority(QAction::LowPriority);
-    menu->addSeparator();
-
 #ifndef QT_NO_PRINTER
     const QIcon printIcon = QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png"));
-    a = menu->addAction(printIcon, tr("&Print..."), this, &TextEdit::filePrint);
+    QAction *a = menu->addAction(printIcon, tr("&Print..."), this, &TextEdit::filePrint);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(QKeySequence::Print);
     tb->addAction(a);
@@ -301,6 +193,7 @@ void TextEdit::setupEditActions()
 
     const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(rsrcPath + "/editundo.png"));
     actionUndo = menu->addAction(undoIcon, tr("&Undo"), textEdit, &QTextEdit::undo);
+    actionUndo->setPriority(QAction::LowPriority);
     actionUndo->setShortcut(QKeySequence::Undo);
     tb->addAction(actionUndo);
 
@@ -410,37 +303,11 @@ void TextEdit::setupTextActions()
     tb->addActions(alignGroup->actions());
     menu->addActions(alignGroup->actions());
 
-    menu->addSeparator();
-
-    QPixmap pix(16, 16);
-    pix.fill(Qt::black);
-    actionTextColor = menu->addAction(pix, tr("&Color..."), this, &TextEdit::textColor);
-    tb->addAction(actionTextColor);
 
     tb = addToolBar(tr("Format Actions"));
     tb->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
     addToolBarBreak(Qt::TopToolBarArea);
     addToolBar(tb);
-
-    comboStyle = new QComboBox(tb);
-    tb->addWidget(comboStyle);
-    comboStyle->addItem("Standard");
-    comboStyle->addItem("Bullet List (Disc)");
-    comboStyle->addItem("Bullet List (Circle)");
-    comboStyle->addItem("Bullet List (Square)");
-    comboStyle->addItem("Ordered List (Decimal)");
-    comboStyle->addItem("Ordered List (Alpha lower)");
-    comboStyle->addItem("Ordered List (Alpha upper)");
-    comboStyle->addItem("Ordered List (Roman lower)");
-    comboStyle->addItem("Ordered List (Roman upper)");
-    comboStyle->addItem("Heading 1");
-    comboStyle->addItem("Heading 2");
-    comboStyle->addItem("Heading 3");
-    comboStyle->addItem("Heading 4");
-    comboStyle->addItem("Heading 5");
-    comboStyle->addItem("Heading 6");
-
-    connect(comboStyle, QOverload<int>::of(&QComboBox::activated), this, &TextEdit::textStyle);
 
     comboFont = new QFontComboBox(tb);
     tb->addWidget(comboFont);
@@ -472,27 +339,6 @@ void TextEdit::setupUriActions()
 }
 
 
-bool TextEdit::load(const QString &f)
-{
-    if (!QFile::exists(f))
-        return false;
-    QFile file(f);
-    if (!file.open(QFile::ReadOnly))
-        return false;
-
-    QByteArray data = file.readAll();
-    QTextCodec *codec = Qt::codecForHtml(data);
-    QString str = codec->toUnicode(data);
-    if (Qt::mightBeRichText(str)) {
-        textEdit->setHtml(str);
-    } else {
-        str = QString::fromLocal8Bit(data);
-        textEdit->setPlainText(str);
-    }
-
-    setCurrentFileName(f);
-    return true;
-}
 
 void TextEdit::setCrdt(Crdt *crdtclient)
 {
@@ -525,29 +371,8 @@ QString TextEdit::getURI()
 }
 
 
-
-bool TextEdit::maybeSave()
+void TextEdit::setCurrentFileName()
 {
-    if (!textEdit->document()->isModified())
-        return true;
-
-    const QMessageBox::StandardButton ret =
-        QMessageBox::warning(this, QCoreApplication::applicationName(),
-                             tr("The document has been modified.\n"
-                                "Do you want to save your changes?"),
-                             QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-    if (ret == QMessageBox::Save)
-        return fileSave();
-    else if (ret == QMessageBox::Cancel)
-        return false;
-    return true;
-}
-
-void TextEdit::setCurrentFileName(const QString &fileName)
-{
-    //this->fileName = fileName;
-    //textEdit->document()->setModified(false);
-
     QString shownName;
     if (this->fileName.isEmpty())
         shownName = "untitled.txt";
@@ -566,10 +391,7 @@ void TextEdit::setUsername(QString usern)
 
 void TextEdit::fileNew()
 {
-    if (maybeSave()) {
-        //textEdit->clear();
-        (setCurrentFileName(QString()));
-    }
+    setCurrentFileName();
 
 }
 
@@ -578,33 +400,23 @@ void TextEdit::receiveSymbol(Message *m)
     handlingOperation = true;
     externAction=true;
     localOperation = false;
-   QTextCursor curs = textEdit->textCursor(),oldcurs;
-       //QTextCursor curs ,oldcurs=textEdit->textCursor();
-       //textEdit->setTextCursor(curs);
+    QTextCursor curs = textEdit->textCursor(),oldcurs;
     QColor col;
     QTextCharFormat qform, preqform;
-    //preqform=textEdit->currentCharFormat();
     if(colors.find(m->getSymbol().getSiteId())==colors.end()){
         int pos=m->getSymbol().getSiteId()%5;
-        //
         QColor q=listcolor.at(pos);
-        //
         colors.insert(m->getSymbol().getSiteId(),q);
     }
     col=colors.take(m->getSymbol().getSiteId());
-    //textEdit->setTextBackgroundColor(col);
-
 
     qform.setBackground(col);
     qform.setFontFamily(m->getSymbol().getFamily());
     qform.setFontItalic(m->getSymbol().getItalic());
     qform.setFontUnderline(m->getSymbol().getUnderln());
-    //qform.setFontPointSize((float)m->getSize());
     qform.setFontPointSize(m->getSymbol().getSize());
     if(m->getSymbol().getBold())
         qform.setFontWeight(QFont::Bold);
-
-    //curs.setCharFormat(qform);
 
     int position,oldposition;
     oldposition=textEdit->textCursor().position();
@@ -613,9 +425,9 @@ void TextEdit::receiveSymbol(Message *m)
         position=crdt->remoteinsert(tmp);
         curs.setPosition(position);
         if(tmp.getValue()=='\0')
-             curs.insertText((QChar)'\n',qform);
+            curs.insertText((QChar)'\n',qform);
         else
-             curs.insertText((QChar)tmp.getValue(),qform);
+            curs.insertText((QChar)tmp.getValue(),qform);
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -659,7 +471,7 @@ void TextEdit::setSiteid(int s)
 
 void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
 {
-    //this->m_onlineUsers = users;
+
     for(auto userKey : users.keys()){
     QFont font("American Typewriter", 10, QFont::Bold);
     QLabel *remoteLabel = new QLabel(this);
@@ -672,8 +484,6 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     // 2. Draw the remote cursor at position 0
     QTextCursor& remoteCursor = m_onlineUsers[userKey].cursor;
     remoteCursor=textEdit->textCursor();
-    //remoteCursor.setPosition(0);
-   // QRect curCoord = textEdit->cursorRect(remoteCursor);
     QRect curCoord = textEdit->cursorRect();
     int height = curCoord.bottom()-curCoord.top();
     remoteLabel->resize(1000, height+5);
@@ -691,82 +501,6 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     remoteLabel->raise();
     }
 
-}
-
-
-
-void TextEdit::fileOpen()
-{
-    QFileDialog fileDialog(this, tr("Open File..."));
-    fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-    fileDialog.setFileMode(QFileDialog::ExistingFile);
-    fileDialog.setMimeTypeFilters(QStringList() << "text/html" << "text/plain");
-    if (fileDialog.exec() != QDialog::Accepted)
-        return;
-    const QString fn = fileDialog.selectedFiles().first();
-    if (load(fn))
-        statusBar()->showMessage(tr("Opened \"%1\"").arg(QDir::toNativeSeparators(fn)));
-    else
-        statusBar()->showMessage(tr("Could not open \"%1\"").arg(QDir::toNativeSeparators(fn)));
-
-}
-
-bool TextEdit::fileSave()
-{
-    if (fileName.isEmpty())
-        return fileSaveAs();
-    if (fileName.startsWith(QStringLiteral(":/")))
-        return fileSaveAs();
-
-    QTextDocumentWriter writer(fileName);
-    bool success = writer.write(textEdit->document());
-    if (success) {
-        textEdit->document()->setModified(false);
-        statusBar()->showMessage(tr("Wrote \"%1\"").arg(QDir::toNativeSeparators(fileName)));
-    } else {
-        statusBar()->showMessage(tr("Could not write to file \"%1\"")
-                                 .arg(QDir::toNativeSeparators(fileName)));
-    }
-    return success;
-}
-
-bool TextEdit::fileSaveAs()
-{
-    QFileDialog fileDialog(this, tr("Save as..."));
-    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    QStringList mimeTypes;
-    mimeTypes << "application/vnd.oasis.opendocument.text" << "text/html" << "text/plain" << "application/pdf";
-    fileDialog.setMimeTypeFilters(mimeTypes);
-    if (fileDialog.exec() != QDialog::Accepted)
-        return false;
-
-    if(fileDialog.selectedMimeTypeFilter()
-            .split("/").contains("pdf")){
-        QString fileName = fileDialog.selectedFiles().first();
-        if(!fileName.split('.').contains("pdf"))
-            fileName = fileName.append(".pdf");
-        QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setOutputFileName(fileName);
-        textEdit->document()->print(&printer);
-        statusBar()->showMessage(tr("Exported \"%1\"")
-                                 .arg(QDir::toNativeSeparators(fileName)));
-        return true;
-    }
-    else if(fileDialog.selectedMimeTypeFilter().contains("opendocument")){
-        fileDialog.setDefaultSuffix("odt");
-    }
-    else if(fileDialog.selectedMimeTypeFilter().contains("plain")){
-        fileDialog.setDefaultSuffix("txt");
-    }
-    else{ if(fileDialog.selectedMimeTypeFilter().contains("html")){
-        fileDialog.setDefaultSuffix("html");
-    }
-       else fileDialog.setDefaultSuffix("odt");
-    }
-    const QString fn = fileDialog.selectedFiles().first();
-    setCurrentFileName(fn);
-    return fileSave();
 }
 
 void TextEdit::filePrint()
@@ -942,7 +676,6 @@ void TextEdit::textColor()
     QTextCharFormat fmt;
     fmt.setForeground(col);
     mergeFormatOnWordOrSelection(fmt);
-    colorChanged(col);
 }
 
 void TextEdit::textAlign(QAction *a)
@@ -969,15 +702,13 @@ void TextEdit::showUriWindow()
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 {
     fontChanged(format.font());
-    colorChanged(format.foreground().color());
 }
 
 void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 {
     if(alignAction==true){
         alignAction=false;
-        QChar c;
-        int max,min, p=textEdit->textCursor().position();
+        int max,min;
         min=position;
         max=min+charsAdded-2;
         for(int i=0;i<max;i++){
@@ -992,100 +723,98 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
 
     }
-else{
-   if(externAction==false){
+    else{
+        if(externAction==false){
 
 
 
-       QTextCursor  cursor = textEdit->textCursor();
+            QTextCursor  cursor = textEdit->textCursor();
 
-        qDebug() << "position: " << position;
-        qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
+            qDebug() << "position: " << position;
+            qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
 
-        if(charsRemoved!=0 && charsAdded==0){
-            for(int i=0; i<charsRemoved; i++){
-                Message m=crdt->localErase(position);
-                emit(sendMessage(&m));
-            }
-        }else
-        if(charsAdded!= 0){
-            if(charsAdded==charsRemoved){
-
-                //                dati da passare
-
-                int pos=cursor.selectionStart();
-                for(int i=0;i<charsAdded;i++){
-                    Message mc,mi;
-                    Symbol s=crdt->getSymbols().at(pos+i);
-                    //eliminazione vecchio carattere
-                    mc.setSymbol(s);
-                    mc.setAction('D');
-                    emit(sendMessage(&mc));
-                    //invio carattere modificato
-                    mi.setAction('I');
-                    s.setBold(actionTextBold->isChecked());
-                    s.setItalic(actionTextItalic->isChecked());
-                    s.setUnderln(actionTextUnderline->isChecked());
-                    s.setFamily(localFamily);
-                    s.setSize(localsize);
-                    s.setAlign(findalign(textEdit->alignment()));
-                    mi.setSymbol(s);
-                    emit(sendMessage(&mi));
+            if(charsRemoved!=0 && charsAdded==0){
+                for(int i=0; i<charsRemoved; i++){
+                    Message m=crdt->localErase(position);
+                    emit(sendMessage(&m));
                 }
-            }
-            else if(charsRemoved!=charsAdded){
-                if(position == 0 && charsAdded > 1){
-                    charsAdded--;
-                    charsRemoved--;
+            }else
+                if(charsAdded!= 0){
+                    if(charsAdded==charsRemoved){
+
+                        //                dati da passare
+
+                        int pos=cursor.selectionStart();
+                        for(int i=0;i<charsAdded;i++){
+                            Message mc,mi;
+                            Symbol s=crdt->getSymbols().at(pos+i);
+                            //eliminazione vecchio carattere
+                            mc.setSymbol(s);
+                            mc.setAction('D');
+                            emit(sendMessage(&mc));
+                            //invio carattere modificato
+                            mi.setAction('I');
+                            s.setBold(actionTextBold->isChecked());
+                            s.setItalic(actionTextItalic->isChecked());
+                            s.setUnderln(actionTextUnderline->isChecked());
+                            s.setFamily(localFamily);
+                            s.setSize(localsize);
+                            s.setAlign(findalign(textEdit->alignment()));
+                            mi.setSymbol(s);
+                            emit(sendMessage(&mi));
+                        }
+                    }
+                    else if(charsRemoved!=charsAdded){
+                        if(position == 0 && charsAdded > 1){
+                            charsAdded--;
+                            charsRemoved--;
+                        }
+                        int pos=cursor.selectionStart()-charsAdded;
+                        for(int i=0;i<charsRemoved;i++){
+                            Message mc;
+                            Symbol s=crdt->getSymbols().at(pos+i);
+                            //eliminazione vecchio carattere
+                            mc.setSymbol(s);
+                            mc.setAction('D');
+                            emit(sendMessage(&mc));
+                        }
+                        for(int i=0;i<charsAdded;i++){
+                            Message mi=crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
+                            Symbol s=mi.getSymbol();
+                            mi.setAction('I');
+                            s.setBold(actionTextBold->isChecked());
+                            s.setItalic(actionTextItalic->isChecked());
+                            s.setUnderln(actionTextUnderline->isChecked());
+                            s.setFamily(localFamily);
+                            s.setSize(localsize);
+                            s.setAlign(findalign(textEdit->alignment()));
+                            mi.setSymbol(s);
+                            position+=1;
+                            emit(sendMessage(&mi));
+                        }
+                    }
+                    else{
+                        if(charsRemoved>0)
+                            charsAdded--;
+                        for(int i=0; i<charsAdded; i++){
+                            qDebug() << "char: " << textEdit->document()->characterAt(position);
+                            Message m = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
+                            Symbol s=m.getSymbol();
+                            s.setSize(textEdit->fontPointSize());
+                            s.setFamily(textEdit->fontFamily());
+                            s.setUnderln(textEdit->currentCharFormat().fontUnderline());
+                            s.setItalic(textEdit->currentCharFormat().fontItalic());
+                            s.setBold(actionTextBold->isChecked());
+                            s.setAlign(findalign(textEdit->alignment()));
+                            m.setSymbol(s);
+                            position+=1;
+                            emit(sendMessage(&m));
+                        }
+                    }
                 }
-//                charsAdded--;
-                int pos=cursor.selectionStart()-charsAdded;
-//                if(pos==0) charsRemoved = 0;
-                for(int i=0;i<charsRemoved;i++){
-                    Message mc;
-                    Symbol s=crdt->getSymbols().at(pos+i);
-                    //eliminazione vecchio carattere
-                    mc.setSymbol(s);
-                    mc.setAction('D');
-                    emit(sendMessage(&mc));
-                }
-                for(int i=0;i<charsAdded;i++){
-                    Message mi=crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
-                    Symbol s=mi.getSymbol();
-                    mi.setAction('I');
-                    s.setBold(actionTextBold->isChecked());
-                    s.setItalic(actionTextItalic->isChecked());
-                    s.setUnderln(actionTextUnderline->isChecked());
-                    s.setFamily(localFamily);
-                    s.setSize(localsize);
-                    s.setAlign(findalign(textEdit->alignment()));
-                    mi.setSymbol(s);
-                    position+=1;
-                    emit(sendMessage(&mi));
-                }
-            }
-            else{
-                if(charsRemoved>0)
-                charsAdded--;
-            for(int i=0; i<charsAdded; i++){
-                qDebug() << "char: " << textEdit->document()->characterAt(position);
-                Message m = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
-                Symbol s=m.getSymbol();
-                s.setSize(textEdit->fontPointSize());
-                s.setFamily(textEdit->fontFamily());
-                s.setUnderln(textEdit->currentCharFormat().fontUnderline());
-                s.setItalic(textEdit->currentCharFormat().fontItalic());
-                s.setBold(actionTextBold->isChecked());
-                s.setAlign(findalign(textEdit->alignment()));
-                m.setSymbol(s);
-                position+=1;
-                emit(sendMessage(&m));
-            }
-            }
         }
-   }
-externAction=false;
-localOperation=true;
+        externAction=false;
+        localOperation=true;
     }
 
 }
@@ -1096,68 +825,28 @@ void TextEdit::cursorPositionChanged()
     QTextCursor cursor = textEdit->textCursor();
     QTextCharFormat form;
     form.setFontItalic(textEdit->currentCharFormat().fontItalic());
-   form.setFontFamily(localFamily);
+    form.setFontFamily(localFamily);
     form.setFontUnderline(textEdit->currentCharFormat().fontUnderline());
     form.setFontPointSize(localsize);
     form.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
     if(!cursor.hasSelection()){
-    textEdit->setTextBackgroundColor(Qt::transparent);
-    if(flagc==true){
-    textEdit->setFontFamily(localFamily);
-    textEdit->setFontPointSize(localsize);
-    flagc=false;
-    }
-    textEdit->setFontItalic(textEdit->fontItalic());
-    textEdit->setFontUnderline(textEdit->fontUnderline());
-    textEdit->setFontWeight(textEdit->fontWeight());
-    if(externAction){
-      localOperation=false;
-    }else{
-      localOperation=true;
-    }
-
-    }
-
-
-
-
-    alignmentChanged(textEdit->alignment());
-    QTextList *list = textEdit->textCursor().currentList();
-
-    if (list) {
-        switch (list->format().style()) {
-        case QTextListFormat::ListDisc:
-            comboStyle->setCurrentIndex(1);
-            break;
-        case QTextListFormat::ListCircle:
-            comboStyle->setCurrentIndex(2);
-            break;
-        case QTextListFormat::ListSquare:
-            comboStyle->setCurrentIndex(3);
-            break;
-        case QTextListFormat::ListDecimal:
-            comboStyle->setCurrentIndex(4);
-            break;
-        case QTextListFormat::ListLowerAlpha:
-            comboStyle->setCurrentIndex(5);
-            break;
-        case QTextListFormat::ListUpperAlpha:
-            comboStyle->setCurrentIndex(6);
-            break;
-        case QTextListFormat::ListLowerRoman:
-            comboStyle->setCurrentIndex(7);
-            break;
-        case QTextListFormat::ListUpperRoman:
-            comboStyle->setCurrentIndex(8);
-            break;
-        default:
-            comboStyle->setCurrentIndex(-1);
-            break;
+        textEdit->setTextBackgroundColor(Qt::transparent);
+        if(flagc==true){
+            textEdit->setFontFamily(localFamily);
+            textEdit->setFontPointSize(localsize);
+            flagc=false;
         }
-    } else {
-        int headingLevel = textEdit->textCursor().blockFormat().headingLevel();
-        comboStyle->setCurrentIndex(headingLevel ? headingLevel + 8 : 0);
+        textEdit->setFontItalic(textEdit->fontItalic());
+        textEdit->setFontUnderline(textEdit->fontUnderline());
+        textEdit->setFontWeight(textEdit->fontWeight());
+        if(externAction){
+            localOperation=false;
+        }else{
+            localOperation=true;
+        }
+
     }
+    alignmentChanged(textEdit->alignment());
 
 }
 
@@ -1180,8 +869,7 @@ void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
 {
     QTextCursor cursor = textEdit->textCursor();
     if (cursor.hasSelection()){
-        //cursor.select(QTextCursor::WordUnderCursor);
-    cursor.mergeCharFormat(format);}
+        cursor.mergeCharFormat(format);}
     textEdit->mergeCurrentCharFormat(format);
 }
 
@@ -1194,12 +882,7 @@ void TextEdit::fontChanged(const QFont &f)
     actionTextUnderline->setChecked(f.underline());
 }
 
-void TextEdit::colorChanged(const QColor &c)
-{
-    QPixmap pix(16, 16);
-    pix.fill(c);
-    actionTextColor->setIcon(pix);
-}
+
 
 void TextEdit::alignmentChanged(Qt::Alignment a)
 {
@@ -1231,7 +914,7 @@ void TextEdit::updateCursors()
         QFont new_font(l_font.family(),static_cast<int>((font_size/2)+3),QFont::Bold);
         user.label->setFont(new_font);
 
-        user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3));
+        user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3)+100);
         user.label->setVisible(true);
     }
 }
@@ -1241,10 +924,9 @@ void TextEdit::updateCursors()
 void TextEdit::loadFile(QList<Symbol> file)
 {
     handlingOperation = true;
-    setCurrentFileName(QString());
+    setCurrentFileName();
     QString tmp;
-    bool u=true;
-    QChar al,q;
+    QChar al;
     std::vector<Symbol> vtmp;
     QTextCursor curs=textEdit->textCursor();
     QTextCharFormat qform;

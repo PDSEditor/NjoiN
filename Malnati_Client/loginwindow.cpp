@@ -37,34 +37,8 @@ void LoginWindow::on_pushButton_login_clicked()
         Message m;
         m.setAction('L');
         m.setParams({username,password});
-        //da cancellare assolutamente!!!!
         m.setSender(siteId);
-        //
         emit(sendMessage(&m));
-        //qui bisogna attendere che il server ritorni il siteId
-        //    if(isLogin){                               //sostituire con Islogin==1!!!!!!
-        //        QMessageBox::information(this,"Login","Username e password corretti");
-        //       // mw = new MainWindow(this);
-        //        setIsLogin(true);
-        //       // TextEdit te;
-        //      //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
-        //      /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
-        //                (availableGeometryMw.height() - mw->height()) / 2);*/
-
-
-        //        this->accept();
-
-        //        //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-        //       // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
-
-        //        //te.fileNew();
-        //       // mw->show();
-        //       // hide();
-        //    }
-        //    else{
-        //        QMessageBox::warning(this,"Login","Username e password non sono corretti");
-        //        isLogin=false;
-        //    }
     }
 
 }
@@ -72,24 +46,10 @@ void LoginWindow::on_pushButton_login_clicked()
 void LoginWindow::receivedLogin(bool resp){
 
     if(resp){
-        isLogin=true;                              //sostituire con Islogin==1!!!!!!
+        isLogin=true;
             QMessageBox::information(this,"Login success","Username e password corretti");
-           // mw = new MainWindow(this);
             setIsLogin(true);
-           // TextEdit te;
-          //  mw->resize(availableGeometryMw.width() / 2, (availableGeometryMw.height() * 2) / 3);
-          /*  mw->move((availableGeometryMw.width() - mw->width()) / 2,
-                    (availableGeometryMw.height() - mw->height()) / 2);*/
-
-
             this->accept();
-
-            //APRE UNA PAGINA DI PRESENTAZIONE DEL TEXTEDIT
-           // if (!mw.load(parser.positionalArguments().value(0, QLatin1String(":/example.html"))))
-
-            //te.fileNew();
-           // mw->show();
-           // hide();
     }
     else {
         QMessageBox::critical(this,"Errore login","Username e password non sono corretti");
