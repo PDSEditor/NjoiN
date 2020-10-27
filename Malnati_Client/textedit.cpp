@@ -1231,7 +1231,7 @@ void TextEdit::updateCursors()
         QFont new_font(l_font.family(),static_cast<int>((font_size/2)+3),QFont::Bold);
         user.label->setFont(new_font);
 
-        user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3));
+        user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3)+100);
         user.label->setVisible(true);
     }
 }
