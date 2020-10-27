@@ -30,6 +30,7 @@ void MainWindow::newFile(){
 
     connect(it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
     connect(it,&InsertTitle::showMw,this,&MainWindow::openMw);
+    it->setUsername(this->username);
 
     it->exec();
 

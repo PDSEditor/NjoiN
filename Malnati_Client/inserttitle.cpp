@@ -23,6 +23,11 @@ InsertTitle::InsertTitle(QList<QString> s,QDialog *parent) :
     names=s;
 }
 
+void InsertTitle::setUsername(QString username)
+{
+    this->username = username;
+}
+
 InsertTitle::~InsertTitle()
 {
     delete ui;
@@ -33,7 +38,8 @@ void InsertTitle::on_buttonBox_accepted()
     QString title = ui->lineEdit->text();
     bool flag=0;
     foreach (QString s, names) {
-        if(s.left(s.lastIndexOf('_'))==title){
+        QString tmp = title+"_"+this->username;
+        if(!s.compare(tmp)){
             flag=1;
             break;
     }

@@ -16,6 +16,7 @@ protected:
 public:
     explicit InsertTitle(QDialog *parent = nullptr);
     explicit InsertTitle(QList<QString> s,QDialog *parent = nullptr);
+    void setUsername(QString username);
     ~InsertTitle();
 
 private slots:
@@ -31,6 +32,7 @@ signals:
 private:
     Ui::InsertTitle *ui;
     QList<QString> names;
+    QString username;
 };
 
 #endif // INSERTTITLE_H
