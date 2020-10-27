@@ -53,7 +53,8 @@ void DocumentManager::openDocument(SharedDocument &doc)
 void DocumentManager::closeDocument(QString uri)
 {
     for (QList<SharedDocument>::iterator doc=openDocuments.begin(); doc != openDocuments.end(); ++doc){
-        if(doc->getUri() == uri){
+        auto uri = doc->getUri();
+        if(uri != nullptr){
             openDocuments.erase(doc);
         }
     }

@@ -2,7 +2,9 @@
 
 QString SharedDocument::getUri() const
 {
-    return uri;
+    if(uri != nullptr || this->uri.size()>0)
+        return uri;
+    else return nullptr;
 }
 
 void SharedDocument::setUri(const QString &value)
