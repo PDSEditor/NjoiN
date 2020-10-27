@@ -78,13 +78,6 @@ TextEdit::TextEdit(QWidget *parent)
     setupTextActions();
     setupUriActions();
 
-
-    {
-        QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
-        helpMenu->addAction(tr("About"), this, &TextEdit::about);
-        helpMenu->addAction(tr("About &Qt"), qApp, &QApplication::aboutQt);
-    }
-
     QFont textFont("Helvetica");
     textEdit->setFont(textFont);
     fontChanged(textEdit->font());
@@ -179,11 +172,7 @@ void TextEdit::setupFileActions()
     a->setShortcut(Qt::CTRL + Qt::Key_D);
     tb->addAction(a);
 
-    menu->addSeparator();
 #endif
-
-    a = menu->addAction(tr("&Quit"), this, &QWidget::close);
-    a->setShortcut(Qt::CTRL + Qt::Key_Q);
 }
 
 void TextEdit::setupEditActions()
@@ -551,7 +540,48 @@ void TextEdit::filePrintPdf()
     QPrinter printer(QPrinter::HighResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(fileName);
-    textEdit->document()->print(&printer);
+    textEdit->selectAll();
+    QTextEdit tmp;
+    QTextCursor curs=tmp.textCursor();
+    QTextCursor cu=textEdit->textCursor();
+    for(unsigned long i=0;i<crdt->getSymbols().size();i++){
+    cu.setPosition(i+1);
+    Symbol c= crdt->getSymbols()[i];
+    QTextCharFormat qform=cu.charFormat();
+    qform.setBackground(Qt::transparent);
+    QChar u=c.getValue();
+    if(u=='\0')
+        curs.insertText("\n",qform);
+    else
+        curs.insertText(u,qform);
+}
+//    QString string=textEdit->toPlainText();
+//    QList<QString> liststring=string.split("");
+//    tmp.setDocument(textEdit->document());
+//    QTextCharFormat qform;
+//    qform.setBackground(Qt::transparent);
+//    tmp.selectAll();
+//    tmp.mergeCurrentCharFormat(qform);
+//    QTextCursor curs=tmp.textCursor();
+//    QChar al;
+//    QTextCharFormat qform;
+//    std::vector<Symbol> list=crdt->getSymbols();
+//    for (unsigned long i=0;i<list.size();i++) {
+//        qform.setFontFamily(crdt->getSymbols()[i].getFamily());
+//        qform.setFontItalic(crdt->getSymbols()[i].getItalic());
+//        qform.setFontUnderline(crdt->getSymbols()[i].getUnderln());
+//        qform.setFontPointSize(crdt->getSymbols()[i].getSize());
+//        if(crdt->getSymbols()[i].getBold())
+//            qform.setFontWeight(QFont::Bold);
+//        if(al!=crdt->getSymbols()[i].getAlign()){
+//            al=crdt->getSymbols()[i].getAlign();
+//            tmp.setTextCursor(curs);
+//            tmp.setAlignment(insertalign(al));
+//        }
+//        Symbol s=list[i];
+//        curs.insertText(liststring[i+1],qform);
+//    }
+    tmp.document()->print(&printer);
     statusBar()->showMessage(tr("Exported \"%1\"")
                              .arg(QDir::toNativeSeparators(fileName)));
 //! [0]
