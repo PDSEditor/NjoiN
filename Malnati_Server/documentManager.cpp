@@ -5,25 +5,31 @@ DocumentManager::DocumentManager(QObject *parent) : QObject(parent)
 
 }
 
-bool DocumentManager::saveToServer(QString documentId)
+bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
 {
     //todo: da testare
     for(auto it : openDocuments){
-        QString name = it.getName();
-        QString creator = it.getCreator();
-        if((name+'_'+creator) == documentId) {
-            QFile file(documentId+".bin"); //uri? o name? o id?
-            if (!file.open(QFile::WriteOnly)) return false;
-            QByteArray bArray;
-            for(auto i : it.getSymbols()){
-                bArray.append(i.getValue());
-            }
+        if(QString::compare(it.getUri(), documentId) != 0) continue;
+        //        QString name = it.getName();
+        //        QString creator = it.getCreator();
+        //        if((name+'_'+creator) == documentId) {
+        QFile file("/home/pepos/projects/progetto_malnati/Malnati_Server/backup" + documentId+ ".bin"); //uri? o name? o id?
+        if (!file.open(QFile::WriteOnly | QIODevice::Text)) return false;
+        QByteArray bArray;
+        for(auto i : symbols){
+            bArray.append(i.toJson().toBinaryData());
+            //            }
+        }
             auto returnValue = file.write(bArray);
 
             if(returnValue == -1)
                 return false;
-            else return true;
-        }
+            else {
+                file.close();
+                return true;
+            }
+            //da sistemare le parentesi poi dovrebbe andare
+//        }
     }
     return false;
 }

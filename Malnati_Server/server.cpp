@@ -116,12 +116,13 @@ void Server::dispatchMessage(Message &mes) {
 
     for(it=clients.begin(); it!= clients.end(); it++) {
         if(it.key() != sender || mes.getAction()=='A') {
+            if(this->acMan->getOnlineAccounts().keys().contains(it.key())){
+                QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
 
-            QString username = this->acMan->getOnlineAccounts()[it.key()].get()->getUsername();    // prende l'username legato al siteId del messaggio
-
-            if(this->acMan->getAccountsPerFile()[documentId].contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
-                                                                                       // lavorando al documento, in quel caso invia la insert o delete
-                this->socketMan->messageToUser(mes, it.key());
+                if(this->acMan->getAccountsPerFile()[documentId].contains(username)) {                 // controlla se l'utente trovato è in quelli che stanno attualmente
+                    // lavorando al documento, in quel caso invia la insert o delete
+                    this->socketMan->messageToUser(mes, it.key());
+                }
             }
         }
     }
@@ -273,11 +274,11 @@ void Server::processMessage(Message &mesIn) {
         username = mesIn.getParams()[1];
         documentId = mesIn.getParams()[0];
         if(!this->acMan->closeDocumentByUser(username, documentId)) {   // se torna false, vuol dire che era l'ultimo utente con il documento aperto
-
+            auto symbols = this->dbMan->retrieveSymbolsOfDocument(documentId);
+            if(!this->docMan->saveToServer(documentId, symbols)){
+                qDebug() << "Errore nel salvataggio in locale sul server del file";
+            }
             this->docMan->closeDocument(documentId);
-
-            // per ora commentato
-            //this->docMan->saveToServer(documentId);
         }
         break;
     }
@@ -548,112 +549,6 @@ void Server::updateUsersOnDocument(Message mes)
     }
 
 }
-
-int compare(Symbol s1, Symbol s2){
-    int len1=s1.getPosition().size();
-    int len2=s2.getPosition().size();
-    int res=0;
-    for(int i=0;i<std::min(len1,len2);i++){
-
-        if(s1.getPosition()[i]>s2.getPosition()[i]){
-            res=1;
-            break;
-        }
-        if(s1.getPosition()[i]<s2.getPosition()[i]){
-            res=-1;
-            break;
-        }
-    }
-    if(res==0){
-        if(len1>len2){
-            res=1;
-        }else
-        if(len1<len2){
-            res=-1;
-        }
-
-    }
-    return res;
-}
-
-/*int Server::remoteInsert(Symbol symbol){
-    int min=0;
-    int max = this->symbols.size()-1;
-    int middle=(max+min)/2 , pos;
-    std::vector<int> index(symbol.getPosition().begin(), symbol.getPosition().end());//=symbol.getPosition().toStdVector();
-    std::vector<int> tmp;
-    std::vector<Symbol>::iterator it;
-    //controllo se è ultimo
-    if(symbols[max].getPosition().back()<index.front()){
-        symbols.push_back(symbol);
-        return max;
-    }
-    //controllo se è primo
-    if(symbols[0].getPosition().front()>index.back()){
-        it=symbols.begin();
-        symbols.insert(it,symbol);
-        return min;
-    }
-    //è in mezzo
-    while(max-min>1){
-       pos=compare(symbol,symbols[middle]);
-       if(pos>0){
-           min=middle;
-       }
-       else if(pos<0){
-           max=middle;
-       }
-       middle=(max+min)/2;
-    }
-    it=symbols.begin();
-    pos=compare(symbol,symbols[min]);
-    if(pos>0){
-        //inserisco dopo il min
-        symbols.insert(it+min+1,symbol);
-        return min+1;
-    }
-    if(pos<0){
-        //inserisco prima del min
-        symbols.insert(it+min-1,symbol);
-        return min-1;
-    }
-}
-
-int Server::remoteDelete(Symbol s){
-    int min=0,max=symbols.size()-1,middle=(max+min)/2,pos;
-    std::vector<int> index(s.getPosition().begin(), s.getPosition().end());//=s.getPosition().toStdVector();
-    std::vector<int> tmp;
-    std::vector<Symbol>::iterator it;
-    it=symbols.begin();
-    //controllo se è ultimo
-    if(compare(s,symbols[max])==0){
-            symbols.erase(it+max);
-            return max;
-}
-    //controllo se è primo
-    if(compare(s,symbols[min])==0){
-            symbols.erase(it+min);
-            return min;
-        }
-    while(max-min>1){
-       pos=compare(s,symbols[middle]);
-       if(pos>0){
-           min=middle;
-       }
-       else if(pos<0){
-           max=middle;
-       }
-       if(pos==0){
-           symbols.erase(it+middle);
-           break;
-       }
-       middle=(max+min)/2;
-    }
-    return middle;
-
-}*/
-
-
 
 bool Symbol::operator<(const Symbol &other) const{
     return this->getPosition() < other.getPosition();

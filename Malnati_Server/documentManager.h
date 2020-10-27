@@ -15,7 +15,7 @@ private:
 
 public:
     explicit DocumentManager(QObject *parent = nullptr);
-    bool saveToServer(QString documentId);
+    bool saveToServer(QString documentId, QList<Symbol> &symbols);
     bool checkPermission(QString username, QString documentId);       //controlla se l'account può accedere al file
     void openDocument(SharedDocument &doc);
     void closeDocument(QString uri);
