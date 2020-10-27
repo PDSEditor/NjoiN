@@ -1029,3 +1029,12 @@ void TextEdit::moveCursor(int pos, QString userId)
         }
     }
 }
+
+TextEdit::~TextEdit(){
+    delete this->tb;
+    delete this->crdt;
+    delete this->textEdit;
+    delete this->symbols;
+    delete this->shu;
+    delete this->m_localCursor;
+}
