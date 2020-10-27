@@ -61,9 +61,9 @@ FORMS += \
     inserturi.ui \
     inserttitle.ui \
     loginwindow.ui \
-    mainwindow.ui \
     registration.ui \
-    showuridialog.ui
+    showuridialog.ui \
+    mainwindow.ui
 
 RESOURCES += textedit.qrc
 build_all:!build_pass {

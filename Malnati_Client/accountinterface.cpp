@@ -86,7 +86,7 @@ void AccountInterface::receiveNewImage(Message &m){
 
 void AccountInterface::receiveNewPsw(Message &m){
     if(m.getError()){
-            QMessageBox::critical(this,"Error","Errore nel cambio password, riprova");
+            QMessageBox::warning(this,"Error","Errore nel cambio password, riprova");
             return;
         }else QMessageBox::information(this, "Success", "Password cambiata con successo!");
 }
