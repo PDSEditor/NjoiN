@@ -48,6 +48,7 @@ public:
     QString getURI();
     Qt::Alignment insertalign(QChar c);
     QChar findalign(Qt::Alignment);
+    void setUsername(QString usern);
    // void moveCursor(int pos, QString userId);
 
 public slots:
@@ -105,6 +106,7 @@ private:
     bool maybeSave();
     void setCurrentFileName(const QString &fileName);
 
+
     void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
     void fontChanged(const QFont &f);
     void colorChanged(const QColor &c);
@@ -143,7 +145,7 @@ private:
     QComboBox *comboSize;
 
     QToolBar *tb;
-    QString fileName,URI;
+    QString fileName,URI,username;
     QTextEdit *textEdit;
     Crdt *crdt;
     socketManager *sockm;

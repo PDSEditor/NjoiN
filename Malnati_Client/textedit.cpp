@@ -187,8 +187,7 @@ TextEdit::TextEdit(QWidget *parent)
             Message m;
             m.setAction('Z');
             m.setSender(siteid);
-            QString userName = URI.split("_").takeLast();
-            m.setParams({QString(pos),userName});
+            m.setParams({QString::number(pos),username});
             emit sendTextMessage(&m);
         }
  });
@@ -560,6 +559,11 @@ void TextEdit::setCurrentFileName(const QString &fileName)
 
 }
 
+void TextEdit::setUsername(QString usern)
+{
+    username=usern;
+}
+
 void TextEdit::fileNew()
 {
     if (maybeSave()) {
@@ -663,12 +667,14 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     remoteLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
     remoteLabel->setStyleSheet("color:"+color.name()+";background-color:transparent;border: 1px solid transparent;border-left-color:"+color.name()+";");
     remoteLabel->setFont(font);
-    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->document())};
+    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->textCursor())};
     m_onlineUsers[userKey] = newUser;
     // 2. Draw the remote cursor at position 0
     QTextCursor& remoteCursor = m_onlineUsers[userKey].cursor;
-    remoteCursor.setPosition(0);
-    QRect curCoord = textEdit->cursorRect(remoteCursor);
+    remoteCursor=textEdit->textCursor();
+    //remoteCursor.setPosition(0);
+   // QRect curCoord = textEdit->cursorRect(remoteCursor);
+    QRect curCoord = textEdit->cursorRect();
     int height = curCoord.bottom()-curCoord.top();
     remoteLabel->resize(1000, height+5);
 
@@ -680,8 +686,7 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
         font_size=DEFAULT_SIZE;
     QFont new_font(l_font.family(),static_cast<int>((font_size/2)+3),QFont::Bold);
     remoteLabel->setFont(new_font);
-
-    remoteLabel->move(curCoord.left(), curCoord.top()-(remoteLabel->fontInfo().pointSize()/3));
+    remoteLabel->move(curCoord.left(), curCoord.top()-(remoteLabel->fontInfo().pointSize()/3)+100);
     remoteLabel->setVisible(true);
     remoteLabel->raise();
     }
@@ -1212,7 +1217,7 @@ void TextEdit::updateCursors()
 {
     for (auto it = m_onlineUsers.begin(); it != m_onlineUsers.end(); it++) {
         User user;
-        user.user = it.key();
+        user = it.value();
         QRect remoteCoord = textEdit->cursorRect(user.cursor);
         int height = remoteCoord.bottom()-remoteCoord.top();
         user.label->resize(1000, height+5);
@@ -1311,32 +1316,34 @@ QChar TextEdit::findalign(Qt::Alignment al){
 
 void TextEdit::moveCursor(int pos, QString userId)
 {
-    if(m_onlineUsers.contains(userId)){
-    User user ;
-<<<<<<< HEAD
-    //inizializzo come cursore del textedit e poi modifico la posizione
-    user.cursor= textEdit->textCursor();
-    user.label= new QLabel();
-    user.label->setParent(this);
-    user.user = userId;
-=======
-    user = m_onlineUsers[userId];
->>>>>>> origin/Simone
-    user.cursor.setPosition(pos);
-    QRect remoteCoord = textEdit->cursorRect(user.cursor);
-    int height = remoteCoord.bottom()-remoteCoord.top();
-    user.label->resize(1000, height+5);
+    if(pos==-24){
+        if(m_onlineUsers.contains(userId)){
 
-    /* update label dimension according to remote cursor position */
-    QFont l_font=user.label->font();
-    QTextCharFormat fmt=user.cursor.charFormat();
-    int font_size=static_cast<int>(fmt.fontPointSize());
-    if(font_size==0)
-        font_size=DEFAULT_SIZE;
-    QFont new_font(l_font.family(),static_cast<int>((font_size/2)+3),QFont::Bold);
-    user.label->setFont(new_font);
+            delete  m_onlineUsers[userId].label;
+            m_onlineUsers.remove(userId);
 
-    user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3));
-    user.label->setVisible(true);
+        }
+    }
+    else{
+        if(m_onlineUsers.contains(userId)){
+            User user ;
+            user = m_onlineUsers[userId];
+            user.cursor.setPosition(pos);
+            QRect remoteCoord = textEdit->cursorRect(user.cursor);
+            int height = remoteCoord.bottom()-remoteCoord.top();
+            user.label->resize(1000, height+5);
+
+            /* update label dimension according to remote cursor position */
+            QFont l_font=user.label->font();
+            QTextCharFormat fmt=user.cursor.charFormat();
+            int font_size=static_cast<int>(fmt.fontPointSize());
+            if(font_size==0)
+                font_size=DEFAULT_SIZE;
+            QFont new_font(l_font.family(),static_cast<int>((font_size/2)+3),QFont::Bold);
+            user.label->setFont(new_font);
+
+            user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3)+100);
+            user.label->setVisible(true);
+        }
     }
 }
