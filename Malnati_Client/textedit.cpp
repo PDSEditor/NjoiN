@@ -1281,6 +1281,10 @@ void TextEdit::moveCursor(int pos, QString userId)
 {
     if(m_onlineUsers.contains(userId)){
     User user ;
+    //inizializzo come cursore del textedit e poi modifico la posizione
+    user.cursor= textEdit->textCursor();
+    user.label= new QLabel();
+    user.label->setParent(this);
     user.user = userId;
     user.cursor.setPosition(pos);
     QRect remoteCoord = textEdit->cursorRect(user.cursor);
