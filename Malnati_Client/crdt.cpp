@@ -307,6 +307,19 @@ int Crdt::remotedelete(Symbol s){
        }
        middle=(max+min)/2;
     }
+
+    if(pos!=0) {
+        if(pos>0){
+
+            symbols.erase(it+max);
+            return max;
+        }
+        else{
+            symbols.erase(it+min);
+            return min;
+        }
+    }
+
     return middle;
 
 }
