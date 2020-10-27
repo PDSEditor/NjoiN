@@ -33,6 +33,7 @@ public:
 
     QMap<QString, QString> getUsernameDocumentMap() const;
     void setUsernameDocumentMap(const QMap<QString, QString> &value);
+    bool removeUsernameFromMap(QString username);
 
 public slots:
     void removeOnlineAccounts (int siteId);

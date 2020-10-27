@@ -303,10 +303,11 @@ void Server::processMessage(Message &mesIn) {
                 }
                 this->docMan->closeDocument(documentId);
             }
+            this->updateUsersOnDocument(mesIn);
+            this->acMan->removeUsernameFromMap(username);
         } catch (std::exception& e) {
             qDebug()<< "Errore nella chiusura di un documento";
         }
-
         break;
     }
 
@@ -565,8 +566,8 @@ void Server::updateUsersOnDocument(Message mes)
 
     auto siteIdUser = this->socketMan->getSiteIdUser();
 
-    if(!onlineUsers.contains(siteIdUser[mes.getSender()]))
-        onlineUsers.append(siteIdUser[mes.getSender()]);
+//    if(!onlineUsers.contains(siteIdUser[mes.getSender()]))
+//        onlineUsers.append(siteIdUser[mes.getSender()]);
 
     for(auto user: onlineUsers){
 

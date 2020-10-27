@@ -412,6 +412,7 @@ void TextEdit::receiveSymbol(Message *m)
     Symbol tmp = m->getSymbol();
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
+        if(position == -1) return;
         curs.setPosition(position);
         if(tmp.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
