@@ -429,7 +429,7 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
     } catch (mongocxx::query_exception &e) {
         qDebug() << "[ERROR][DatabaseManager::retrieveSymbolsOfDocument] find error, connection to db failed";
         qDebug() << e.what();
-        throw;
+        throw std::exception();
     }
 
     // TODO:test
@@ -487,19 +487,24 @@ QList<SharedDocument> DatabaseManager::getAllMyDocuments(QString username)
     filterBuilder << "userAllowed" << username.toUtf8().constData();
 
     auto cursor = documentCollection.find(filterBuilder.view());
-    for(auto &&doc : cursor){
-        QString string = QString::fromStdString(bsoncxx::to_json(doc));
-        QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
-        QList<QString> userAllowed;
-        for (auto i : document["userAllowed"].toArray()){
-            userAllowed.push_back(i.toString());
-        }
-        SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
-        documentsToReturn.push_back(shared);/*
+    try {
+        for(auto &&doc : cursor){
+            QString string = QString::fromStdString(bsoncxx::to_json(doc));
+            QJsonDocument document = QJsonDocument::fromJson(string.toUtf8());
+            QList<QString> userAllowed;
+            for (auto i : document["userAllowed"].toArray()){
+                userAllowed.push_back(i.toString());
+            }
+            SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
+            documentsToReturn.push_back(shared);/*
 
-        auto a = bsoncxx::to_json(doc);
-        documentsToReturn.push_back(SharedDocument::fromJson(bsoncxx::to_json(doc)));*/
+            auto a = bsoncxx::to_json(doc);
+            documentsToReturn.push_back(SharedDocument::fromJson(bsoncxx::to_json(doc)));*/
+        }
+    } catch (mongocxx::query_exception &e) {
+        throw std::exception();
     }
+
     return documentsToReturn;
 }
 
