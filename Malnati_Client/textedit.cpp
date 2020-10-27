@@ -170,29 +170,29 @@ TextEdit::TextEdit(QWidget *parent)
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
 
-    connect(textEdit->document(), &QTextDocument::cursorPositionChanged, this, [&](){
-        int line = textEdit->textCursor().blockNumber()+1;
-        int pos = textEdit->textCursor().columnNumber()+1;
-        int TLines = textEdit->document()->blockCount();
+//    connect(textEdit->document(), &QTextDocument::cursorPositionChanged, this, [&](){
+//        int line = textEdit->textCursor().blockNumber()+1;
+//        int pos = textEdit->textCursor().columnNumber()+1;
+//        int TLines = textEdit->document()->blockCount();
 
-        //statusbar->showMessage(QString("Line:%1 Col:%2 TotLines:%3").arg(line).arg(pos).arg(TLines));
-    });
+//        //statusbar->showMessage(QString("Line:%1 Col:%2 TotLines:%3").arg(line).arg(pos).arg(TLines));
+//    });
 
-    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
-        int pos = textEdit->textCursor().position();
-        //resetActionToggle();
-        if (localOperation )//|| handlingOperation)
-            localOperation = false;
-        else{
-            Message m;
-            m.setAction('Z');
-            m.setSender(siteid);
-            QString userName = URI.right(URI.lastIndexOf('_'));
-            m.setParams({QString(pos),userName});
-            emit sendTextMessage(&m);
-        }
+//    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
+//        int pos = textEdit->textCursor().position();
+//        //resetActionToggle();
+//        if (localOperation )//|| handlingOperation)
+//            localOperation = false;
+//        else{
+//            Message m;
+//            m.setAction('Z');
+//            m.setSender(siteid);
+//            QString userName = URI.right(URI.lastIndexOf('_'));
+//            m.setParams({QString(pos),userName});
+//            emit sendTextMessage(&m);
+//        }
 
-    });
+//    });
 
 
 
@@ -508,7 +508,7 @@ void TextEdit::setSocketM(socketManager *sockclient)
     connect(this, &TextEdit::sendMessage, sockm, &socketManager::binaryMessageToServer);
     connect(this, &TextEdit::sendTextMessage, sockm, &socketManager::messageToServer);
     connect(sockm,&socketManager::receiveAllign,this,&TextEdit::receiveAllign);
-    connect(sockm, &socketManager::updateCursor,this,&TextEdit::updateCursors);
+//    connect(sockm, &socketManager::updateCursor,this,&TextEdit::updateCursors);
 }
 
 void TextEdit::setFileName(QString fileName)
