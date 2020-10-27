@@ -6,8 +6,8 @@ socketManager::socketManager(const QUrl &url,  QObject *parent) : QObject(parent
     connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
     //connect(&webSocket, &QWebSocket::disconnected, this, &socketManager::closed);
     //webSocket= new QWebSocket();
+    connect(&webSocket, &QWebSocket::aboutToClose, this, &socketManager::closingSock);
 
-//    connect(webSocket, &QWebSocket::error, [=](QAbstractSocket::SocketError error)
 //    {
 //        // Handle error here...
 //        qDebug() << webSocket.errorString();
@@ -37,7 +37,7 @@ void socketManager::messageToServer(Message *m)
     webSocket.sendTextMessage(m->toJson().toJson(QJsonDocument::Compact));
 }
 
-void socketManager::closingSock(char* error)
+void socketManager::closingSock()
 {
     qDebug()<<"chiudendo socket";
 }
