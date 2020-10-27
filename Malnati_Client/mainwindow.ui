@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>714</width>
+    <height>526</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="font">
+   <font>
+    <family>MS Shell Dlg 2</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0" colspan="2">
+     <spacer name="horizontalSpacer_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="2" colspan="3">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>22</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>N Joi' N</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <property name="margin">
+       <number>12</number>
+      </property>
+      <property name="indent">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="5" colspan="2">
+     <spacer name="horizontalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="3">
+     <spacer name="verticalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>218</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>100</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="1" colspan="2">
+     <widget class="QPushButton" name="pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Nuovo Documento</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>55</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="4" colspan="2">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Aggiungi Documento</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="6">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>100</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="0" colspan="7">
+     <widget class="QListWidget" name="listWidget"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>714</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionOpen"/>
+   <addaction name="separator"/>
+   <addaction name="actionAccount"/>
+   <addaction name="separator"/>
+   <addaction name="actionClose"/>
+  </widget>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="textedit.qrc">
+     <normaloff>:/images/Icons/icons8-insert-page-24.png</normaloff>:/images/Icons/icons8-insert-page-24.png</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="toolTip">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="textedit.qrc">
+     <normaloff>:/images/Icons/icons8-open-document-24.png</normaloff>:/images/Icons/icons8-open-document-24.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionAccount">
+   <property name="icon">
+    <iconset resource="textedit.qrc">
+     <normaloff>:/images/Icons/icons8-male-user-24.png</normaloff>:/images/Icons/icons8-male-user-24.png</iconset>
+   </property>
+   <property name="text">
+    <string>Account</string>
+   </property>
+   <property name="toolTip">
+    <string>Account</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="textedit.qrc">
+     <normaloff>:/images/Icons/icons8-cancel-24.png</normaloff>:/images/Icons/icons8-cancel-24.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+   <property name="toolTip">
+    <string>Close</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="textedit.qrc"/>
+ </resources>
+ <connections/>
+</ui>

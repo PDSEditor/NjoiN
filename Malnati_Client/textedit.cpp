@@ -1000,7 +1000,13 @@ else{
                 }
             }
             else if(charsRemoved!=charsAdded){
+                if(position == 0 && charsAdded > 1){
+                    charsAdded--;
+                    charsRemoved--;
+                }
+//                charsAdded--;
                 int pos=cursor.selectionStart()-charsAdded;
+//                if(pos==0) charsRemoved = 0;
                 for(int i=0;i<charsRemoved;i++){
                     Message mc;
                     Symbol s=crdt->getSymbols().at(pos+i);

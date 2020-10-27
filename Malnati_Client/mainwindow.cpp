@@ -164,7 +164,7 @@ void MainWindow::sendUri(Message m)
 
 void MainWindow::receiveURIerror()
 {
-    QMessageBox::information(this,"ERRORE","URI non corretta");
+    QMessageBox::critical(this,"ERRORE","URI non corretta");
 }
 
 
