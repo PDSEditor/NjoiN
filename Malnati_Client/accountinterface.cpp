@@ -65,6 +65,7 @@ void AccountInterface::on_changeImage_clicked()
     }
 
 
+
     QByteArray bArray;
     QBuffer buffer(&bArray);
     buffer.open(QIODevice::WriteOnly);

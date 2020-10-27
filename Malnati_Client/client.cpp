@@ -2,17 +2,13 @@
 
 Client::Client()
 {
-
-
 }
 Client::~Client(){
-
     delete mw;
     if(closed==false){
         delete crdt;
     }
     delete sockm;
-
 }
 
 bool Client::Login()
@@ -47,34 +43,10 @@ bool Client::Login()
 
     lw.exec();
 
-     //    /** TEST IMMAGINE! **/
-     //    QString imgPath("/home/pepos/projects/progetto_malnati/Malnati_Client/images/cv_musk.png");
-     //    QPixmap image(imgPath);
-
-     //    //per averla sul json
-     //    QJsonObject obj;
-     //    QBuffer buffer;
-     //    buffer.open(QIODevice::WriteOnly);
-     //    image.save(&buffer, "PNG");
-     //    auto const encoded = buffer.data().toBase64();
-     //    obj.insert("image", QLatin1String(encoded));
-
-     //    //per riaverla
-     //    QByteArray l_image;
-     //    l_image = obj["image"].toString().toLatin1(); //in base64
-
-     //    QPixmap p;
-     //    p.loadFromData(QByteArray::fromBase64(l_image), "PNG");
-
-     //    /*****************************************/
-
     if(lw.getIsLogin()==true){
          mw->show();
          crdt=new Crdt();
-         //connect(&webSocket, &QWebSocket::connected, this, &socketManager::onConnected);
          connect(mw, &MainWindow::newTextEdit, this, &Client::receive_textEdit);
-
-//         connect(mw, &MainWindow::sendImage,sockm,&socketManager::receiveImage);
          connect(mw, &MainWindow::sendImage,sockm,&socketManager::messageToServer);
          connect(mw, &MainWindow::sendPwd, sockm, &socketManager::messageToServer);
          connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);

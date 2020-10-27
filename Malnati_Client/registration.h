@@ -22,7 +22,6 @@ public:
     void setSiteId(int s);
 
 public slots:
-    void receiveRegistration(Message);
     void openRw(int);
     void closeRw();
 
