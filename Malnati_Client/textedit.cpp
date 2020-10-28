@@ -62,6 +62,8 @@ TextEdit::TextEdit(QWidget *parent)
 
 
     textEdit = new QTextEdit(this);
+    textEdit->textCursor().setPosition(textEdit->document()->end().position());
+    textEdit->textCursor().setPosition(0);
     externAction=false;
 
     connect(textEdit, &QTextEdit::currentCharFormatChanged,
@@ -389,7 +391,7 @@ void TextEdit::receiveSymbol(Message *m)
     handlingOperation = true;
     externAction=true;
     localOperation = false;
-    QTextCursor curs = textEdit->textCursor(),oldcurs;
+    QTextCursor curs = textEdit->textCursor(), oldcurs;
     QColor col;
     QTextCharFormat qform, preqform;
     if(colors.find(m->getSymbol().getSiteId())==colors.end()){

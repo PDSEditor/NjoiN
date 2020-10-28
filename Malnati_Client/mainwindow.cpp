@@ -325,7 +325,7 @@ void MainWindow::receiveTitle(QString title)
     layout =new QHBoxLayout();
     layoutUsers = new QVBoxLayout();
 
-    te = new TextEdit();
+    te = new TextEdit();    
     te->setUsername(username);
     layout->addWidget(te);
     layout->addWidget(usersWindow);
