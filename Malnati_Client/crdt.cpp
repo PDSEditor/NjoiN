@@ -58,7 +58,7 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
 }
 
 
-Message Crdt::localInsert(QChar value, int precedingC, int followingC){
+std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int followingC){
     //da la dimensione del vettore di simboli
     size_t symbolsSize = this->symbols.size();
     std::vector<int> following;
@@ -96,13 +96,14 @@ Message Crdt::localInsert(QChar value, int precedingC, int followingC){
 
     Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounterAndIncrement());
 //
-    this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
-    Message m;
-    m.setAction('I');
+    auto pos = this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
+//    Message m;
+//    m.setAction('I');
 
-    m.setSymbol(symbolToInsert);
+//    m.setSymbol(symbolToInsert);
     print(fractionalPos);
-    return m;
+//    return m;
+    return pos;
 }
 
 //MAI USATA

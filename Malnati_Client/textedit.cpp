@@ -788,18 +788,20 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                             emit(sendMessage(&mc));
                         }
                         for(int i=0;i<charsAdded;i++){
-                            Message mi=crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
-                            Symbol s=mi.getSymbol();
-                            mi.setAction('I');
-                            s.setBold(actionTextBold->isChecked());
-                            s.setItalic(actionTextItalic->isChecked());
-                            s.setUnderln(actionTextUnderline->isChecked());
-                            s.setFamily(localFamily);
-                            s.setSize(localsize);
-                            s.setAlign(findalign(textEdit->alignment()));
-                            mi.setSymbol(s);
-                            position+=1;
-                            emit(sendMessage(&mi));
+                            std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
+                            Message mi;
+                            if(it != this->crdt->getSymbols().end()){
+                                mi.setAction('I');
+                                it->setBold(actionTextBold->isChecked());
+                                it->setItalic(actionTextItalic->isChecked());
+                                it->setUnderln(actionTextUnderline->isChecked());
+                                it->setFamily(localFamily);
+                                it->setSize(localsize);
+                                it->setAlign(findalign(textEdit->alignment()));
+                                mi.setSymbol(*it);
+                                position+=1;
+                                emit(sendMessage(&mi));
+                            }else return;
                         }
                     }
                     else{
@@ -807,15 +809,17 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                             charsAdded--;
                         for(int i=0; i<charsAdded; i++){
                             qDebug() << "char: " << textEdit->document()->characterAt(position);
-                            Message m = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
-                            Symbol s=m.getSymbol();
-                            s.setSize(textEdit->fontPointSize());
-                            s.setFamily(textEdit->fontFamily());
-                            s.setUnderln(textEdit->currentCharFormat().fontUnderline());
-                            s.setItalic(textEdit->currentCharFormat().fontItalic());
-                            s.setBold(actionTextBold->isChecked());
-                            s.setAlign(findalign(textEdit->alignment()));
-                            m.setSymbol(s);
+                            std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
+                            Message m;
+                            m.setAction('I');
+                            //todo: mettere controlli
+                            it->setBold(actionTextBold->isChecked());
+                            it->setItalic(actionTextItalic->isChecked());
+                            it->setUnderln(actionTextUnderline->isChecked());
+                            it->setFamily(localFamily);
+                            it->setSize(localsize);
+                            it->setAlign(findalign(textEdit->alignment()));
+                            m.setSymbol(*it);
                             position+=1;
                             emit(sendMessage(&m));
                         }
@@ -1043,7 +1047,7 @@ TextEdit::~TextEdit(){
     delete this->tb;
     delete this->crdt;
     delete this->textEdit;
-    delete this->symbols;
+//    delete this->symbols;
     delete this->shu;
     delete this->m_localCursor;
 }
