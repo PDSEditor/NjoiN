@@ -13,7 +13,7 @@ class Symbol
 {
 
 private:
-    QChar value;
+    QString value;
     std::vector<int> position;
     int siteId;
     int counter;
@@ -28,7 +28,7 @@ private:
 
 public:
     Symbol(std::vector<int> &position, int siteId, int counter);
-    Symbol(QChar value, std::vector<int> &position, int siteId, int counter);
+    Symbol(QString value, std::vector<int> &position, int siteId, int counter);
     Symbol();
 
     QString getFamily();
@@ -50,8 +50,8 @@ public:
     void setSiteId(int value);
     int getCounter() const;
     void setCounter(int value);
-    QChar getValue() const;
-    void setValue(QChar v);
+    QString getValue() const;
+    void setValue(QString v);
     static Symbol fromJson(const QJsonDocument &charJD);
     QJsonDocument toJson();
     bool operator < (const Symbol &other) const;

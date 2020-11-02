@@ -10,7 +10,7 @@
 class Symbol
 {
 private:
-    QChar value;
+    QString value;
     std::vector<int> position;
     int siteId;
     int counter;
@@ -36,10 +36,10 @@ public:
     void setItalic(bool i);
     void setUnderln(bool u);
     void setSize(qreal s);
-    Symbol(QChar value, std::vector<int> position, int siteId, int counter);
+    Symbol(QString value, std::vector<int> position, int siteId, int counter);
     Symbol();
-    QChar getValue() const;
-    void setValue(QChar value);
+    QString getValue() const;
+    void setValue(QString value);
     std::vector<int> getPosizione() const;
     void setPosizione(const std::vector<int> &value);
     int getSiteId() const;
