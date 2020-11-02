@@ -421,7 +421,7 @@ void TextEdit::receiveSymbol(Message *m)
         if(tmp.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
         else
-            curs.insertText(tmp.getValue(),qform);
+            curs.insertText((QChar)tmp.getValue(),qform);
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -554,7 +554,11 @@ void TextEdit::filePrintPdf()
     Symbol c= crdt->getSymbols()[i];
     QTextCharFormat qform=cu.charFormat();
     qform.setBackground(Qt::transparent);
-    curs.insertText(c.getValue(),qform);
+    QChar u=c.getValue();
+    if(u=='\0')
+        curs.insertText("\n",qform);
+    else
+        curs.insertText(u,qform);
 }
     tmp.document()->print(&printer);
     statusBar()->showMessage(tr("Exported \"%1\"")

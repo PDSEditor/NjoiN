@@ -79,11 +79,9 @@ void socketManager::binaryMessageToServer(Message *m)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        bytemex.append(symbol.getValue().size());
-        bytemex.append(symbol.getValue());
-//        tmpc=symbol.getValue();
-//        bytemex.append(tmpc.cell());
-//        bytemex.append(tmpc.row());
+        tmpc=symbol.getValue();
+        bytemex.append(tmpc.cell());
+        bytemex.append(tmpc.row());
 
 
         //inserimento info testo
@@ -117,7 +115,7 @@ void socketManager::onConnected()
     QByteArray a("Test start");
     Message *m = new Message(QChar('I'));
     Symbol symbol;
-    symbol.setValue("a");
+    symbol.setValue('a');
     symbol.setSiteId(5);
     symbol.setCounter(1);
     std::vector<int> v;
@@ -246,17 +244,10 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         symbol.setCounter(tmp);
         i+=4;
         c.clear();
-        c.append(bytemex.mid(i,4));
-        memcpy(&tmp,c,4);
-        symbol.setCounter(tmp);
-        i+=4;
-        c.clear();
-        for(int j=0;j<tmp;j++){
-            c.append(bytemex.mid(i,2));
-            memcpy(&tmpc,c,2);
-            i+=2;
-        }
-        symbol.setValue(tmpc);       
+        c.append(bytemex.mid(i,2));
+        memcpy(&tmpc,c,2);
+        symbol.setValue(tmpc);
+        i+=2;
         bo=bytemex.at(i);
         i++;
         un=bytemex.at(i);

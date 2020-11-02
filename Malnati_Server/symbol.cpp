@@ -11,7 +11,7 @@ Symbol::Symbol(std::vector<int> &position, int siteId, int counter)
 
 }
 
-Symbol::Symbol(QString value, std::vector<int> &position, int siteId, int counter)
+Symbol::Symbol(QChar value, std::vector<int> &position, int siteId, int counter)
 {
     this->position = std::move(position);
     this->siteId = siteId;
@@ -24,12 +24,12 @@ Symbol::Symbol()
 {
 
 }
-QString Symbol::getValue() const
+QChar Symbol::getValue() const
 {
     return value;
 }
 
-void Symbol::setValue(QString v)
+void Symbol::setValue(QChar v)
 {
     value = v;
 }
@@ -125,7 +125,7 @@ void Symbol::setSize(qreal s)
 
 Symbol Symbol::fromJson(const QJsonDocument &charJD){
     QJsonObject charJ = charJD.object();
-    auto value = charJ["value"].toString();
+    int value = charJ["value"].toInt();
     int siteId = charJ["siteId"].toInt();
     QJsonArray fractionalPosJ = charJ["position"].toArray();
     int counter = charJ["counter"].toInt();
@@ -155,7 +155,7 @@ Symbol Symbol::fromJson(const QJsonDocument &charJD){
 QJsonDocument Symbol::toJson()
 {
     QJsonObject json_obj;
-    json_obj["value"] = this->value;
+    json_obj["value"] = this->value.unicode();
     json_obj["siteId"] = this->siteId;
     json_obj["counter"] = this->counter;
     json_obj["family"] = this->family;
