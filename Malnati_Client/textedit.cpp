@@ -63,8 +63,9 @@ TextEdit::TextEdit(QWidget *parent)
 
     textEdit = new QTextEdit(this);
 //    textEdit->textCursor().setPosition(textEdit->document()->end().position());
-    textEdit->textCursor().setPosition(40960);
-    textEdit->textCursor().setPosition(0);
+//    textEdit->textCursor().setPosition(40960);
+//    textEdit->textCursor().setPosition(0);
+    textEdit->selectAll();
     externAction=false;
 
     connect(textEdit, &QTextEdit::currentCharFormatChanged,
