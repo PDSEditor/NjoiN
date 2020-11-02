@@ -79,10 +79,12 @@ void socketManager::binaryMessageToServer(Message *m)
         for(int p=0;p<4;p++){
             bytemex.append(tmp >> (p * 8));
         }
-        tmpc=symbol.getValue();
-        bytemex.append(tmpc.cell());
-        bytemex.append(tmpc.row());
 
+//        tmpc=symbol.getValue().unicode();
+        auto value = symbol.getValue().unicode();
+        for(int p=0;p<2;p++){
+            bytemex.append(value >> (p * 8));
+        }
 
         //inserimento info testo
 
@@ -245,8 +247,11 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
         i+=4;
         c.clear();
         c.append(bytemex.mid(i,2));
-        memcpy(&tmpc,c,2);
-        symbol.setValue(tmpc);
+
+        unsigned short ciao;
+        memcpy(&ciao,c,2);
+        symbol.setValue(ciao);
+
         i+=2;
         bo=bytemex.at(i);
         i++;
