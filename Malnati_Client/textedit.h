@@ -147,7 +147,7 @@ private:
     QTextEdit *textEdit;
     Crdt *crdt;
     socketManager *sockm;
-    std :: vector<Symbol> *symbols;
+//    std :: vector<Symbol> *symbols;
     ShowUriDialog *shu;
     QTextCursor *m_localCursor = nullptr;
     QMap<QString,User> m_onlineUsers;

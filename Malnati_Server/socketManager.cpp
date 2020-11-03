@@ -93,9 +93,13 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         /*for(int p=0;p<2;p++){
             bytemex.append(tmp >> (p*8));
         }*/
-        tmpc=symbol.getValue();
-        bytemex.append(tmpc.cell());
-        bytemex.append(tmpc.row());
+
+
+        auto value = symbol.getValue().unicode();
+
+        for(int p=0;p<2;p++){
+            bytemex.append(value >> (p * 8));
+        }
 
         bytemex.append(symbol.getBold());
         bytemex.append(symbol.getUnderln());
@@ -241,8 +245,12 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
         i+=4;
         c.clear();
         c.append(bytemex.mid(i,2));
-        memcpy(&tmpc,c,2);
-        symbol.setValue(tmpc);
+
+        unsigned short ciao;
+        memcpy(&ciao,c,2);
+
+        symbol.setValue(ciao);
+
         //symbol.setValue(bytemex.at(i));
         i+=2;
         bo=bytemex.at(i);

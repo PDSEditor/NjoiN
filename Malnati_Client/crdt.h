@@ -34,7 +34,7 @@ private:
 
 public:
     explicit Crdt();
-    Message localInsert(QChar value, int preceding, int following);
+    std::vector<Symbol>::iterator localInsert(QChar value, int preceding, int following);
     Message localErase(int position);
     int getSiteId();
     void setSiteId(int);
