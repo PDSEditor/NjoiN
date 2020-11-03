@@ -80,6 +80,7 @@ TextEdit::TextEdit(QWidget *parent)
     setupEditActions();
     setupTextActions();
     setupUriActions();
+    setupBackgroundAction();
 
     QFont textFont("Helvetica");
     textEdit->setFont(textFont);
@@ -330,6 +331,17 @@ void TextEdit::setupUriActions()
 
 }
 
+void TextEdit::setupBackgroundAction()
+{
+    QToolBar *tb = addToolBar(tr("Modifica Background"));
+    QMenu *menu = menuBar()->addMenu(tr("&Background"));
+
+    const QIcon newIcon = QIcon::fromTheme("ModifyBackground", QIcon(rsrcPath + "/../Icons/icons8-collegamento-24.png"));
+    QAction *a = menu->addAction(newIcon, tr("&ModifyBackground"), this, &TextEdit::modifyBackground);
+    tb->addAction(a);
+    a->setPriority(QAction::LowPriority);
+}
+
 
 
 void TextEdit::setCrdt(Crdt *crdtclient)
@@ -400,9 +412,12 @@ void TextEdit::receiveSymbol(Message *m)
         QColor q=listcolor.at(pos);
         colors.insert(m->getSymbol().getSiteId(),q);
     }
-    col=colors.take(m->getSymbol().getSiteId());
-
-    qform.setBackground(col);
+    if(backgroundOp==true){
+        col=colors.take(m->getSymbol().getSiteId());
+        qform.setBackground(col);
+    }
+    else
+        qform.setBackground(Qt::transparent);
     qform.setFontFamily(m->getSymbol().getFamily());
     qform.setFontItalic(m->getSymbol().getItalic());
     qform.setFontUnderline(m->getSymbol().getUnderln());
@@ -707,6 +722,53 @@ void TextEdit::showUriWindow()
    shu->exec();
 }
 
+void TextEdit::modifyBackground()
+{
+    if(backgroundOp==true){
+        externAction=true;
+        QTextCursor cursor = textEdit->textCursor();
+        textEdit->selectAll();
+        QTextCharFormat qform;
+        qform.setBackground(Qt::transparent);
+        textEdit->textCursor().mergeCharFormat(qform);
+        textEdit->setTextCursor(cursor);
+        backgroundOp=false;
+    }
+    else{
+        textEdit->selectAll();
+        externAction=true;
+        textEdit->clear();
+        QTextCursor cursor = textEdit->textCursor();
+        int i=0;
+        cursor.setPosition(i);
+        QChar al;
+        for(Symbol s : crdt->getSymbols()){
+
+            QTextCharFormat qform;
+            externAction=true;
+            if(s.getSiteId()==siteid)
+                qform.setBackground(Qt::transparent);
+            else
+                qform.setBackground(listcolor.at(11%siteid));
+            qform.setFontFamily(s.getFamily());
+            qform.setFontItalic(s.getItalic());
+            qform.setFontUnderline(s.getUnderln());
+            qform.setFontPointSize(s.getSize());
+            if(s.getBold())
+                qform.setFontWeight(QFont::Bold);
+            if(al!=s.getAlign()){
+                al=s.getAlign();
+                textEdit->setTextCursor(cursor);
+                textEdit->setAlignment(insertalign(al));
+                externAction=true;
+            }
+            cursor.insertText(s.getValue(),qform);
+        }
+        backgroundOp=true;
+    }
+
+}
+
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 {
     fontChanged(format.font());
@@ -941,10 +1003,14 @@ void TextEdit::loadFile(QList<Symbol> file)
     QColor col;
     foreach(Symbol s,file){
         externAction=true;
-        if(s.getSiteId()==siteid)
-            col=Qt::transparent;
+        if(backgroundOp==true){
+            if(s.getSiteId()==siteid)
+                col=Qt::transparent;
+            else
+                col=listcolor.at(s.getSiteId()%11);
+        }
         else
-            col=listcolor.at(s.getSiteId()%11);
+            col= Qt::transparent;
         qform.setBackground(col);
         qform.setFontFamily(s.getFamily());
         qform.setFontItalic(s.getItalic());
