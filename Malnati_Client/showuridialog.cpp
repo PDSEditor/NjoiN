@@ -1,6 +1,7 @@
 #include "showuridialog.h"
 #include "ui_showuridialog.h"
 #include <QCloseEvent>
+#include "simplecrypt.h"
 
 ShowUriDialog::ShowUriDialog(QWidget *parent) :
     QDialog(parent),
@@ -13,7 +14,9 @@ ShowUriDialog::ShowUriDialog(QWidget *parent) :
 
 void ShowUriDialog::setUriDialog(QString uri)
 {
-    ui->UriLabel->setText(uri);
+    SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
+    QString enc = crypto.encryptToString(uri);
+    ui->UriLabel->setText(enc);
 }
 
 void ShowUriDialog::closeEvent(QCloseEvent *event){

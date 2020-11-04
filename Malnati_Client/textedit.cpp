@@ -756,6 +756,11 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                         int pos=cursor.selectionStart();
                         for(int i=0;i<charsAdded;i++){
                             Message mc,mi;
+                            if(crdt->getSymbols().size()< pos+i+1){
+                                qDebug()<<"Errore textedit.cpp riga 760, si accede a posizione oltre nell'array symbols";
+                                qDebug()<<"ultimo carattere accedibile: " + QString(crdt->getSymbols().at(pos+i-1).getValue());
+                            }
+
                             Symbol s=crdt->getSymbols().at(pos+i);
                             //eliminazione vecchio carattere
                             mc.setSymbol(s);
