@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>393</width>
+    <width>277</width>
     <height>361</height>
    </rect>
   </property>
@@ -16,8 +16,8 @@
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>20</y>
+     <x>20</x>
+     <y>42</y>
      <width>231</width>
      <height>25</height>
     </rect>
@@ -52,8 +52,8 @@
   <widget class="QLineEdit" name="lineEdit_2">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>80</y>
+     <x>20</x>
+     <y>102</y>
      <width>231</width>
      <height>25</height>
     </rect>
@@ -65,8 +65,8 @@
   <widget class="QLineEdit" name="lineEdit_3">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>160</y>
+     <x>20</x>
+     <y>162</y>
      <width>231</width>
      <height>25</height>
     </rect>
@@ -79,7 +79,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>130</y>
+     <y>140</y>
      <width>171</width>
      <height>17</height>
     </rect>
@@ -91,8 +91,8 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>300</y>
+     <x>172</x>
+     <y>310</y>
      <width>80</width>
      <height>25</height>
     </rect>
@@ -104,8 +104,8 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>300</y>
+     <x>20</x>
+     <y>310</y>
      <width>80</width>
      <height>25</height>
     </rect>
@@ -130,14 +130,42 @@
   <widget class="QPushButton" name="pushButton_3">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>210</y>
-     <width>91</width>
-     <height>30</height>
+     <x>20</x>
+     <y>232</y>
+     <width>80</width>
+     <height>25</height>
     </rect>
    </property>
    <property name="text">
-    <string>Carica</string>
+    <string>Scegli..</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="image_pic_2">
+   <property name="geometry">
+    <rect>
+     <x>162</x>
+     <y>206</y>
+     <width>90</width>
+     <height>90</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <property name="text">
+    <string notr="true"/>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
