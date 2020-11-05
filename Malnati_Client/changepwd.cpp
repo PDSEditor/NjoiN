@@ -34,7 +34,7 @@ void ChangePwd::on_buttonBox_accepted()
 
 void ChangePwd::on_buttonBox_rejected()
 {
-    this->hide();
+    this->close();
 }
 
 void ChangePwd::setNewPwd(const QString &value)

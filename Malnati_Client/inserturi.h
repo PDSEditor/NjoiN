@@ -3,6 +3,7 @@
 
 #include <QAbstractButton>
 #include <QDialog>
+#include <QDialogButtonBox>
 #include "message.h"
 
 namespace Ui {
@@ -18,7 +19,7 @@ public:
     ~Inserturi();
 
 private slots:
-    void on_buttonBox_clicked(QAbstractButton *button);
+    void on_buttonBox_accepted();
 
     void on_buttonBox_rejected();
 
@@ -28,5 +29,6 @@ signals:
 private:
     Ui::Inserturi *ui;
 };
+
 
 #endif // INSERTURI_H
