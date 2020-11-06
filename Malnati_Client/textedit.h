@@ -154,7 +154,7 @@ private:
     Q_INVOKABLE void updateCursors();
     bool handlingOperation;
     bool localOperation;
-    bool backgroundOp=true;
+    bool backgroundOp=true,ereasingBackg=false;
 
 };
 
