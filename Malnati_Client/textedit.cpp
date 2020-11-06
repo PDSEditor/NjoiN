@@ -754,11 +754,13 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                         //                dati da passare
 
                         int pos=cursor.selectionStart();
+                        //int pos = position;
                         for(int i=0;i<charsAdded;i++){
                             Message mc,mi;
                             if(crdt->getSymbols().size()< pos+i+1){
                                 qDebug()<<"Errore textedit.cpp riga 760, si accede a posizione oltre nell'array symbols";
                                 qDebug()<<"ultimo carattere accedibile: " + QString(crdt->getSymbols().at(pos+i-1).getValue());
+                                pos--;
                             }
 
                             Symbol s=crdt->getSymbols().at(pos+i);
