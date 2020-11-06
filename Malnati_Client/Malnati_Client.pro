@@ -32,6 +32,7 @@ SOURCES += \
     message.cpp \
     registration.cpp \
     showuridialog.cpp \
+    simplecrypt.cpp \
     symbol.cpp \
     textedit.cpp \
     socketmanager.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     message.h \
     registration.h \
     showuridialog.h \
+    simplecrypt.h \
     symbol.h \
     textedit.h \
     socketmanager.h \

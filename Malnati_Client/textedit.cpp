@@ -804,6 +804,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
 
 
+<<<<<<< HEAD
                 QTextCursor  cursor = textEdit->textCursor();
 
                 qDebug() << "position: " << position;
@@ -813,6 +814,56 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                     for(int i=0; i<charsRemoved; i++){
                         Message m=crdt->localErase(position);
                         emit(sendMessage(&m));
+=======
+    }
+    else{
+        if(externAction==false){
+
+
+
+            QTextCursor  cursor = textEdit->textCursor();
+
+            qDebug() << "position: " << position;
+            qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
+
+            if(charsRemoved!=0 && charsAdded==0){
+                for(int i=0; i<charsRemoved; i++){
+                    Message m=crdt->localErase(position);
+                    emit(sendMessage(&m));
+                }
+            }else
+                if(charsAdded!= 0){
+                    if(charsAdded==charsRemoved){
+
+                        //                dati da passare
+
+                        int pos=cursor.selectionStart();
+                        //int pos = position;
+                        for(int i=0;i<charsAdded;i++){
+                            Message mc,mi;
+                            if(crdt->getSymbols().size()< pos+i+1){
+                                qDebug()<<"Errore textedit.cpp riga 760, si accede a posizione oltre nell'array symbols";
+                                qDebug()<<"ultimo carattere accedibile: " + QString(crdt->getSymbols().at(pos+i-1).getValue());
+                                pos--;
+                            }
+
+                            Symbol s=crdt->getSymbols().at(pos+i);
+                            //eliminazione vecchio carattere
+                            mc.setSymbol(s);
+                            mc.setAction('D');
+                            emit(sendMessage(&mc));
+                            //invio carattere modificato
+                            mi.setAction('I');
+                            s.setBold(actionTextBold->isChecked());
+                            s.setItalic(actionTextItalic->isChecked());
+                            s.setUnderln(actionTextUnderline->isChecked());
+                            s.setFamily(localFamily);
+                            s.setSize(localsize);
+                            s.setAlign(findalign(textEdit->alignment()));
+                            mi.setSymbol(s);
+                            emit(sendMessage(&mi));
+                        }
+>>>>>>> origin/Mattia
                     }
                 }else
                     if(charsAdded!= 0){

@@ -192,7 +192,7 @@ int Crdt::remoteinsert(Symbol s){
            max=middle;
        }
        else if(pos == 0) {
-//           qDebug()<<"errore: inserimento stesso carattere";
+           qDebug()<<"errore: inserimento stesso carattere";
            return -1;
        }
        middle=(max+min)/2;
