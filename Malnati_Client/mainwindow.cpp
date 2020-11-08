@@ -6,6 +6,7 @@
 #include "loginwindow.h"
 #include "accountinterface.h"
 #include "inserttitle.h"
+#include "simplecrypt.h"
 
 socketManager *sock;
 MainWindow::MainWindow(QWidget *parent)
@@ -148,7 +149,10 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
 void MainWindow::sendUri(Message m)
 {
     m.setSender(siteId);
-    openURI=m.getParams().at(0);
+    SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
+    QString decrypted = crypto.decryptToString(m.getParams()[0]);
+    openURI=decrypted;
+    m.setParams({decrypted});
     emit(sendTextMessage(&m));
 
 }
@@ -256,8 +260,12 @@ void MainWindow::receivedInfoAccount(Message& m){
 
     QList<QString> tmp;
     long size = m.getParams().size();
+
+    //SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
+
     for(int i=3; i<size; i++){
         documents.append(m.getParams().at(i));
+        //QString encrypted = crypto.encryptToString(m.getParams().at(i));
         addElementforUser(m.getParams().at(i));
     }
 }

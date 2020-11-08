@@ -80,7 +80,7 @@ void AccountInterface::receiveNewImage(Message &m){
     if(m.getError()){
         QMessageBox::critical(this,"Error","Errore nel cambio immagine, riprova");
         return;
-    }else QMessageBox::information(this, "Success", "Immagine cambiata correttamente!");
+    }else QMessageBox::information(this, "Success", "Immagine cambiata correttamente.");
 
     this->setImagePic(this->probImage);
 }

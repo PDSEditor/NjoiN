@@ -86,6 +86,7 @@ private slots:
     void textColor();
     void textAlign(QAction *a);
     void showUriWindow();
+    void modifyBackground();
 
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorPositionChanged();
@@ -101,6 +102,7 @@ private:
     void setupEditActions();
     void setupTextActions();
     void setupUriActions();
+    void setupBackgroundAction();
     void setCurrentFileName();
 
 
@@ -152,6 +154,7 @@ private:
     Q_INVOKABLE void updateCursors();
     bool handlingOperation;
     bool localOperation;
+    bool backgroundOp=true,ereasingBackg=false;
 
 };
 

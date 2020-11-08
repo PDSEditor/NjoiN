@@ -32,6 +32,7 @@ SOURCES += \
     message.cpp \
     registration.cpp \
     showuridialog.cpp \
+    simplecrypt.cpp \
     symbol.cpp \
     textedit.cpp \
     socketmanager.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     message.h \
     registration.h \
     showuridialog.h \
+    simplecrypt.h \
     symbol.h \
     textedit.h \
     socketmanager.h \
@@ -80,6 +82,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #unix|win32: LIBS += -lmongoc-1.0
 
 DISTFILES += \
+    images/Icons/icon2.png \
     images/Icons/icons8-cancel-24.png \
     images/Icons/icons8-collegamento-24.png \
     images/Icons/icons8-insert-page-24.png \
