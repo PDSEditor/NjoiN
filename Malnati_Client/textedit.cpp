@@ -852,7 +852,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                             for(int i=0;i<charsRemoved;i++){
                                 Message mc;
 //                                Symbol s=crdt->getSymbols().at(pos+i);
-                                mc = crdt->localErase(position+i);
+                                mc = crdt->localErase(position);
                                 //eliminazione vecchio carattere
 //                                mc.setSymbol(s);
                                 mc.setAction('D');
