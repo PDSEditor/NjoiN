@@ -802,10 +802,6 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
         }
         else{
             if(externAction==false){
-
-
-
-
                 QTextCursor  cursor = textEdit->textCursor();
 
                 qDebug() << "position: " << position;
@@ -855,9 +851,10 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                             int pos=cursor.selectionStart()-charsAdded;
                             for(int i=0;i<charsRemoved;i++){
                                 Message mc;
-                                Symbol s=crdt->getSymbols().at(pos+i);
+//                                Symbol s=crdt->getSymbols().at(pos+i);
+                                mc = crdt->localErase(position+i);
                                 //eliminazione vecchio carattere
-                                mc.setSymbol(s);
+//                                mc.setSymbol(s);
                                 mc.setAction('D');
                                 emit(sendMessage(&mc));
                             }
