@@ -852,7 +852,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                             for(int i=0;i<charsRemoved;i++){
                                 Message mc;
 //                                Symbol s=crdt->getSymbols().at(pos+i);
-                                mc = crdt->localErase(position+i);
+                                mc = crdt->localErase(position);
                                 //eliminazione vecchio carattere
 //                                mc.setSymbol(s);
                                 mc.setAction('D');
@@ -1103,12 +1103,9 @@ void TextEdit::moveCursor(int pos, QString userId)
                  user.cursor = textEdit->textCursor();
             }
 
-//            user.cursor = textEdit->textCursor();
+            user.cursor = textEdit->textCursor();
             user.cursor.setPosition(pos); //dio errore outofrange
             QRect remoteCoord = textEdit->cursorRect(user.cursor);
-
-            QTextCursor q; int i=0;
-            q.setPosition(i);
 
             int height = remoteCoord.bottom()-remoteCoord.top();
             user.label->resize(1000, height+5);
