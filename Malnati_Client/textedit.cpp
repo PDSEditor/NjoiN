@@ -488,7 +488,8 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     remoteLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
     remoteLabel->setStyleSheet("color:"+color.name()+";background-color:transparent;border: 1px solid transparent;border-left-color:"+color.name()+";");
     remoteLabel->setFont(font);
-    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->textCursor())};
+//    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->textCursor())};
+    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->document())};
     m_onlineUsers[userKey] = newUser;
     // 2. Draw the remote cursor at position 0
     QTextCursor& remoteCursor = m_onlineUsers[userKey].cursor;
@@ -1099,13 +1100,19 @@ void TextEdit::moveCursor(int pos, QString userId)
     }
     else{
         if(m_onlineUsers.contains(userId)){
-            User user ;
+            User user;
             user = m_onlineUsers[userId];
             if(user.cursor.isNull()){
                  user.cursor = textEdit->textCursor();
             }
-            user.cursor.setPosition(pos);
+
+//            user.cursor = textEdit->textCursor();
+            user.cursor.setPosition(pos); //dio errore outofrange
             QRect remoteCoord = textEdit->cursorRect(user.cursor);
+
+            QTextCursor q; int i=0;
+            q.setPosition(i);
+
             int height = remoteCoord.bottom()-remoteCoord.top();
             user.label->resize(1000, height+5);
 
