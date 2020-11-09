@@ -82,6 +82,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #unix|win32: LIBS += -lmongoc-1.0
 
 DISTFILES += \
+    images/Icons/icon2.png \
     images/Icons/icons8-cancel-24.png \
     images/Icons/icons8-collegamento-24.png \
     images/Icons/icons8-insert-page-24.png \

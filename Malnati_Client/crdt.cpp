@@ -14,7 +14,7 @@ bool exists(int index, std::vector<int> vector);
 void print(const std::vector<int>& input)
 {
     for(auto i: input){
-        qDebug() << "pos: " << i;
+//        qDebug() << "pos: " << i;
     }
 }
 
@@ -82,7 +82,7 @@ std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int
                 preceding = this->symbols[precedingC].getPosizione();
                 following=std::vector<int>{maxnum};
                 createFractional(preceding, following, fractionalPos, Crdt::maxnum);
-                qDebug() << "fractionalpos: " << fractionalPos;;
+//                qDebug() << "fractionalpos: " << fractionalPos;;
         }
         else{ // cioè sono in mezzo
             //mi salvo le posizioni frazionarie di quello prima e di quello dopo
@@ -90,7 +90,7 @@ std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int
             following = this->symbols[followingC].getPosizione();
             createFractional(preceding, following, fractionalPos, Crdt::maxnum);
 
-            qDebug() << "fractionalpos: " << fractionalPos;
+//            qDebug() << "fractionalpos: " << fractionalPos;
         }
     }
 
@@ -101,7 +101,7 @@ std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int
 //    m.setAction('I');
 
 //    m.setSymbol(symbolToInsert);
-    print(fractionalPos);
+//    print(fractionalPos);
 //    return m;
     return pos;
 }
