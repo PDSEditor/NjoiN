@@ -55,6 +55,9 @@
          </item>
          <item>
           <widget class="QLineEdit" name="lineEdit_username">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -67,7 +70,7 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Password </string>
+            <string>Password  </string>
            </property>
           </widget>
          </item>

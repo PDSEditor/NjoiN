@@ -6,6 +6,7 @@ Registration::Registration(QWidget *parent) :
     ui(new Ui::Registration)
 {
     ui->setupUi(this);
+    setWindowTitle("Registrazione");
 }
 
 
@@ -91,6 +92,8 @@ void Registration::on_pushButton_3_clicked()
     pix.save(&buffer, "PNG");
     auto const encoded = buffer.data().toBase64();
     this->img = encoded;
+
+    ui->image_pic_2->setPixmap(pix);
 
 }
 

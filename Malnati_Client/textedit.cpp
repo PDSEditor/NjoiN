@@ -1030,6 +1030,9 @@ void TextEdit::moveCursor(int pos, QString userId)
         if(m_onlineUsers.contains(userId)){
             User user ;
             user = m_onlineUsers[userId];
+            if(user.cursor.isNull()){
+                 user.cursor = textEdit->textCursor();
+            }
             user.cursor.setPosition(pos);
             QRect remoteCoord = textEdit->cursorRect(user.cursor);
             int height = remoteCoord.bottom()-remoteCoord.top();

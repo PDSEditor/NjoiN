@@ -34,11 +34,10 @@ void AccountInterface::on_changePassword_clicked()
     changePwdDialog->exec();
 
     QString newPwd, oldPwd;
-//    if(changePwdDialog->exec()){
-        newPwd = changePwdDialog->getNewPassword();
-        oldPwd = changePwdDialog->getOldPassword();
-//    }
-    emit(changePassword(oldPwd, newPwd));
+    newPwd = changePwdDialog->getNewPassword();
+    oldPwd = changePwdDialog->getOldPassword();
+    if(newPwd.size() > 0 && oldPwd.size()>0)
+        emit(changePassword(oldPwd, newPwd));
     return;
 }
 

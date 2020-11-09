@@ -16,7 +16,7 @@ Inserturi::~Inserturi()
     delete ui;
 }
 
-void Inserturi::on_buttonBox_clicked(QAbstractButton *button)
+void Inserturi::on_buttonBox_accepted()
 {
     Message m;
     m.setAction('U');
