@@ -337,7 +337,7 @@ void TextEdit::setupBackgroundAction()
     QToolBar *tb = addToolBar(tr("Modifica Background"));
     QMenu *menu = menuBar()->addMenu(tr("&Background"));
 
-    const QIcon newIcon = QIcon::fromTheme("ModifyBackground", QIcon(rsrcPath + "/../Icons/icons2.png"));
+    const QIcon newIcon = QIcon::fromTheme("ModifyBackground", QIcon(rsrcPath + "/../Icons/icon2.png"));
     QAction *a = menu->addAction(newIcon, tr("&ModifyBackground"), this, &TextEdit::modifyBackground);
     tb->addAction(a);
     a->setPriority(QAction::LowPriority);
@@ -488,7 +488,8 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     remoteLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
     remoteLabel->setStyleSheet("color:"+color.name()+";background-color:transparent;border: 1px solid transparent;border-left-color:"+color.name()+";");
     remoteLabel->setFont(font);
-    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->textCursor())};
+//    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->textCursor())};
+    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->document())};
     m_onlineUsers[userKey] = newUser;
     // 2. Draw the remote cursor at position 0
     QTextCursor& remoteCursor = m_onlineUsers[userKey].cursor;
@@ -801,10 +802,6 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
         }
         else{
             if(externAction==false){
-
-
-
-
                 QTextCursor  cursor = textEdit->textCursor();
 
                 qDebug() << "position: " << position;
@@ -817,46 +814,51 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                     }
                 }else
                     if(charsAdded!= 0){
-                        if(charsAdded==charsRemoved){
+//                        if(charsAdded==charsRemoved){
 
-                            //                dati da passare
+//                            //                dati da passare
 
-                            int pos=cursor.selectionStart();
-                            for(int i=0;i<charsAdded;i++){
-                                Message mc,mi;
-                                if(crdt->getSymbols().size()< pos+i+1){
-                                    qDebug()<<"Errore textedit.cpp riga 760, si accede a posizione oltre nell'array symbols";
-                                    qDebug()<<"ultimo carattere accedibile: " + QString(crdt->getSymbols().at(pos+i-1).getValue());
-                                    pos--;
-                                }
-                                Symbol s=crdt->getSymbols()[pos+i];
-                                //eliminazione vecchio carattere
-                                mc.setSymbol(crdt->getSymbols()[pos+i]);
-                                mc.setAction('D');
-                                emit(sendMessage(&mc));
-                                //invio carattere modificato
-                                mi.setAction('I');
-                                crdt->getSymbols()[pos+i].setBold(actionTextBold->isChecked());
-                                crdt->getSymbols()[pos+i].setItalic(actionTextItalic->isChecked());
-                                crdt->getSymbols()[pos+i].setUnderln(actionTextUnderline->isChecked());
-                                crdt->getSymbols()[pos+i].setFamily(localFamily);
-                                crdt->getSymbols()[pos+i].setSize(localsize);
-                                crdt->getSymbols()[pos+i].setAlign(findalign(textEdit->alignment()));
-                                mi.setSymbol(crdt->getSymbols()[pos+i]);
-                                emit(sendMessage(&mi));
-                            }
-                        }
-                        else if(charsRemoved!=charsAdded){
-                            if(position == 0 && charsAdded > 1){
-                                charsAdded--;
-                                charsRemoved--;
-                            }
-                            int pos=cursor.selectionStart()-charsAdded;
+//                            int pos=cursor.selectionStart();
+//                            for(int i=0;i<charsAdded;i++){
+//                                Message mc,mi;
+//                                if(crdt->getSymbols().size()< pos+i+1){
+//                                    qDebug()<<"Errore textedit.cpp riga 760, si accede a posizione oltre nell'array symbols";
+//                                    qDebug()<<"ultimo carattere accedibile: " + QString(crdt->getSymbols().at(pos+i-1).getValue());
+//                                    pos--;
+//                                }
+//                                Symbol s=crdt->getSymbols()[pos+i];
+//                                //eliminazione vecchio carattere
+//                                mc.setSymbol(s);
+//                                mc.setAction('D');
+//                                emit(sendMessage(&mc));
+//                                //invio carattere modificato
+//                                mi.setAction('I');
+//                                s.setBold(actionTextBold->isChecked());
+//                                s.setItalic(actionTextItalic->isChecked());
+//                                s.setUnderln(actionTextUnderline->isChecked());
+//                                s.setFamily(localFamily);
+//                                s.setSize(localsize);
+//                                s.setAlign(findalign(textEdit->alignment()));
+//                                mi.setSymbol(s);
+//                                emit(sendMessage(&mi));
+//                            }
+//                        }
+//                        else if(charsRemoved!=charsAdded){
+//                            if(position == 0 && charsAdded > 1){
+//                                charsAdded--;
+//                                charsRemoved--;
+//                            }
+                            int pos=position;
+//                            int pos=cursor.selectionStart()-charsAdded;
                             for(int i=0;i<charsRemoved;i++){
                                 Message mc;
-                                Symbol s=crdt->getSymbols().at(pos+i);
+                                if(charsAdded>0)
+                                    mc = crdt->localErase(pos);
+                                else
+                                    mc = crdt->localErase(pos+1);
+//                                Symbol s=crdt->getSymbols().at(pos+i);
                                 //eliminazione vecchio carattere
-                                mc.setSymbol(s);
+//                                mc.setSymbol(s);
                                 mc.setAction('D');
                                 emit(sendMessage(&mc));
                             }
@@ -876,27 +878,27 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                                     emit(sendMessage(&mi));
                                 }else return;
                             }
-                        }
-                        else{
-                            if(charsRemoved>0)
-                                charsAdded--;
-                            for(int i=0; i<charsAdded; i++){
-                                qDebug() << "char: " << textEdit->document()->characterAt(position);
-                                std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
-                                Message m;
-                                m.setAction('I');
-                                //todo: mettere controlli
-                                it->setBold(actionTextBold->isChecked());
-                                it->setItalic(actionTextItalic->isChecked());
-                                it->setUnderln(actionTextUnderline->isChecked());
-                                it->setFamily(localFamily);
-                                it->setSize(localsize);
-                                it->setAlign(findalign(textEdit->alignment()));
-                                m.setSymbol(*it);
-                                position+=1;
-                                emit(sendMessage(&m));
-                            }
-                        }
+//                        }
+//                        else{
+//                            if(charsRemoved>0)
+//                                charsAdded--;
+//                            for(int i=0; i<charsAdded; i++){
+//                                qDebug() << "char: " << textEdit->document()->characterAt(position);
+//                                std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
+//                                Message m;
+//                                m.setAction('I');
+//                                //todo: mettere controlli
+//                                it->setBold(actionTextBold->isChecked());
+//                                it->setItalic(actionTextItalic->isChecked());
+//                                it->setUnderln(actionTextUnderline->isChecked());
+//                                it->setFamily(localFamily);
+//                                it->setSize(localsize);
+//                                it->setAlign(findalign(textEdit->alignment()));
+//                                m.setSymbol(*it);
+//                                position+=1;
+//                                emit(sendMessage(&m));
+//                            }
+//                        }
                     }
             }
             externAction=false;
@@ -1099,13 +1101,16 @@ void TextEdit::moveCursor(int pos, QString userId)
     }
     else{
         if(m_onlineUsers.contains(userId)){
-            User user ;
+            User user;
             user = m_onlineUsers[userId];
             if(user.cursor.isNull()){
                  user.cursor = textEdit->textCursor();
             }
-            user.cursor.setPosition(pos);
+
+            user.cursor = textEdit->textCursor();
+            user.cursor.setPosition(pos); //dio errore outofrange
             QRect remoteCoord = textEdit->cursorRect(user.cursor);
+
             int height = remoteCoord.bottom()-remoteCoord.top();
             user.label->resize(1000, height+5);
 
