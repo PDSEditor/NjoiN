@@ -106,18 +106,18 @@ TextEdit::TextEdit(QWidget *parent)
             this, &TextEdit::onTextChanged);
 
 
-    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
-        int pos = textEdit->textCursor().position();
-        if (!localOperation || handlingOperation )
-            localOperation = false;
-        else{
-            Message m;
-            m.setAction('Z');
-            m.setSender(siteid);
-            m.setParams({QString::number(pos),username});
-            emit sendTextMessage(&m);
-        }
- });
+//    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
+//        int pos = textEdit->textCursor().position();
+//        if (!localOperation || handlingOperation )
+//            localOperation = false;
+//        else{
+//            Message m;
+//            m.setAction('Z');
+//            m.setSender(siteid);
+//            m.setParams({QString::number(pos),username});
+//            emit sendTextMessage(&m);
+//        }
+// });
 
 
 
@@ -152,6 +152,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 void TextEdit::closeEvent(QCloseEvent */* unused */)
 {
+    crdt->getSymbols().clear();
     emit(openMW(this->getURI()));
 
 }
@@ -432,7 +433,12 @@ void TextEdit::receiveSymbol(Message *m)
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         if(position == -1) return;
-        curs.setPosition(position);
+
+
+        if(position > textEdit->document()->characterCount())
+            curs.movePosition(QTextCursor::End);
+        else curs.setPosition(position);
+
         if(tmp.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
         else
@@ -445,7 +451,7 @@ void TextEdit::receiveSymbol(Message *m)
 
     }
 
-    updateCursors();
+//    updateCursors();
     handlingOperation = false;
 
 
@@ -1050,7 +1056,7 @@ void TextEdit::loadFile(QList<Symbol> file)
         vtmp.push_back(s);
     }
     crdt->setSymbols(vtmp);
-    updateCursors();
+//    updateCursors();
     handlingOperation = false;
 }
 
@@ -1137,3 +1143,4 @@ TextEdit::~TextEdit(){
     delete this->shu;
     delete this->m_localCursor;
 }
+

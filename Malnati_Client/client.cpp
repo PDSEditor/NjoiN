@@ -46,6 +46,7 @@ bool Client::Login()
          mw->show();
          crdt=new Crdt();
          connect(mw, &MainWindow::newTextEdit, this, &Client::receive_textEdit);
+         connect(mw, &MainWindow::closeTextEdit, this, &Client::closeTextEdit);
          connect(mw, &MainWindow::sendImage,sockm,&socketManager::messageToServer);
          connect(mw, &MainWindow::sendPwd, sockm, &socketManager::messageToServer);
          connect(mw,&MainWindow::sendMessage,sockm,&socketManager::binaryMessageToServer);
@@ -64,7 +65,13 @@ void Client::receive_textEdit(TextEdit *t,int s){
     this->crdt->setSiteId(s);
     t->setCrdt(this->crdt);
     t->setSocketM(Client::sockm);
-    connect(sockm, &socketManager::newMessage, t, &TextEdit::receiveSymbol);
+    //da disconnettere!
+    connect(sockm, &socketManager::newMessage, t, &TextEdit::receiveSymbol, Qt::UniqueConnection);
+
+}
+
+void Client::closeTextEdit(TextEdit *t){
+    disconnect(sockm, &socketManager::newMessage, t, &TextEdit::receiveSymbol);
 }
 
 
