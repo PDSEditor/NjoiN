@@ -10,6 +10,7 @@
 #include <QPrinter>
 #include <QLabel>
 #include <showuridialog.h>
+#include <QShortcut>
 
 
 #define DEFAULT_SIZE 12
@@ -87,7 +88,7 @@ private slots:
     void textAlign(QAction *a);
     void showUriWindow();
     void modifyBackground();
-
+    void pasted();
     void currentCharFormatChanged(const QTextCharFormat &format);
     void cursorPositionChanged();
     void onTextChanged(int position, int charsRemoved, int charsAdded);
@@ -110,7 +111,7 @@ private:
     void fontChanged(const QFont &f);
     void alignmentChanged(Qt::Alignment a);
     Symbol searchSymbolToErase(char c);
-    bool externAction, flagc=false,alignAction;
+    bool externAction, flagc=false,alignAction,copied=false;
     QMap<int,QColor> colors;
     std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
     int contcolor=0;
@@ -118,8 +119,8 @@ private:
 
     //local format
     bool localb,locall,localu;
-    QString localFamily;
-    qreal localsize;
+    QString localFamily,copiedfamily;
+    qreal localsize,copiedsize;
 
     QAction *actionSave;
     QAction *actionTextBold;
