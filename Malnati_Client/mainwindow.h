@@ -52,6 +52,7 @@ public slots:
 
 signals:
     void newTextEdit(TextEdit* t,int s);
+    void closeTextEdit(TextEdit *t);
     void sendImage(Message *);
     void sendPwd(Message *);
     void sendMessage(Message* mex);
