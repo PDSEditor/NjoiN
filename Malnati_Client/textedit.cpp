@@ -152,6 +152,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 void TextEdit::closeEvent(QCloseEvent */* unused */)
 {
+    crdt->getSymbols().clear();
     emit(openMW(this->getURI()));
 
 }
@@ -432,7 +433,12 @@ void TextEdit::receiveSymbol(Message *m)
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         if(position == -1) return;
-        curs.setPosition(position);
+
+
+        if(position > textEdit->document()->characterCount())
+            curs.movePosition(QTextCursor::End);
+        else curs.setPosition(position);
+
         if(tmp.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
         else
@@ -1137,3 +1143,4 @@ TextEdit::~TextEdit(){
     delete this->shu;
     delete this->m_localCursor;
 }
+

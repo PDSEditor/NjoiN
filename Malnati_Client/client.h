@@ -20,6 +20,7 @@ public:
 
 private slots:
     void receive_textEdit(TextEdit *t,int s);
+    void closeTextEdit(TextEdit *t);
 
 
 private:

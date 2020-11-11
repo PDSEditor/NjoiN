@@ -370,7 +370,7 @@ void MainWindow::receiveTitle(QString title)
     te->setSiteid(siteId);
     addElementforUser(title+"_"+username);
     te->fileNew();
-    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
+//    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
 //    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
 
@@ -403,6 +403,7 @@ void MainWindow::openMw(QString fileName)
         mc.setSender(this->getSiteId());
         mc.setParams({QString::number(-24),username});
         emit(sendTextMessage(&mc));
+        emit(closeTextEdit(this->te));
     }
 }
 
