@@ -1055,11 +1055,7 @@ void TextEdit::loadFile(QList<Symbol> file)
         vtmp.push_back(s);
     }
     crdt->setSymbols(vtmp);
-<<<<<<< HEAD
-    //updateCursors();
-=======
 //    updateCursors();
->>>>>>> origin/Angelo
     handlingOperation = false;
 }
 
