@@ -106,18 +106,18 @@ TextEdit::TextEdit(QWidget *parent)
             this, &TextEdit::onTextChanged);
 
 
-    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
-        int pos = textEdit->textCursor().position();
-        if (!localOperation || handlingOperation )
-            localOperation = false;
-        else{
-            Message m;
-            m.setAction('Z');
-            m.setSender(siteid);
-            m.setParams({QString::number(pos),username});
-            emit sendTextMessage(&m);
-        }
- });
+//    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
+//        int pos = textEdit->textCursor().position();
+//        if (!localOperation || handlingOperation )
+//            localOperation = false;
+//        else{
+//            Message m;
+//            m.setAction('Z');
+//            m.setSender(siteid);
+//            m.setParams({QString::number(pos),username});
+//            emit sendTextMessage(&m);
+//        }
+// });
 
 
 
@@ -445,7 +445,7 @@ void TextEdit::receiveSymbol(Message *m)
 
     }
 
-    updateCursors();
+    //updateCursors();
     handlingOperation = false;
 
 
@@ -1050,7 +1050,7 @@ void TextEdit::loadFile(QList<Symbol> file)
         vtmp.push_back(s);
     }
     crdt->setSymbols(vtmp);
-    updateCursors();
+    //updateCursors();
     handlingOperation = false;
 }
 
