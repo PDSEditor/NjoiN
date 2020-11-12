@@ -338,8 +338,8 @@ void TextEdit::setupBackgroundAction()
     QToolBar *tb = addToolBar(tr("Modifica Background"));
     QMenu *menu = menuBar()->addMenu(tr("&Background"));
 
-    const QIcon newIcon = QIcon::fromTheme("ModifyBackground", QIcon(rsrcPath + "/../Icons/icon2.png"));
-    QAction *a = menu->addAction(newIcon, tr("&ModifyBackground"), this, &TextEdit::modifyBackground);
+    const QIcon newIcon = QIcon::fromTheme("Modify background", QIcon(rsrcPath + "/../Icons/icon2.png"));
+    QAction *a = menu->addAction(newIcon, tr("&Modify background"), this, &TextEdit::modifyBackground);
     tb->addAction(a);
     a->setPriority(QAction::LowPriority);
 }
