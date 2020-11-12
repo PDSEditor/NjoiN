@@ -474,7 +474,8 @@ void TextEdit::receiveAllign(Message m)
     a=m.getParams().at(2).toLatin1().at(0);
     al=insertalign(a);
     for(int i=start;i<=end;i++){
-        crdt->getSymbols()[i].setAlign(a);
+//        crdt->getSymbols()[i].setAlign(a);
+        crdt->setAlline(i,a);
     }
     c.setPosition(start);
     textEdit->setTextCursor(c);
@@ -718,15 +719,23 @@ void TextEdit::textColor()
 void TextEdit::textAlign(QAction *a)
 {
     alignAction=true;
-    if (a == actionAlignLeft)
+    if (a == actionAlignLeft){
+        tmpalign='L';
         textEdit->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
-    else if (a == actionAlignCenter)
+    }
+    else if (a == actionAlignCenter){
+        tmpalign='C';
         textEdit->setAlignment(Qt::AlignHCenter);
-    else if (a == actionAlignRight)
+    }
+    else if (a == actionAlignRight){
+        tmpalign='R';
         textEdit->setAlignment(Qt::AlignRight | Qt::AlignAbsolute);
-    else if (a == actionAlignJustify)
-        textEdit->setAlignment(Qt::AlignJustify);
 
+    }
+    else if (a == actionAlignJustify){
+        tmpalign='J';
+        textEdit->setAlignment(Qt::AlignJustify);
+    }
 }
 
 void TextEdit::showUriWindow()
@@ -789,7 +798,6 @@ void TextEdit::modifyBackground()
 
 void TextEdit::pasted()
 {
-    copied=true;
     textEdit->paste();
 }
 
@@ -805,9 +813,13 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
             alignAction=false;
             int max,min;
             min=position;
-            max=min+charsAdded-2;
-            for(int i=0;i<max;i++){
-                crdt->getSymbols()[i].setAlign(findalign(textEdit->alignment()));
+            if(position+charsAdded>crdt->getSymbols().size())
+                max=min+charsAdded-2;
+            else
+                max=min+charsAdded-1;
+            for(int i=min;i<=max;i++){
+                crdt->setAlline(i,tmpalign);
+
             }
 
             Message m;
@@ -883,28 +895,23 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                             for(int i=0;i<charsAdded;i++){
                                 std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
                                 Message mi;
-
+                                //
+                                cursor.setPosition(position+1);
+                                //
                                 if(it != this->crdt->getSymbols().end()){
                                     mi.setAction('I');
-                                    it->setBold(actionTextBold->isChecked());
-                                    it->setItalic(actionTextItalic->isChecked());
-                                    it->setUnderln(actionTextUnderline->isChecked());
-                                    if(copied==true){
-                                        it->setFamily(copiedfamily);
-                                        it->setSize(copiedsize);
-                                    }
-                                    else{
-                                    it->setFamily(localFamily);
-                                    it->setSize(localsize);
-                                    }
+                                    it->setBold(cursor.charFormat().fontWeight()==QFont::Bold?  true : false);
+                                    it->setItalic(cursor.charFormat().fontItalic());
+                                    it->setUnderln(cursor.charFormat().fontUnderline());
+                                    it->setFamily(cursor.charFormat().fontFamily());
+                                    it->setSize(cursor.charFormat().fontPointSize());
                                     it->setAlign(findalign(textEdit->alignment()));
                                     mi.setSymbol(*it);
                                     position+=1;
                                     emit(sendMessage(&mi));
                                 }else return;
                             }
-                            if(copied==true)
-                                copied=false;
+
 
 //                        }
 //                        else{
@@ -942,11 +949,11 @@ void TextEdit::cursorPositionChanged()
     QTextCursor cursor = textEdit->textCursor();
     QTextCharFormat form;
     form.setFontItalic(textEdit->currentCharFormat().fontItalic());
-    localFamily=cursor.charFormat().fontFamily();
-    form.setFontFamily(localFamily);
+//    localFamily=cursor.charFormat().fontFamily();
+    //form.setFontFamily(localFamily);
     form.setFontUnderline(textEdit->currentCharFormat().fontUnderline());
-    localsize=cursor.charFormat().fontPointSize();
-    form.setFontPointSize(localsize);
+    //localsize=cursor.charFormat().fontPointSize();
+//    form.setFontPointSize(localsize);
     form.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
     if(!cursor.hasSelection()){
         textEdit->setTextBackgroundColor(Qt::transparent);
@@ -971,8 +978,6 @@ void TextEdit::cursorPositionChanged()
 
 void TextEdit::clipboardDataChanged()
 {
-    copiedfamily=textEdit->textCursor().charFormat().fontFamily();
-    copiedsize=textEdit->textCursor().charFormat().fontPointSize();
 #ifndef QT_NO_CLIPBOARD
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
         actionPaste->setEnabled(md->hasText());

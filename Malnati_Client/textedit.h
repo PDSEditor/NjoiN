@@ -116,6 +116,7 @@ private:
     std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
     int contcolor=0;
     int siteid;
+    QChar tmpalign;
 
     //local format
     bool localb,locall,localu;
