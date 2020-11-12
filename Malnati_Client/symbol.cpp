@@ -33,7 +33,7 @@ QChar Symbol::getAlign()
 
 void Symbol::setAlign(QChar a)
 {
-    align=a;
+    this->align=a;
 }
 
 int Symbol::getCounter() const
