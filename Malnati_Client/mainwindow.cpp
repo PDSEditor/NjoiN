@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
      model.setHorizontalHeaderItem( 0, new QStandardItem( "Documento" ) );
      model.setHorizontalHeaderItem( 1, new QStandardItem( "Creatore" ) );
      ui->treeView->setModel( &model );
+     ui->treeView->setColumnWidth(0, 500);
 
      connect(ui->treeView, &QTreeView::clicked, this, &MainWindow::test);
 
