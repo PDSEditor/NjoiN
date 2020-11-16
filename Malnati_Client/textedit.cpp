@@ -477,19 +477,31 @@ void TextEdit::receiveAllign(Message m)
     end=m.getParams().at(1).toInt();
     a=m.getParams().at(2).toLatin1().at(0);
     al=insertalign(a);
-    for(int i=start;i<=end;i++){
-        if(crdt->getSymbols()[i].getValue()==8233){
-            c.setPosition(i);
-            textEdit->setTextCursor(c);
-            textEdit->setAlignment(al);
+    if(start <= end){
+        for(int i=start;i<=end;i++){
+            if(crdt->getSymbols()[i].getValue()==8233 && i!=start){
+                c.setPosition(i);
+                textEdit->setTextCursor(c);
+                /****/
+                alignAction=false;
+                externAction=true;
+                /***/
+                textEdit->setAlignment(al);
+            }
+            crdt->setAlline(i,a);
         }
-        crdt->setAlline(i,a);
+        c.setPosition(end);
+        textEdit->setTextCursor(c);
+        alignAction=false;
+        externAction=true;
+        textEdit->setAlignment(al);
+    }else{
+        c.setPosition(start);
+        textEdit->setTextCursor(c);
+        alignAction=false;
+        externAction=true;
+        textEdit->setAlignment(al);
     }
-    c.setPosition(end);
-    textEdit->setTextCursor(c);
-    alignAction=false;
-    externAction=true;
-    textEdit->setAlignment(al);
 }
 
 void TextEdit::setSiteid(int s)
