@@ -932,7 +932,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                                     it->setUnderln(cursor.charFormat().fontUnderline());
                                     it->setFamily(cursor.charFormat().fontFamily());
                                     it->setSize(cursor.charFormat().fontPointSize());
-                                    it->setAlign(findalign(textEdit->alignment()));
+//                                    it->setAlign(findalign(textEdit->alignment()));
+                                    it->setAlign(findalign(cursor.blockFormat().alignment()));
                                     mi.setSymbol(*it);
                                     position+=1;
                                     emit(sendMessage(&mi));
