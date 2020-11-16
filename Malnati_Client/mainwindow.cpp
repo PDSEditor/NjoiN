@@ -130,8 +130,8 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te->setSiteid(siteId);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
-    //connect per cursore
-    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+    //cursore
+    //connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
 
 
 
@@ -374,11 +374,9 @@ void MainWindow::receiveTitle(QString title)
     te->fileNew();
 //    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
-<<<<<<< HEAD
-    //connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
-=======
-//    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
->>>>>>> origin/Lorenzo
+//cursore
+   // connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+
 
     Message m;
     m.setAction('C');

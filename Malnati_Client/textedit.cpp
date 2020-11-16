@@ -105,8 +105,8 @@ TextEdit::TextEdit(QWidget *parent)
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
 
-    //connect per il cursore
-    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
+    //cursore
+    /*connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
         int pos = textEdit->textCursor().position();
         if (!localOperation || handlingOperation )
             localOperation = false;
@@ -117,7 +117,7 @@ TextEdit::TextEdit(QWidget *parent)
             m.setParams({QString::number(pos),username});
             emit sendTextMessage(&m);
         }
- });
+ });*/
 
 
     setWindowModified(textEdit->document()->isModified());
@@ -455,7 +455,7 @@ void TextEdit::receiveSymbol(Message *m)
     }
     textEdit->textCursor().setPosition(oldposition);
     //cursore
-    updateCursors();
+    //updateCursors();
 
     handlingOperation = false;
 
@@ -1097,7 +1097,7 @@ void TextEdit::loadFile(QList<Symbol> file)
     }
     crdt->setSymbols(vtmp);
     //cursore
-    updateCursors();
+   // updateCursors();
 
     handlingOperation = false;
 }
