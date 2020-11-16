@@ -447,8 +447,13 @@ void TextEdit::receiveSymbol(Message *m)
 
         if(tmp.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
-        else
+        else{
             curs.insertText((QChar)tmp.getValue(),qform);
+            /***PROVA DA DEFINIRE **/
+            externAction=true;
+            textEdit->setAlignment(insertalign(m->getSymbol().getAlign()));
+            /********************/
+        }
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -933,7 +938,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                                     it->setFamily(cursor.charFormat().fontFamily());
                                     it->setSize(cursor.charFormat().fontPointSize());
 //                                    it->setAlign(findalign(textEdit->alignment()));
-                                    it->setAlign(findalign(cursor.blockFormat().alignment()));
+                                    if(it->getValue() != 8233)
+                                        it->setAlign(findalign(cursor.blockFormat().alignment()));
                                     mi.setSymbol(*it);
                                     position+=1;
                                     emit(sendMessage(&mi));
