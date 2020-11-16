@@ -845,6 +845,10 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                     for(int i=0; i<charsRemoved; i++){
                         Message m=crdt->localErase(position);
                         emit(sendMessage(&m));
+                        if(position==0){
+                            textEdit->setFontFamily("Kalapi");
+                            textEdit->setFontPointSize(12);
+                        }
                     }
                 }else
                     if(charsAdded!= 0){
