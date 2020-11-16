@@ -456,8 +456,8 @@ void TextEdit::receiveSymbol(Message *m)
         curs.deletePreviousChar();
 
     }
-
-//    updateCursors();
+    textEdit->textCursor().setPosition(oldposition);
+            //    updateCursors();
     handlingOperation = false;
 
 
@@ -837,6 +837,10 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 qDebug() << "position: " << position;
                 qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
 
+                if(position == 0 && charsAdded > 1){
+                    charsAdded--;
+                    charsRemoved--;
+                }
                 if(charsRemoved!=0 && charsAdded==0){
                     for(int i=0; i<charsRemoved; i++){
                         Message m=crdt->localErase(position);
