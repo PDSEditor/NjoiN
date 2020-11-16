@@ -44,6 +44,9 @@ public:
     int remoteinsert(Symbol s);
     int remotedelete(Symbol s);
 
+    //allineamento
+    void setAlline(int pos,QChar a);
+
     std::vector<Symbol> getSymbols();
     void setSymbols(std::vector<Symbol> vect);
     ~Crdt();

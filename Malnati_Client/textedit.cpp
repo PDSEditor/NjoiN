@@ -105,7 +105,7 @@ TextEdit::TextEdit(QWidget *parent)
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
 
-/*
+    //connect per il cursore
     connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
         int pos = textEdit->textCursor().position();
         if (!localOperation || handlingOperation )
@@ -119,7 +119,6 @@ TextEdit::TextEdit(QWidget *parent)
         }
  });
 
-*/
 
     setWindowModified(textEdit->document()->isModified());
     actionUndo->setEnabled(textEdit->document()->isUndoAvailable());
@@ -152,6 +151,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 void TextEdit::closeEvent(QCloseEvent */* unused */)
 {
+    crdt->getSymbols().clear();
     emit(openMW(this->getURI()));
 
 }
@@ -211,13 +211,17 @@ void TextEdit::setupEditActions()
     actionCopy->setShortcut(QKeySequence::Copy);
     tb->addAction(actionCopy);
 
+
     const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(rsrcPath + "/editpaste.png"));
-    actionPaste = menu->addAction(pasteIcon, tr("&Paste"), textEdit, &QTextEdit::paste);
+//    actionPaste = menu->addAction(pasteIcon, tr("&Paste"), textEdit, &QTextEdit::paste);
+    actionPaste = menu->addAction(pasteIcon,tr("&Paste"),this,&TextEdit::pasted);
     actionPaste->setPriority(QAction::LowPriority);
-    actionPaste->setShortcut(QKeySequence::Paste);
+//    actionPaste->setShortcut(QKeySequence::Paste);
+    actionPaste->setShortcuts(QKeySequence::Paste);
     tb->addAction(actionPaste);
-    if (const QMimeData *md = QApplication::clipboard()->mimeData())
+    if (const QMimeData *md = QApplication::clipboard()->mimeData()){
         actionPaste->setEnabled(md->hasText());
+    }
 #endif
 }
 
@@ -432,7 +436,12 @@ void TextEdit::receiveSymbol(Message *m)
     if(m->getAction()=='I'){
         position=crdt->remoteinsert(tmp);
         if(position == -1) return;
-        curs.setPosition(position);
+
+
+        if(position > textEdit->document()->characterCount())
+            curs.movePosition(QTextCursor::End);
+        else curs.setPosition(position);
+
         if(tmp.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
         else
@@ -444,8 +453,10 @@ void TextEdit::receiveSymbol(Message *m)
         curs.deletePreviousChar();
 
     }
+    textEdit->textCursor().setPosition(oldposition);
+    //cursore
+    updateCursors();
 
-    //updateCursors();
     handlingOperation = false;
 
 
@@ -462,7 +473,8 @@ void TextEdit::receiveAllign(Message m)
     a=m.getParams().at(2).toLatin1().at(0);
     al=insertalign(a);
     for(int i=start;i<=end;i++){
-        crdt->getSymbols()[i].setAlign(a);
+//        crdt->getSymbols()[i].setAlign(a);
+        crdt->setAlline(i,a);
     }
     c.setPosition(start);
     textEdit->setTextCursor(c);
@@ -706,15 +718,23 @@ void TextEdit::textColor()
 void TextEdit::textAlign(QAction *a)
 {
     alignAction=true;
-    if (a == actionAlignLeft)
+    if (a == actionAlignLeft){
+        tmpalign='L';
         textEdit->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
-    else if (a == actionAlignCenter)
+    }
+    else if (a == actionAlignCenter){
+        tmpalign='C';
         textEdit->setAlignment(Qt::AlignHCenter);
-    else if (a == actionAlignRight)
+    }
+    else if (a == actionAlignRight){
+        tmpalign='R';
         textEdit->setAlignment(Qt::AlignRight | Qt::AlignAbsolute);
-    else if (a == actionAlignJustify)
-        textEdit->setAlignment(Qt::AlignJustify);
 
+    }
+    else if (a == actionAlignJustify){
+        tmpalign='J';
+        textEdit->setAlignment(Qt::AlignJustify);
+    }
 }
 
 void TextEdit::showUriWindow()
@@ -775,6 +795,11 @@ void TextEdit::modifyBackground()
 
 }
 
+void TextEdit::pasted()
+{
+    textEdit->paste();
+}
+
 void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
 {
     fontChanged(format.font());
@@ -787,9 +812,13 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
             alignAction=false;
             int max,min;
             min=position;
-            max=min+charsAdded-2;
-            for(int i=0;i<max;i++){
-                crdt->getSymbols()[i].setAlign(findalign(textEdit->alignment()));
+            if(position+charsAdded>crdt->getSymbols().size())
+                max=min+charsAdded-2;
+            else
+                max=min+charsAdded-1;
+            for(int i=min;i<=max;i++){
+                crdt->setAlline(i,tmpalign);
+
             }
 
             Message m;
@@ -807,10 +836,18 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 qDebug() << "position: " << position;
                 qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
 
+                if(position == 0 && charsAdded > 1){
+                    charsAdded--;
+                    charsRemoved--;
+                }
                 if(charsRemoved!=0 && charsAdded==0){
                     for(int i=0; i<charsRemoved; i++){
                         Message m=crdt->localErase(position);
                         emit(sendMessage(&m));
+                        if(position==0){
+                            textEdit->setFontFamily("Kalapi");
+                            textEdit->setFontPointSize(12);
+                        }
                     }
                 }else
                     if(charsAdded!= 0){
@@ -866,19 +903,24 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                             for(int i=0;i<charsAdded;i++){
                                 std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
                                 Message mi;
+                                //
+                                cursor.setPosition(position+1);
+                                //
                                 if(it != this->crdt->getSymbols().end()){
                                     mi.setAction('I');
-                                    it->setBold(actionTextBold->isChecked());
-                                    it->setItalic(actionTextItalic->isChecked());
-                                    it->setUnderln(actionTextUnderline->isChecked());
-                                    it->setFamily(localFamily);
-                                    it->setSize(localsize);
+                                    it->setBold(cursor.charFormat().fontWeight()==QFont::Bold?  true : false);
+                                    it->setItalic(cursor.charFormat().fontItalic());
+                                    it->setUnderln(cursor.charFormat().fontUnderline());
+                                    it->setFamily(cursor.charFormat().fontFamily());
+                                    it->setSize(cursor.charFormat().fontPointSize());
                                     it->setAlign(findalign(textEdit->alignment()));
                                     mi.setSymbol(*it);
                                     position+=1;
                                     emit(sendMessage(&mi));
                                 }else return;
                             }
+
+
 //                        }
 //                        else{
 //                            if(charsRemoved>0)
@@ -886,20 +928,20 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 //                            for(int i=0; i<charsAdded; i++){
 //                                qDebug() << "char: " << textEdit->document()->characterAt(position);
 //                                std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
-//                                Message m;
-//                                m.setAction('I');
-//                                //todo: mettere controlli
-//                                it->setBold(actionTextBold->isChecked());
-//                                it->setItalic(actionTextItalic->isChecked());
-//                                it->setUnderln(actionTextUnderline->isChecked());
-//                                it->setFamily(localFamily);
-//                                it->setSize(localsize);
-//                                it->setAlign(findalign(textEdit->alignment()));
-//                                m.setSymbol(*it);
-//                                position+=1;
-//                                emit(sendMessage(&m));
-//                            }
-//                        }
+                            //                                Message m;
+                            //                                m.setAction('I');
+                            //                                //todo: mettere controlli
+                            //                                it->setBold(actionTextBold->isChecked());
+                            //                                it->setItalic(actionTextItalic->isChecked());
+                            //                                it->setUnderln(actionTextUnderline->isChecked());
+                            //                                it->setFamily(localFamily);
+                            //                                it->setSize(localsize);
+                            //                                it->setAlign(findalign(textEdit->alignment()));
+                            //                                m.setSymbol(*it);
+                            //                                position+=1;
+                            //                                emit(sendMessage(&m));
+                            //                            }
+                            //                        }
                     }
             }
             externAction=false;
@@ -915,9 +957,11 @@ void TextEdit::cursorPositionChanged()
     QTextCursor cursor = textEdit->textCursor();
     QTextCharFormat form;
     form.setFontItalic(textEdit->currentCharFormat().fontItalic());
-    form.setFontFamily(localFamily);
+//    localFamily=cursor.charFormat().fontFamily();
+    //form.setFontFamily(localFamily);
     form.setFontUnderline(textEdit->currentCharFormat().fontUnderline());
-    form.setFontPointSize(localsize);
+    //localsize=cursor.charFormat().fontPointSize();
+//    form.setFontPointSize(localsize);
     form.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
     if(!cursor.hasSelection()){
         textEdit->setTextBackgroundColor(Qt::transparent);
@@ -945,6 +989,7 @@ void TextEdit::clipboardDataChanged()
 #ifndef QT_NO_CLIPBOARD
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
         actionPaste->setEnabled(md->hasText());
+
 #endif
 }
 
@@ -1051,7 +1096,9 @@ void TextEdit::loadFile(QList<Symbol> file)
         vtmp.push_back(s);
     }
     crdt->setSymbols(vtmp);
-    //updateCursors();
+    //cursore
+    updateCursors();
+
     handlingOperation = false;
 }
 
@@ -1138,3 +1185,4 @@ TextEdit::~TextEdit(){
     delete this->shu;
     delete this->m_localCursor;
 }
+

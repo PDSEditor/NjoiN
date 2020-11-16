@@ -130,7 +130,9 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te->setSiteid(siteId);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
-    //connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+    //connect per cursore
+    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+
 
 
 
@@ -370,9 +372,13 @@ void MainWindow::receiveTitle(QString title)
     te->setSiteid(siteId);
     addElementforUser(title+"_"+username);
     te->fileNew();
-    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
+//    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
+<<<<<<< HEAD
     //connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+=======
+//    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+>>>>>>> origin/Lorenzo
 
     Message m;
     m.setAction('C');
@@ -403,6 +409,7 @@ void MainWindow::openMw(QString fileName)
         mc.setSender(this->getSiteId());
         mc.setParams({QString::number(-24),username});
         emit(sendTextMessage(&mc));
+        emit(closeTextEdit(this->te));
     }
 }
 

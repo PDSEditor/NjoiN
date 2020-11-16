@@ -144,7 +144,7 @@ int Crdt::getCounter(){
 }
 
 std::vector<Symbol> Crdt::getSymbols(){
-    return this->symbols;
+    return symbols;
 }
 
 void Crdt::setSymbols(std::vector<Symbol> vect)
@@ -256,6 +256,12 @@ int Crdt::remotedelete(Symbol s){
     }
 
     return middle;
+
+}
+
+void Crdt::setAlline(int pos, QChar a)
+{
+    symbols[pos].setAlign(a);
 
 }
 
