@@ -341,8 +341,8 @@ void TextEdit::setupBackgroundAction()
     QToolBar *tb = addToolBar(tr("Modifica Background"));
     QMenu *menu = menuBar()->addMenu(tr("&Background"));
 
-    const QIcon newIcon = QIcon::fromTheme("ModifyBackground", QIcon(rsrcPath + "/../Icons/icon2.png"));
-    QAction *a = menu->addAction(newIcon, tr("&ModifyBackground"), this, &TextEdit::modifyBackground);
+    const QIcon newIcon = QIcon::fromTheme("Modify background", QIcon(rsrcPath + "/../Icons/icon2.png"));
+    QAction *a = menu->addAction(newIcon, tr("&Modify background"), this, &TextEdit::modifyBackground);
     tb->addAction(a);
     a->setPriority(QAction::LowPriority);
 }
@@ -451,6 +451,10 @@ void TextEdit::receiveSymbol(Message *m)
         position=crdt->remotedelete(tmp);
         curs.setPosition(position+1);
         curs.deletePreviousChar();
+        if(crdt->getSymbols().size()==0){
+            textEdit->setFontFamily("Kalapi");
+            textEdit->setFontPointSize(12);
+        }
 
     }
     textEdit->textCursor().setPosition(oldposition);
@@ -472,16 +476,31 @@ void TextEdit::receiveAllign(Message m)
     end=m.getParams().at(1).toInt();
     a=m.getParams().at(2).toLatin1().at(0);
     al=insertalign(a);
-    for(int i=start;i<=end;i++){
-//        crdt->getSymbols()[i].setAlign(a);
-        crdt->setAlline(i,a);
+    if(start <= end){
+        for(int i=start;i<=end;i++){
+            if(crdt->getSymbols()[i].getValue()==8233 && i!=start){
+                c.setPosition(i);
+                textEdit->setTextCursor(c);
+                /****/
+                alignAction=false;
+                externAction=true;
+                /***/
+                textEdit->setAlignment(al);
+            }
+            crdt->setAlline(i,a);
+        }
+        c.setPosition(end);
+        textEdit->setTextCursor(c);
+        alignAction=false;
+        externAction=true;
+        textEdit->setAlignment(al);
+    }else{
+        c.setPosition(start);
+        textEdit->setTextCursor(c);
+        alignAction=false;
+        externAction=true;
+        textEdit->setAlignment(al);
     }
-    c.setPosition(start);
-    textEdit->setTextCursor(c);
-    alignAction=false;
-    externAction=true;
-    textEdit->setAlignment(al);
-
 }
 
 void TextEdit::setSiteid(int s)
@@ -836,7 +855,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 qDebug() << "position: " << position;
                 qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
 
-                if(position == 0 && charsAdded > 1){
+                if(position == 0 && charsRemoved > crdt->getSymbols().size()){
                     charsAdded--;
                     charsRemoved--;
                 }
@@ -913,7 +932,8 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                                     it->setUnderln(cursor.charFormat().fontUnderline());
                                     it->setFamily(cursor.charFormat().fontFamily());
                                     it->setSize(cursor.charFormat().fontPointSize());
-                                    it->setAlign(findalign(textEdit->alignment()));
+//                                    it->setAlign(findalign(textEdit->alignment()));
+                                    it->setAlign(findalign(cursor.blockFormat().alignment()));
                                     mi.setSymbol(*it);
                                     position+=1;
                                     emit(sendMessage(&mi));
@@ -1063,10 +1083,10 @@ void TextEdit::loadFile(QList<Symbol> file)
     QString tmp;
     QChar al;
     std::vector<Symbol> vtmp;
-    QTextCursor curs=textEdit->textCursor();
-    QTextCharFormat qform;
+    QTextCursor curs=textEdit->textCursor(); 
     QColor col;
     foreach(Symbol s,file){
+        QTextCharFormat qform;
         externAction=true;
         if(backgroundOp==true){
             if(s.getSiteId()==siteid)
