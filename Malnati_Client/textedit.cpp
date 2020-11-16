@@ -454,6 +454,10 @@ void TextEdit::receiveSymbol(Message *m)
         position=crdt->remotedelete(tmp);
         curs.setPosition(position+1);
         curs.deletePreviousChar();
+        if(crdt->getSymbols().size()==0){
+            textEdit->setFontFamily("Kalapi");
+            textEdit->setFontPointSize(12);
+        }
 
     }
     textEdit->textCursor().setPosition(oldposition);
