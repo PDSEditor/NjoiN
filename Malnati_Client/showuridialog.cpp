@@ -9,6 +9,7 @@ ShowUriDialog::ShowUriDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     b= new QSignalBlocker(this);
+    setWindowTitle("Condividi");
 
 }
 
