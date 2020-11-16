@@ -841,7 +841,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 qDebug() << "position: " << position;
                 qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
 
-                if(position == 0 && charsAdded > 1){
+                if(position == 0 && charsRemoved > crdt->getSymbols().size()){
                     charsAdded--;
                     charsRemoved--;
                 }
@@ -1067,10 +1067,10 @@ void TextEdit::loadFile(QList<Symbol> file)
     QString tmp;
     QChar al;
     std::vector<Symbol> vtmp;
-    QTextCursor curs=textEdit->textCursor();
-    QTextCharFormat qform;
+    QTextCursor curs=textEdit->textCursor(); 
     QColor col;
     foreach(Symbol s,file){
+        QTextCharFormat qform;
         externAction=true;
         if(backgroundOp==true){
             if(s.getSiteId()==siteid)
