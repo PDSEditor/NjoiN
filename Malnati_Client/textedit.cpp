@@ -478,15 +478,18 @@ void TextEdit::receiveAllign(Message m)
     a=m.getParams().at(2).toLatin1().at(0);
     al=insertalign(a);
     for(int i=start;i<=end;i++){
-//        crdt->getSymbols()[i].setAlign(a);
+        if(crdt->getSymbols()[i].getValue()==8233){
+            c.setPosition(i);
+            textEdit->setTextCursor(c);
+            textEdit->setAlignment(al);
+        }
         crdt->setAlline(i,a);
     }
-    c.setPosition(start);
+    c.setPosition(end);
     textEdit->setTextCursor(c);
     alignAction=false;
     externAction=true;
     textEdit->setAlignment(al);
-
 }
 
 void TextEdit::setSiteid(int s)
