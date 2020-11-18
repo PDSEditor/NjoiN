@@ -911,6 +911,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 //                                charsRemoved--;
 //                            }
                             int pos=position;
+                            QChar previousAlign='n';
 //                            int pos=cursor.selectionStart()-charsAdded;
                             for(int i=0;i<charsRemoved;i++){
                                 Message mc;
@@ -938,8 +939,18 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                                     it->setFamily(cursor.charFormat().fontFamily());
                                     it->setSize(cursor.charFormat().fontPointSize());
 //                                    it->setAlign(findalign(textEdit->alignment()));
-                                    if(it->getValue() != 8233)
+                                    if(it->getValue() != 8233){
                                         it->setAlign(findalign(cursor.blockFormat().alignment()));
+                                        previousAlign=it->getAlign();
+                                    }
+                                    else{
+                                        if(previousAlign!='n'){
+                                            it->setAlign(previousAlign);
+                                        }
+                                        else {
+                                            it->setAlign(findalign(textEdit->alignment()));
+                                        }
+                                    }
                                     mi.setSymbol(*it);
                                     position+=1;
                                     emit(sendMessage(&mi));
