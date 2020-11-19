@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>714</width>
-    <height>526</height>
+    <height>569</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,6 +26,42 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="6">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>100</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>100</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="4" colspan="2">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Aggiungi Documento</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0" colspan="2">
      <spacer name="horizontalSpacer_4">
       <property name="orientation">
@@ -75,18 +111,15 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="5" colspan="2">
-     <spacer name="horizontalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+    <item row="3" column="0" colspan="7">
+     <widget class="QTreeView" name="treeView">
+      <property name="defaultDropAction">
+       <enum>Qt::CopyAction</enum>
       </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
+      <attribute name="headerVisible">
+       <bool>true</bool>
+      </attribute>
+     </widget>
     </item>
     <item row="1" column="3">
      <spacer name="verticalSpacer_2">
@@ -99,19 +132,6 @@
       <property name="sizeHint" stdset="0">
        <size>
         <width>218</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>100</width>
         <height>20</height>
        </size>
       </property>
@@ -143,31 +163,18 @@
       </property>
      </spacer>
     </item>
-    <item row="2" column="4" colspan="2">
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>Aggiungi Documento</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="6">
-     <spacer name="horizontalSpacer_2">
+    <item row="0" column="5" colspan="2">
+     <spacer name="horizontalSpacer_5">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>100</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
      </spacer>
-    </item>
-    <item row="3" column="0" colspan="7">
-     <widget class="QListWidget" name="listWidget"/>
     </item>
    </layout>
   </widget>

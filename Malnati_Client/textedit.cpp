@@ -444,8 +444,13 @@ void TextEdit::receiveSymbol(Message *m)
 
         if(tmp.getValue()=='\0')
             curs.insertText((QChar)'\n',qform);
-        else
+        else{
             curs.insertText((QChar)tmp.getValue(),qform);
+            /***PROVA DA DEFINIRE **/
+            externAction=true;
+            textEdit->setAlignment(insertalign(m->getSymbol().getAlign()));
+            /********************/
+        }
     }
     else if(m->getAction()=='D'){
         position=crdt->remotedelete(tmp);
@@ -458,6 +463,7 @@ void TextEdit::receiveSymbol(Message *m)
 
     }
     textEdit->textCursor().setPosition(oldposition);
+
     //cursore
     updateCursors();
 
@@ -592,20 +598,37 @@ void TextEdit::filePrintPdf()
     QPrinter printer(QPrinter::HighResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName(fileName);
-    textEdit->selectAll();
+    QChar al;
     QTextEdit tmp;
     QTextCursor curs=tmp.textCursor();
     QTextCursor cu=textEdit->textCursor();
     for(unsigned long i=0;i<crdt->getSymbols().size();i++){
-    cu.setPosition(i+1);
-    Symbol c= crdt->getSymbols()[i];
-    QTextCharFormat qform=cu.charFormat();
+//    cu.setPosition(i+1);
+//    Symbol c= crdt->getSymbols()[i];
+ QTextCharFormat qform;
+//    qform.setBackground(Qt::transparent);
+//    QChar u=c.getValue();
+//    if(u=='\0')
+//        curs.insertText("\n",qform);
+//    else
+//        curs.insertText(u,qform);
     qform.setBackground(Qt::transparent);
-    QChar u=c.getValue();
-    if(u=='\0')
-        curs.insertText("\n",qform);
-    else
-        curs.insertText(u,qform);
+    qform.setFontFamily(crdt->getSymbols()[i].getFamily());
+    qform.setFontItalic(crdt->getSymbols()[i].getItalic());
+    qform.setFontUnderline(crdt->getSymbols()[i].getUnderln());
+    qform.setFontPointSize(crdt->getSymbols()[i].getSize());
+    if(crdt->getSymbols()[i].getBold())
+        qform.setFontWeight(QFont::Bold);
+    if(al!=crdt->getSymbols()[i].getAlign()){
+        al=crdt->getSymbols()[i].getAlign();
+        tmp.setTextCursor(curs);
+        tmp.setAlignment(insertalign(al));
+        externAction=true;
+    }
+//    if(s.getValue()=='\0')
+//        curs.insertText((QChar)'\n',qform);
+//    else
+        curs.insertText(crdt->getSymbols()[i].getValue(),qform);
 }
     tmp.document()->print(&printer);
     statusBar()->showMessage(tr("Exported \"%1\"")
@@ -905,6 +928,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 //                                charsRemoved--;
 //                            }
                             int pos=position;
+                            QChar previousAlign='n';
 //                            int pos=cursor.selectionStart()-charsAdded;
                             for(int i=0;i<charsRemoved;i++){
                                 Message mc;
@@ -933,7 +957,18 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                                     it->setFamily(cursor.charFormat().fontFamily());
                                     it->setSize(cursor.charFormat().fontPointSize());
 //                                    it->setAlign(findalign(textEdit->alignment()));
-                                    it->setAlign(findalign(cursor.blockFormat().alignment()));
+                                    if(it->getValue() != 8233){
+                                        it->setAlign(findalign(cursor.blockFormat().alignment()));
+                                        previousAlign=it->getAlign();
+                                    }
+                                    else{
+                                        if(previousAlign!='n'){
+                                            it->setAlign(previousAlign);
+                                        }
+                                        else {
+                                            it->setAlign(findalign(textEdit->alignment()));
+                                        }
+                                    }
                                     mi.setSymbol(*it);
                                     position+=1;
                                     emit(sendMessage(&mi));
