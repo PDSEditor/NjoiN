@@ -131,7 +131,7 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
     //cursore
-    //connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
 
 
 
@@ -216,6 +216,7 @@ void MainWindow::showUsers(Message m)
                 if(a.size()==0){
                     this->offlineUsers->addItem(user);
                     this->offlineUsers->item(this->offlineUsers->count()-1)->setForeground(q);
+                    onlineUserColor.remove(user);
                 }
             }
         }
@@ -375,7 +376,7 @@ void MainWindow::receiveTitle(QString title)
 //    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
 //cursore
-   // connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+   connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
 
 
     Message m;
@@ -398,15 +399,16 @@ void MainWindow::openMw(QString fileName)
 
     if (fileName!="") {
         Message m,mc;
+        mc.setAction('Z');
+        mc.setSender(this->getSiteId());
+        mc.setParams({QString::number(-24),username});
+        emit(sendTextMessage(&mc));
         m.setAction('X');
         m.setSender(this->getSiteId());
         m.setParams({fileName, this->username});
         emit(sendTextMessage(&m));
         //messaggio per cursore
-        mc.setAction('Z');
-        mc.setSender(this->getSiteId());
-        mc.setParams({QString::number(-24),username});
-        emit(sendTextMessage(&mc));
+
         emit(closeTextEdit(this->te));
     }
 }
