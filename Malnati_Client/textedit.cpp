@@ -466,7 +466,7 @@ void TextEdit::receiveSymbol(Message *m)
 
     }
     textEdit->textCursor().setPosition(oldposition);
-            //    updateCursors();
+    //    updateCursors();
     handlingOperation = false;
 
 
