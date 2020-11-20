@@ -797,7 +797,7 @@ void TextEdit::modifyBackground()
         qform.setBackground(Qt::transparent);
         textEdit->textCursor().mergeCharFormat(qform);
         textEdit->setTextCursor(cursor);
-        textEdit->textCursor().setPosition(pos);
+//        textEdit->textCursor().setPosition(pos);
         backgroundOp=false;
     }
     else{
