@@ -80,6 +80,7 @@ private slots:
     void sendNewImage(QByteArray &bArray);
     void sendNewPwd(QString &oldPwd, QString &newPwd);
 
+    void test(const QModelIndex &index);
 
 private:
     Ui::MainWindow *ui;
@@ -87,6 +88,8 @@ private:
     AccountInterface *accountGui = nullptr;
     void newFile();
     bool flaglocal=0;
+
+    QStandardItemModel model;
 
     /** Account **/
     QPixmap image;

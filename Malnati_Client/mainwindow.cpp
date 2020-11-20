@@ -18,7 +18,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->label->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center; text-align:top; color:yellow;");
     setWindowTitle("N Joi' N");
 
-     connect(ui->listWidget, &QListWidget::itemClicked, this, &MainWindow::open_file_on_server);
+    //connect(ui->listWidget, &QListWidget::itemClicked, this, &MainWindow::open_file_on_server);
+
+     model.setHorizontalHeaderItem( 0, new QStandardItem( "Documento" ) );
+     model.setHorizontalHeaderItem( 1, new QStandardItem( "Creatore" ) );
+     ui->treeView->setModel( &model );
+     ui->treeView->setColumnWidth(0, 500);
+
+     connect(ui->treeView, &QTreeView::clicked, this, &MainWindow::test);
+
 }
 
 MainWindow::~MainWindow()
@@ -73,6 +81,29 @@ void MainWindow::sendNewPwd(QString &oldPsw, QString &newPwd){
     m.setSender(siteId);
     m.setParams({username, oldPsw, newPwd});
     emit (sendPwd(&m));
+}
+
+void MainWindow::test(const QModelIndex &index)
+{
+//    qDebug() << index.data().toString();
+//    qDebug() << index.column();
+   if(index.column()== 0) {
+
+       QString creator = this->model.item(index.row(), 1)->text();
+       QString documentName = index.data().toString();
+
+       openURI=documentName + "_" + creator;
+
+       Message m;
+       m.setAction('R');
+       m.setParams({openURI,username});
+       m.setSender(siteId);
+
+       flaglocal=1;
+       emit(sendTextMessage(&m));
+   }
+
+
 }
 
 void MainWindow::open_file_on_server(QListWidgetItem* s){
@@ -130,7 +161,9 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     te->setSiteid(siteId);
     te->setURI(openURI);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
-//    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+    //cursore
+    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+
 
 
 
@@ -139,7 +172,8 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow->setLayout(layout);
     this->teWindow->show();
     te->loadFile(tmp);
-    QList<QListWidgetItem*> q=ui->listWidget->findItems(openURI,Qt::MatchExactly);
+    //QList<QListWidgetItem*> q=ui->listWidget->findItems(openURI,Qt::MatchExactly);
+    QList<QStandardItem*> q =this->model.findItems(openURI,Qt::MatchExactly);
     if(q.size()==0)
         addElementforUser(openURI);
     this->hide();
@@ -214,6 +248,7 @@ void MainWindow::showUsers(Message m)
                 if(a.size()==0){
                     this->offlineUsers->addItem(user);
                     this->offlineUsers->item(this->offlineUsers->count()-1)->setForeground(q);
+                    onlineUserColor.remove(user);
                 }
             }
         }
@@ -277,7 +312,27 @@ void MainWindow::on_pushButton_clicked()
 }
 
 void MainWindow::addElementforUser(QString string){   
-    ui->listWidget->addItem(string);
+    //ui->listWidget->addItem(string);
+
+    auto strings = string.split('_');
+    QString creator;
+    QString documentName;
+
+    if(strings.size()==2) {
+        creator = strings[1];
+        documentName = strings[0];
+    }
+    else {      //nel titolo c'è un underscore
+        creator = strings[strings.size()-1];
+        documentName = string.left(string.lastIndexOf('_'));
+    }
+
+
+    QStandardItem *item1 = new QStandardItem(documentName);
+    QStandardItem *item2 = new QStandardItem(creator);
+
+    this->model.appendRow({item1, item2});
+
 }
 
 void MainWindow::on_actionNew_triggered()
@@ -372,7 +427,9 @@ void MainWindow::receiveTitle(QString title)
     te->fileNew();
 //    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
-//    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+//cursore
+   connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);
+
 
     Message m;
     m.setAction('C');
@@ -394,15 +451,16 @@ void MainWindow::openMw(QString fileName)
 
     if (fileName!="") {
         Message m,mc;
+        mc.setAction('Z');
+        mc.setSender(this->getSiteId());
+        mc.setParams({QString::number(-24),username});
+        emit(sendTextMessage(&mc));
         m.setAction('X');
         m.setSender(this->getSiteId());
         m.setParams({fileName, this->username});
         emit(sendTextMessage(&m));
         //messaggio per cursore
-        mc.setAction('Z');
-        mc.setSender(this->getSiteId());
-        mc.setParams({QString::number(-24),username});
-        emit(sendTextMessage(&mc));
+
         emit(closeTextEdit(this->te));
     }
 }

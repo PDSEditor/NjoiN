@@ -105,22 +105,19 @@ TextEdit::TextEdit(QWidget *parent)
     connect(textEdit->document(), &QTextDocument::contentsChange,
             this, &TextEdit::onTextChanged);
 
-    //prova connect per la copia
-
-
-//    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
-//        int pos = textEdit->textCursor().position();
-//        if (!localOperation || handlingOperation )
-//            localOperation = false;
-//        else{
-//            Message m;
-//            m.setAction('Z');
-//            m.setSender(siteid);
-//            m.setParams({QString::number(pos),username});
-//            emit sendTextMessage(&m);
-//        }
-// });
-
+    //cursore
+    connect(textEdit, &QTextEdit::cursorPositionChanged, this, [&](){
+        int pos = textEdit->textCursor().position();
+        if (!localOperation || handlingOperation )
+            localOperation = false;
+        else{
+            Message m;
+            m.setAction('Z');
+            m.setSender(siteid);
+            m.setParams({QString::number(pos),username});
+            emit sendTextMessage(&m);
+        }
+ });
 
 
     setWindowModified(textEdit->document()->isModified());
@@ -468,7 +465,10 @@ void TextEdit::receiveSymbol(Message *m)
 
     }
     textEdit->textCursor().setPosition(oldposition);
-            //    updateCursors();
+
+    //cursore
+    updateCursors();
+
     handlingOperation = false;
 
 
@@ -799,7 +799,7 @@ void TextEdit::modifyBackground()
         qform.setBackground(Qt::transparent);
         textEdit->textCursor().mergeCharFormat(qform);
         textEdit->setTextCursor(cursor);
-        textEdit->textCursor().setPosition(pos);
+//        textEdit->textCursor().setPosition(pos);
         backgroundOp=false;
     }
     else{
@@ -939,6 +939,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                                 else
                                     mc = crdt->localErase(pos+1);
 //                                Symbol s=crdt->getSymbols().at(pos+i);
+
                                 //eliminazione vecchio carattere
 //                                mc.setSymbol(s);
                                 mc.setAction('D');
@@ -1152,7 +1153,9 @@ void TextEdit::loadFile(QList<Symbol> file)
         vtmp.push_back(s);
     }
     crdt->setSymbols(vtmp);
-//    updateCursors();
+    //cursore
+   updateCursors();
+
     handlingOperation = false;
 }
 
@@ -1195,10 +1198,10 @@ void TextEdit::moveCursor(int pos, QString userId)
 {
     if(pos==-24){
         if(m_onlineUsers.contains(userId)){
-
+            m_onlineUsers[userId].label->setVisible(false);
+             m_onlineUsers[userId].label->hide();
             delete  m_onlineUsers[userId].label;
             m_onlineUsers.remove(userId);
-
         }
     }
     else{
