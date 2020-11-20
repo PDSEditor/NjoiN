@@ -450,6 +450,8 @@ void TextEdit::receiveSymbol(Message *m)
         else{
             curs.insertText((QChar)tmp.getValue(),qform);
             /***PROVA DA DEFINIRE **/
+            curs.setPosition(position);
+            textEdit->setTextCursor(curs);
             externAction=true;
             textEdit->setAlignment(insertalign(m->getSymbol().getAlign()));
             /********************/
