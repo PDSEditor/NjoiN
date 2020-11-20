@@ -239,8 +239,11 @@ void MainWindow::showUsers(Message m)
                     this->onlineUsers->addItem(user);
                     this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
                     onlineUserTE.append(user);
-                    if(user!=username)
+                    if(user!=username && !onlineUserColor.contains(user)){
                         onlineUserColor.insert(user,q);
+                        emit(updateUsersOnTe(onlineUserColor));
+                    }
+
                 }
             }
             else{
@@ -251,11 +254,12 @@ void MainWindow::showUsers(Message m)
                     onlineUserColor.remove(user);
                 }
             }
+
         }
 
     }
 
-    emit(updateUsersOnTe(onlineUserColor));
+
 
 }
 

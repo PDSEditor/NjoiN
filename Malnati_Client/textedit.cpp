@@ -519,6 +519,7 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
 {
 
     for(auto userKey : users.keys()){
+    if(!m_onlineUsers.contains(userKey) && users.size()!= m_onlineUsers.size()){
     QFont font("American Typewriter", 10, QFont::Bold);
     QLabel *remoteLabel = new QLabel(this);
     QColor color(users.value(userKey));
@@ -546,6 +547,7 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     remoteLabel->move(curCoord.left(), curCoord.top()-(remoteLabel->fontInfo().pointSize()/3)+100);
     remoteLabel->setVisible(true);
     remoteLabel->raise();
+    }
     }
 
 }
