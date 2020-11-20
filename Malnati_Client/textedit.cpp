@@ -447,6 +447,8 @@ void TextEdit::receiveSymbol(Message *m)
         else{
             curs.insertText((QChar)tmp.getValue(),qform);
             /***PROVA DA DEFINIRE **/
+            curs.setPosition(position);
+            textEdit->setTextCursor(curs);
             externAction=true;
             textEdit->setAlignment(insertalign(m->getSymbol().getAlign()));
             /********************/
@@ -799,11 +801,14 @@ void TextEdit::modifyBackground()
         qform.setBackground(Qt::transparent);
         textEdit->textCursor().mergeCharFormat(qform);
         textEdit->setTextCursor(cursor);
-        textEdit->textCursor().setPosition(pos);
+//        textEdit->textCursor().setPosition(pos);
+        cursor.setPosition(pos);
+        textEdit->setTextCursor(cursor);
         backgroundOp=false;
     }
     else{
         ereasingBackg=true;
+        auto pos = textEdit->textCursor().position();
         textEdit->selectAll();
         textEdit->clear();
         QTextCursor cursor = textEdit->textCursor();
@@ -832,6 +837,8 @@ void TextEdit::modifyBackground()
             }
             cursor.insertText(s.getValue(),qform);
         }
+        cursor.setPosition(pos);
+        textEdit->setTextCursor(cursor);
         backgroundOp=true;
     }
     ereasingBackg=false;
