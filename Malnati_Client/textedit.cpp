@@ -798,10 +798,13 @@ void TextEdit::modifyBackground()
         textEdit->textCursor().mergeCharFormat(qform);
         textEdit->setTextCursor(cursor);
 //        textEdit->textCursor().setPosition(pos);
+        cursor.setPosition(pos);
+        textEdit->setTextCursor(cursor);
         backgroundOp=false;
     }
     else{
         ereasingBackg=true;
+        auto pos = textEdit->textCursor().position();
         textEdit->selectAll();
         textEdit->clear();
         QTextCursor cursor = textEdit->textCursor();
@@ -830,6 +833,8 @@ void TextEdit::modifyBackground()
             }
             cursor.insertText(s.getValue(),qform);
         }
+        cursor.setPosition(pos);
+        textEdit->setTextCursor(cursor);
         backgroundOp=true;
     }
     ereasingBackg=false;
