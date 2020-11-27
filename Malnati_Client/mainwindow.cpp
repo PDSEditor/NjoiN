@@ -35,7 +35,15 @@ MainWindow::~MainWindow()
 }
 void MainWindow::newFile(){
 
-    it= new InsertTitle(documents);
+//    it= new InsertTitle(documents);
+    QList<QString> documentList;
+    for(auto i = 0; i<this->model.rowCount(); i++) {
+        auto index = this->model.index(i, 0);
+        auto index1 = this->model.index(i, 1);
+        auto stringa = this->model.data(index).toString() + "_" + this->model.data(index1).toString();
+        documentList.push_back(stringa);
+    }
+    it = new InsertTitle(documentList);
 
     connect(it,&InsertTitle::setTitle,this,&MainWindow::receiveTitle);
     connect(it,&InsertTitle::showMw,this,&MainWindow::openMw);
@@ -172,18 +180,21 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow->setLayout(layout);
     this->teWindow->show();
     te->loadFile(tmp);
-    //QList<QListWidgetItem*> q=ui->listWidget->findItems(openURI,Qt::MatchExactly);
-//    QList<QStandardItem*> q =this->model.findItems(openURI,Qt::MatchExactly);
-    QMap<int, QVariant>::iterator it;
+
+    auto flag = false;
     for(auto i = 0; i<this->model.rowCount(); i++) {
         auto index = this->model.index(i, 0);
-        qDebug() << this->model.data(index);
-        qDebug() << this->model.item(i,0);
+        auto index1 = this->model.index(i, 1);
+        auto stringa = this->model.data(index).toString() + "_" + this->model.data(index1).toString();
+        if(openURI.compare(stringa)==0){
+            flag = true;
+            break;
+        }
     }
 
-    QList<QStandardItem*> q =this->model.findItems(openURI.left(openURI.lastIndexOf('_')),Qt::MatchExactly);
-    if(q.size()==0)
+    if(!flag)
         addElementforUser(openURI);
+
     this->hide();
 
 }
@@ -435,8 +446,24 @@ void MainWindow::receiveTitle(QString title)
            (availableGeometry.height() - te->height()) / 2);
     te->setFileName(title);
     te->setURI(title+"_"+username);
+    openURI = te->getURI();
     te->setSiteid(siteId);
-    addElementforUser(title+"_"+username);
+
+    auto flag = false;
+    for(auto i = 0; i<this->model.rowCount(); i++) {
+        auto index = this->model.index(i, 0);
+        auto index1 = this->model.index(i, 1);
+        auto stringa = this->model.data(index).toString() + "_" + this->model.data(index1).toString();
+        if(openURI.compare(stringa)==0){
+            flag = true;
+            break;
+        }
+    }
+
+    if(!flag)
+        addElementforUser(openURI);
+
+//    addElementforUser(title+"_"+username);
     te->fileNew();
 //    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
@@ -474,6 +501,8 @@ void MainWindow::openMw(QString fileName)
         m.setParams({fileName, this->username});
         emit(sendTextMessage(&m));
         //messaggio per cursore
+
+        this->openURI.clear();
 
         emit(closeTextEdit(this->te));
     }
