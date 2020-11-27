@@ -173,7 +173,15 @@ void MainWindow::receivedFile(QList<Symbol> tmp){
     this->teWindow->show();
     te->loadFile(tmp);
     //QList<QListWidgetItem*> q=ui->listWidget->findItems(openURI,Qt::MatchExactly);
-    QList<QStandardItem*> q =this->model.findItems(openURI,Qt::MatchExactly);
+//    QList<QStandardItem*> q =this->model.findItems(openURI,Qt::MatchExactly);
+    QMap<int, QVariant>::iterator it;
+    for(auto i = 0; i<this->model.rowCount(); i++) {
+        auto index = this->model.index(i, 0);
+        qDebug() << this->model.data(index);
+        qDebug() << this->model.item(i,0);
+    }
+
+    QList<QStandardItem*> q =this->model.findItems(openURI.left(openURI.lastIndexOf('_')),Qt::MatchExactly);
     if(q.size()==0)
         addElementforUser(openURI);
     this->hide();
