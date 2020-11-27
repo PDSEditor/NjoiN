@@ -206,7 +206,8 @@ void MainWindow::showUsers(Message m)
 {
     this->onlineUsers->clear();
     this->offlineUsers->clear();
-    std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
+//    std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
+    std::vector<QColor> listcolor={"#FF5252", "#8CFFAB", "#6190FF", "#FF80E6", "#FFE495",Qt::lightGray, "#B46767", "#9AD75D", "#686DA2", "#DC77F0", "#F0BC77"};
 
     bool online = true;
 
@@ -239,8 +240,11 @@ void MainWindow::showUsers(Message m)
                     this->onlineUsers->addItem(user);
                     this->onlineUsers->item(this->onlineUsers->count()-1)->setForeground(q);
                     onlineUserTE.append(user);
-                    if(user!=username)
+                    if(user!=username && !onlineUserColor.contains(user)){
                         onlineUserColor.insert(user,q);
+                        emit(updateUsersOnTe(onlineUserColor));
+                    }
+
                 }
             }
             else{
@@ -251,11 +255,12 @@ void MainWindow::showUsers(Message m)
                     onlineUserColor.remove(user);
                 }
             }
+
         }
 
     }
 
-    emit(updateUsersOnTe(onlineUserColor));
+
 
 }
 

@@ -521,6 +521,7 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
 {
 
     for(auto userKey : users.keys()){
+    if(!m_onlineUsers.contains(userKey) && users.size()!= m_onlineUsers.size()){
     QFont font("American Typewriter", 10, QFont::Bold);
     QLabel *remoteLabel = new QLabel(this);
     QColor color(users.value(userKey));
@@ -548,6 +549,7 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     remoteLabel->move(curCoord.left(), curCoord.top()-(remoteLabel->fontInfo().pointSize()/3)+100);
     remoteLabel->setVisible(true);
     remoteLabel->raise();
+    }
     }
 
 }
@@ -800,10 +802,13 @@ void TextEdit::modifyBackground()
         textEdit->textCursor().mergeCharFormat(qform);
         textEdit->setTextCursor(cursor);
 //        textEdit->textCursor().setPosition(pos);
+        cursor.setPosition(pos);
+        textEdit->setTextCursor(cursor);
         backgroundOp=false;
     }
     else{
         ereasingBackg=true;
+        auto pos = textEdit->textCursor().position();
         textEdit->selectAll();
         textEdit->clear();
         QTextCursor cursor = textEdit->textCursor();
@@ -832,6 +837,8 @@ void TextEdit::modifyBackground()
             }
             cursor.insertText(s.getValue(),qform);
         }
+        cursor.setPosition(pos);
+        textEdit->setTextCursor(cursor);
         backgroundOp=true;
     }
     ereasingBackg=false;
