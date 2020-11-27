@@ -460,6 +460,7 @@ void MainWindow::openMw(QString fileName)
         mc.setSender(this->getSiteId());
         mc.setParams({QString::number(-24),username});
         emit(sendTextMessage(&mc));
+
         m.setAction('X');
         m.setSender(this->getSiteId());
         m.setParams({fileName, this->username});

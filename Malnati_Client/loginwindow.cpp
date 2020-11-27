@@ -13,7 +13,7 @@ LoginWindow::LoginWindow(QWidget *parent) :
     isLogin = false;
     ui->setupUi(this);
 
-    this->ui->logo1->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center;color:red");
+    this->ui->logo1->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center;color:yellow");
     setWindowTitle("Login");
 }
 

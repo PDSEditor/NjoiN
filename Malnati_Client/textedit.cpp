@@ -87,8 +87,8 @@ TextEdit::TextEdit(QWidget *parent)
     textEdit->setFont(textFont);
     fontChanged(textEdit->font());
     alignmentChanged(textEdit->alignment());
-    textEdit->setFontFamily("kalapi");
-    localFamily="kalapi";
+    textEdit->setFontFamily("DejaVu Sans");
+    localFamily="DejaVu Sans";
     textEdit->setFontPointSize(12);
     localsize=12;
     textEdit->currentCharFormat().setFontItalic(false);
@@ -459,7 +459,7 @@ void TextEdit::receiveSymbol(Message *m)
         curs.setPosition(position+1);
         curs.deletePreviousChar();
         if(crdt->getSymbols().size()==0){
-            textEdit->setFontFamily("Kalapi");
+            textEdit->setFontFamily("DejaVu Sans");
             textEdit->setFontPointSize(12);
         }
 
@@ -526,7 +526,7 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     QLabel *remoteLabel = new QLabel(this);
     QColor color(users.value(userKey));
     remoteLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
-    remoteLabel->setStyleSheet("color:"+color.name()+";background-color:transparent;border: 1px solid transparent;border-left-color:"+color.name()+";");
+    remoteLabel->setStyleSheet("color:"+color.name()+";background-color:transparent;border: 3px solid transparent;border-left-color:"+color.name()+";");
     remoteLabel->setFont(font);
 //    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->textCursor())};
     User newUser = { userKey, remoteLabel, QTextCursor(textEdit->document())};
@@ -896,7 +896,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                         Message m=crdt->localErase(position);
                         emit(sendMessage(&m));
                         if(position==0){
-                            textEdit->setFontFamily("Kalapi");
+                            textEdit->setFontFamily("DejaVu Sans");
                             textEdit->setFontPointSize(12);
                         }
                     }
