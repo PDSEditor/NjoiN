@@ -21,7 +21,7 @@ bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
             return false;
         else {
             file.close();
-//            qDebug() << file.fileName();
+            qDebug() << file.fileName() << "saved";
             return true;
         }
             //da sistemare le parentesi poi dovrebbe andare
