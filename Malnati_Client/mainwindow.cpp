@@ -225,7 +225,7 @@ void MainWindow::showUsers(Message m)
 {
     this->onlineUsers->clear();
     this->offlineUsers->clear();
-//    std::vector<QColor> listcolor={Qt::red, Qt::green, Qt::blue, Qt::cyan,Qt::darkYellow,Qt::lightGray, Qt::darkRed, Qt::darkGreen, Qt::darkBlue, Qt::darkCyan, Qt::darkGray};
+    this->onlineUserColor.clear();
     std::vector<QColor> listcolor={"#FF5252", "#8CFFAB", "#6190FF", "#FF80E6", "#FFE495",Qt::lightGray, "#B46767", "#9AD75D", "#686DA2", "#DC77F0", "#F0BC77"};
 
     bool online = true;
