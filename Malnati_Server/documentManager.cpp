@@ -9,17 +9,11 @@ bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
 {
     //todo: da testare
     for(auto it : openDocuments){
-        if(QString::compare(it.getUri(), documentId) != 0) continue;
-        //        QString name = it.getName();
-        //        QString creator = it.getCreator();
-        //        if((name+'_'+creator) == documentId) {
-//        QFile file("/home/pepos/projects/progetto_malnati/Malnati_Server/backup/" + documentId+ ".bin"); //uri? o name? o id?
-        QFile file(documentId + ".bin"); //uri? o name? o id?
+        QFile file(documentId + ".bin");
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
         QByteArray bArray;
         for(auto i : symbols){
             bArray.append(i.toJson().toBinaryData());
-            //            }
         }
         auto returnValue = file.write(bArray, bArray.size()); //salva nella cartella di build
 
@@ -27,7 +21,7 @@ bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
             return false;
         else {
             file.close();
-//            qDebug() << file.fileName();
+            qDebug() << file.fileName() << "saved";
             return true;
         }
             //da sistemare le parentesi poi dovrebbe andare
@@ -61,8 +55,8 @@ void DocumentManager::openDocument(SharedDocument &doc)
 void DocumentManager::closeDocument(QString uri)
 {
     for (QList<SharedDocument>::iterator doc=openDocuments.begin(); doc != openDocuments.end(); ++doc){
-        auto uri = doc->getUri();
-        if(uri != nullptr){
+        auto curDoc = doc->getUri();
+        if(curDoc == uri){
             openDocuments.erase(doc);
         }
     }
