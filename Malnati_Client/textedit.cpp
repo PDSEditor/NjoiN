@@ -449,7 +449,9 @@ void TextEdit::receiveSymbol(Message *m)
             externAction=true;
             textEdit->setAlignment(insertalign(m->getSymbol().getAlign()));
             /********************/
-//            oldposition++;
+            if(oldposition > position){
+                oldposition++;
+            }
         }
     }
     else if(m->getAction()=='D'){
@@ -459,7 +461,9 @@ void TextEdit::receiveSymbol(Message *m)
         if(crdt->getSymbols().size()==0){
             textEdit->setFontFamily("DejaVu Sans");
             textEdit->setFontPointSize(12);
-//            oldposition--;
+            if(oldposition < position){
+                oldposition--;
+            }
         }
 
     }
