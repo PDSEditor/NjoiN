@@ -62,9 +62,6 @@ TextEdit::TextEdit(QWidget *parent)
 
 
     textEdit = new QTextEdit(this);
-//    textEdit->textCursor().setPosition(textEdit->document()->end().position());
-//    textEdit->textCursor().setPosition(40960);
-//    textEdit->textCursor().setPosition(0);
     textEdit->selectAll();
     externAction=false;
 
@@ -452,7 +449,7 @@ void TextEdit::receiveSymbol(Message *m)
             externAction=true;
             textEdit->setAlignment(insertalign(m->getSymbol().getAlign()));
             /********************/
-            oldposition++;
+//            oldposition++;
         }
     }
     else if(m->getAction()=='D'){
@@ -462,7 +459,7 @@ void TextEdit::receiveSymbol(Message *m)
         if(crdt->getSymbols().size()==0){
             textEdit->setFontFamily("DejaVu Sans");
             textEdit->setFontPointSize(12);
-            oldposition--;
+//            oldposition--;
         }
 
     }
@@ -612,7 +609,6 @@ void TextEdit::filePrintPdf()
     QTextCursor curs=tmp.textCursor();
     QTextCursor cu=textEdit->textCursor();
     for(unsigned long i=0;i<crdt->getSymbols().size();i++){
-//    cu.setPosition(i+1);
 //    Symbol c= crdt->getSymbols()[i];
  QTextCharFormat qform;
 //    qform.setBackground(Qt::transparent);
@@ -907,110 +903,53 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                     }
                 }else
                     if(charsAdded!= 0){
-//                        if(charsAdded==charsRemoved){
+                        int pos=position;
+                        QChar previousAlign='n';
+                        //                            int pos=cursor.selectionStart()-charsAdded;
+                        for(int i=0;i<charsRemoved;i++){
+                            Message mc;
+                            if(charsAdded>0)
+                                mc = crdt->localErase(pos);
+                            else
+                                mc = crdt->localErase(pos+1);
+                            //                                Symbol s=crdt->getSymbols().at(pos+i);
 
-//                            //                dati da passare
-
-//                            int pos=cursor.selectionStart();
-//                            for(int i=0;i<charsAdded;i++){
-//                                Message mc,mi;
-//                                if(crdt->getSymbols().size()< pos+i+1){
-//                                    qDebug()<<"Errore textedit.cpp riga 760, si accede a posizione oltre nell'array symbols";
-//                                    qDebug()<<"ultimo carattere accedibile: " + QString(crdt->getSymbols().at(pos+i-1).getValue());
-//                                    pos--;
-//                                }
-//                                Symbol s=crdt->getSymbols()[pos+i];
-//                                //eliminazione vecchio carattere
-//                                mc.setSymbol(s);
-//                                mc.setAction('D');
-//                                emit(sendMessage(&mc));
-//                                //invio carattere modificato
-//                                mi.setAction('I');
-//                                s.setBold(actionTextBold->isChecked());
-//                                s.setItalic(actionTextItalic->isChecked());
-//                                s.setUnderln(actionTextUnderline->isChecked());
-//                                s.setFamily(localFamily);
-//                                s.setSize(localsize);
-//                                s.setAlign(findalign(textEdit->alignment()));
-//                                mi.setSymbol(s);
-//                                emit(sendMessage(&mi));
-//                            }
-//                        }
-//                        else if(charsRemoved!=charsAdded){
-//                            if(position == 0 && charsAdded > 1){
-//                                charsAdded--;
-//                                charsRemoved--;
-//                            }
-                            int pos=position;
-                            QChar previousAlign='n';
-//                            int pos=cursor.selectionStart()-charsAdded;
-                            for(int i=0;i<charsRemoved;i++){
-                                Message mc;
-                                if(charsAdded>0)
-                                    mc = crdt->localErase(pos);
-                                else
-                                    mc = crdt->localErase(pos+1);
-//                                Symbol s=crdt->getSymbols().at(pos+i);
-
-                                //eliminazione vecchio carattere
-//                                mc.setSymbol(s);
-                                mc.setAction('D');
-                                emit(sendMessage(&mc));
-                            }
-                            for(int i=0;i<charsAdded;i++){
-                                std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
-                                Message mi;
-                                //
-                                cursor.setPosition(position+1);
-                                //
-                                if(it != this->crdt->getSymbols().end()){
-                                    mi.setAction('I');
-                                    it->setBold(cursor.charFormat().fontWeight()==QFont::Bold?  true : false);
-                                    it->setItalic(cursor.charFormat().fontItalic());
-                                    it->setUnderln(cursor.charFormat().fontUnderline());
-                                    it->setFamily(cursor.charFormat().fontFamily());
-                                    it->setSize(cursor.charFormat().fontPointSize());
-//                                    it->setAlign(findalign(textEdit->alignment()));
-                                    if(it->getValue() != 8233){
-                                        it->setAlign(findalign(cursor.blockFormat().alignment()));
-                                        previousAlign=it->getAlign();
+                            //eliminazione vecchio carattere
+                            //                                mc.setSymbol(s);
+                            mc.setAction('D');
+                            emit(sendMessage(&mc));
+                        }
+                        for(int i=0;i<charsAdded;i++){
+                            std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
+                            Message mi;
+                            //
+                            cursor.setPosition(position+1);
+                            //
+                            if(it != this->crdt->getSymbols().end()){
+                                mi.setAction('I');
+                                it->setBold(cursor.charFormat().fontWeight()==QFont::Bold?  true : false);
+                                it->setItalic(cursor.charFormat().fontItalic());
+                                it->setUnderln(cursor.charFormat().fontUnderline());
+                                it->setFamily(cursor.charFormat().fontFamily());
+                                it->setSize(cursor.charFormat().fontPointSize());
+                                //                                    it->setAlign(findalign(textEdit->alignment()));
+                                if(it->getValue() != 8233){
+                                    it->setAlign(findalign(cursor.blockFormat().alignment()));
+                                    previousAlign=it->getAlign();
+                                }
+                                else{
+                                    if(previousAlign!='n'){
+                                        it->setAlign(previousAlign);
                                     }
-                                    else{
-                                        if(previousAlign!='n'){
-                                            it->setAlign(previousAlign);
-                                        }
-                                        else {
-                                            it->setAlign(findalign(textEdit->alignment()));
-                                        }
+                                    else {
+                                        it->setAlign(findalign(textEdit->alignment()));
                                     }
-                                    mi.setSymbol(*it);
-                                    position+=1;
-                                    emit(sendMessage(&mi));
-                                }else return;
-                            }
-
-
-//                        }
-//                        else{
-//                            if(charsRemoved>0)
-//                                charsAdded--;
-//                            for(int i=0; i<charsAdded; i++){
-//                                qDebug() << "char: " << textEdit->document()->characterAt(position);
-//                                std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position).unicode(), position-1, position);
-                            //                                Message m;
-                            //                                m.setAction('I');
-                            //                                //todo: mettere controlli
-                            //                                it->setBold(actionTextBold->isChecked());
-                            //                                it->setItalic(actionTextItalic->isChecked());
-                            //                                it->setUnderln(actionTextUnderline->isChecked());
-                            //                                it->setFamily(localFamily);
-                            //                                it->setSize(localsize);
-                            //                                it->setAlign(findalign(textEdit->alignment()));
-                            //                                m.setSymbol(*it);
-                            //                                position+=1;
-                            //                                emit(sendMessage(&m));
-                            //                            }
-                            //                        }
+                                }
+                                mi.setSymbol(*it);
+                                position+=1;
+                                emit(sendMessage(&mi));
+                            }else return;
+                        }
                     }
             }
             externAction=false;
@@ -1223,9 +1162,11 @@ void TextEdit::moveCursor(int pos, QString userId)
             if(user.cursor.isNull()){
                  user.cursor = textEdit->textCursor();
             }
+            auto oldposition = this->textEdit->textCursor().position();
 
             user.cursor = textEdit->textCursor();
-            user.cursor.setPosition(pos); //dio errore outofrange
+            user.cursor.setPosition(pos);
+
             QRect remoteCoord = textEdit->cursorRect(user.cursor);
 
             int height = remoteCoord.bottom()-remoteCoord.top();
@@ -1242,6 +1183,8 @@ void TextEdit::moveCursor(int pos, QString userId)
 
             user.label->move(remoteCoord.left(), remoteCoord.top()-(user.label->fontInfo().pointSize()/3)+100);
             user.label->setVisible(true);
+
+            this->textEdit->textCursor().setPosition(oldposition);
         }
     }
 }
