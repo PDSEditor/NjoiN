@@ -71,10 +71,10 @@ public:
     bool setSymbolsOfDocument(QString documentId, QList<Symbol> document);
     QList<SharedDocument> getAllDocuments(); //todo: da fare
     QList<SharedDocument> getAllMyDocuments(QString username); //to test
-    bool deleteDocument(QString documentId); //da fare
-    QList<Account> getAccounts(QString documentName); //da fare
+    bool deleteDocument(QString documentId); //todo: da fare
+    QList<Account> getAccounts(QString documentName); //todo: da fare
     QString getUri(QString documentName); //da fare
-    void changeDocumentName(QString documentId, QString newName); //ricordarsi di catchare le exception se si usa
+    void changeDocumentName(QString documentId, QString newName);
     /***********/
 
     /** URI **/

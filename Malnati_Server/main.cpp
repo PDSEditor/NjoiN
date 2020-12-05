@@ -22,7 +22,6 @@ int main(int argc, char *argv[])
                                   QCoreApplication::translate("main", "port"), QLatin1String("1234"));
     parser.addOption(portOption);
     parser.process(a);
-//    bool debug = parser.isSet(dbgOption);
     int port = parser.value(portOption).toInt();
 
     qDebug()<<"porta:"<<port;

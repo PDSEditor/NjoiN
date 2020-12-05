@@ -90,12 +90,6 @@ std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int
     Symbol symbolToInsert(value, fractionalPos, this->getSiteId(), this->getCounterAndIncrement());
 //
     auto pos = this->symbols.insert(this->symbols.begin()+followingC, symbolToInsert);
-//    Message m;
-//    m.setAction('I');
-
-//    m.setSymbol(symbolToInsert);
-//    print(fractionalPos);
-//    return m;
     return pos;
 }
 

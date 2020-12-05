@@ -85,25 +85,25 @@ void AccountManager::updateAccountOnDocument(QString user, QString documentId)
 
 void AccountManager::removeOnlineAccounts(int siteId)
 {
-        QString username;
+    QString username;
 
-        if(this->onlineAccounts.contains(siteId)) {
-            username = this->onlineAccounts.value(siteId).get()->getUsername();
-            this->onlineAccounts.remove(siteId);
+    if(this->onlineAccounts.contains(siteId)) {
+        username = this->onlineAccounts.value(siteId).get()->getUsername();
+        this->onlineAccounts.remove(siteId);
 
-// rimuovo anche l'utente dalla lista che tiene conto degli utenti online sui file attualmente aperti
+        // rimuovo anche l'utente dalla lista che tiene conto degli utenti online sui file attualmente aperti
 
-            for(auto iter = this->accountsPerFile.begin(); iter != accountsPerFile.end(); ++iter) {
+        for(auto iter = this->accountsPerFile.begin(); iter != accountsPerFile.end(); ++iter) {
 
-                if(iter.value().contains(username)){
-                    iter.value().removeOne(username);
-                }
-
+            if(iter.value().contains(username)){
+                iter.value().removeOne(username);
             }
+
         }
-        else {
-            qDebug("rimozione di un account con siteId non presente tra quelli accesi") ;
-        }
+    }
+    else {
+        qDebug("rimozione di un account con siteId non presente tra quelli accesi") ;
+    }
 
 
 }

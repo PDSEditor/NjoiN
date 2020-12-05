@@ -261,7 +261,7 @@ bool DatabaseManager::insertSymbol(Message &mes) {
     Symbol symbol = mes.getSymbol();
     QVector<QString> params = mes.getParams();
     if(params.size() == 0) return false;
-    QString documentId = params.at(0); //controllare se il documento esiste?
+    QString documentId = params.at(0);
     mongocxx::collection symbolCollection = (this->db)["symbol"];
     bsoncxx::stdx::optional<bsoncxx::document::value> result;
     auto builder = bsoncxx::builder::stream::document{};
@@ -273,7 +273,6 @@ bool DatabaseManager::insertSymbol(Message &mes) {
     }
 
     bsoncxx::document::value symbolToInsert = builder
-            /*<< "_id" << ? */
             << "document_id" << documentId.toUtf8().constData()
             << "value" << symbol.getValue().unicode()
             << "siteId" << symbol.getSiteId()
@@ -321,13 +320,6 @@ bool DatabaseManager::deleteSymbol(Message &mes)
 //                    << "siteId" << symbol.getSiteId()
                     << "counter" << symbol.getCounter()
                     << "position" << array_builder
-
-//                    << "family" << symbol.getFamily().toUtf8().constData()
-//                    << "bold" << symbol.getBold()
-//                    << "italic" << symbol.getItalic()
-//                    << "underln" << symbol.getUnderln()
-//                    << "size" << symbol.getSize()
-
                     << bsoncxx::builder::stream::finalize;
     bsoncxx::document::view view = symbolToDelete.view();
     try {
@@ -422,7 +414,7 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
         for (auto elem : resultIterator) {
             QString symbol = QString::fromStdString(
                         bsoncxx::to_json(elem));
-            QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());           
+            QJsonDocument stringDocJSON = QJsonDocument::fromJson(symbol.toUtf8());
             Symbol symbolToInsert = Symbol::fromJson(stringDocJSON);
             orderedSymbols.push_back(symbolToInsert);
         }
@@ -432,12 +424,11 @@ QList<Symbol> DatabaseManager::retrieveSymbolsOfDocument(QString documentId)
         throw std::exception();
     }
 
-    // TODO:test
     //It orders according to the order established in Char object,
     //so will be returned a vector in fractionalPosition ascending order
-        std::sort(orderedSymbols.begin(), orderedSymbols.end());
+    std::sort(orderedSymbols.begin(), orderedSymbols.end());
 
-        return orderedSymbols;
+    return orderedSymbols;
 }
 
 bool DatabaseManager::setSymbolsOfDocument(QString documentId, QList<Symbol> document)
@@ -496,10 +487,7 @@ QList<SharedDocument> DatabaseManager::getAllMyDocuments(QString username)
                 userAllowed.push_back(i.toString());
             }
             SharedDocument shared(document["documentName"].toString(), document["creator"].toString(), document["isOpen"].toBool(), userAllowed);
-            documentsToReturn.push_back(shared);/*
-
-            auto a = bsoncxx::to_json(doc);
-            documentsToReturn.push_back(SharedDocument::fromJson(bsoncxx::to_json(doc)));*/
+            documentsToReturn.push_back(shared);
         }
     } catch (mongocxx::query_exception &e) {
         throw std::exception();
