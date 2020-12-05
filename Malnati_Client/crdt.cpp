@@ -9,13 +9,7 @@ int Crdt::maxnum=100;
 int Crdt::counter=0;
 extern socketManager *sock;
 
-bool exists(int index, std::vector<int> vector);
-
-Crdt::Crdt()
-{
-
-
-}
+Crdt::Crdt(){}
 
 std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> following, std::vector<int> &tmp, const int maxnum){
     int prec, foll;
@@ -52,7 +46,7 @@ std::vector<int> createFractional(std::vector<int> preceding, std::vector<int> f
 
 
 std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int followingC){
-    //da la dimensione del vettore di simboli
+    //dimensione del vettore di simboli
     size_t symbolsSize = this->symbols.size();
     std::vector<int> following;
     std::vector<int> preceding;
@@ -82,7 +76,6 @@ std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int
             preceding = this->symbols[precedingC].getPosizione();
             following = this->symbols[followingC].getPosizione();
             createFractional(preceding, following, fractionalPos, Crdt::maxnum);
-
 //            qDebug() << "fractionalpos: " << fractionalPos;
         }
     }
@@ -93,17 +86,11 @@ std::vector<Symbol>::iterator Crdt::localInsert(QChar value, int precedingC, int
     return pos;
 }
 
-//MAI USATA
-bool exists(int index, std::vector<int> vector){
-    if( index < static_cast<int>(vector.size()) )
-        return true;
-    else return false;
-}
-
 Message Crdt::localErase(int position){ //la riscrivo il 22/10 per ricerca idempotenza
     std::vector<Symbol>::iterator i = this->symbols.begin()+position;
     //symbolo da eliminare
     Symbol symbol(i->getValue(), i->getPosizione(), i->getSiteId(), i->getCounter());
+
     /* creo messaggio */
     Message m;
     m.setAction('D');
@@ -241,15 +228,12 @@ int Crdt::remotedelete(Symbol s){
             return min;
         }
     }
-
     return middle;
-
 }
 
 void Crdt::setAlline(int pos, QChar a)
 {
     symbols[pos].setAlign(a);
-
 }
 
 int Crdt::compare(Symbol s1, Symbol s2){
@@ -286,7 +270,6 @@ int Crdt::compare(Symbol s1, Symbol s2){
 }
 
 Crdt::~Crdt(){
-    //rilasciare la memoria
 
 }
 
