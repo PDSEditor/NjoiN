@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QBuffer>
 #include <QFile>
+#include <QDebug>
 #include "sharedDocument.h"
 
 class DocumentManager : public QObject
