@@ -19,17 +19,13 @@ class Crdt: public QObject
 signals:
     void localM(Message *m);
 
-public slots:
-   void remoteM(Message *m);
-
-
 private:
     static int maxnum;
     static int counter; //il numero dell'operazione effettuata dall'utente
 
     int siteId; //chi ha inserito il carattere
     std::vector<Symbol> symbols;
-    int compare(Symbol s1, Symbol s2); //???
+    int compare(Symbol s1, Symbol s2);
 
 
 public:

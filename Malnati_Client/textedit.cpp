@@ -892,7 +892,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                 qDebug() << "position: " << position;
                 qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
 
-                if(position == 0 && charsRemoved > crdt->getSymbols().size()){
+                if(position == 0 && charsRemoved > (int)crdt->getSymbols().size()){
                     charsAdded--;
                     charsRemoved--;
                 }
@@ -926,9 +926,7 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                         for(int i=0;i<charsAdded;i++){
                             std::vector<Symbol>::iterator it = crdt->localInsert(textEdit->document()->characterAt(position), position-1, position);
                             Message mi;
-                            //
                             cursor.setPosition(position+1);
-                            //
                             if(it != this->crdt->getSymbols().end()){
                                 mi.setAction('I');
                                 it->setBold(cursor.charFormat().fontWeight()==QFont::Bold?  true : false);
@@ -1016,7 +1014,8 @@ void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
 {
     QTextCursor cursor = textEdit->textCursor();
     if (cursor.hasSelection()){
-        cursor.mergeCharFormat(format);}
+        cursor.mergeCharFormat(format);
+    }
     textEdit->mergeCurrentCharFormat(format);
 }
 

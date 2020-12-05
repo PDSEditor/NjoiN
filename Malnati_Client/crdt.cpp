@@ -11,13 +11,6 @@ extern socketManager *sock;
 
 bool exists(int index, std::vector<int> vector);
 
-void print(const std::vector<int>& input)
-{
-    for(auto i: input){
-//        qDebug() << "pos: " << i;
-    }
-}
-
 Crdt::Crdt()
 {
 
@@ -265,11 +258,6 @@ void Crdt::setAlline(int pos, QChar a)
 
 }
 
-void Crdt::remoteM(Message *m)
-{
-
-}
-
 int Crdt::compare(Symbol s1, Symbol s2){
     int len1=s1.getPosizione().size();
     int len2=s2.getPosizione().size();
@@ -292,15 +280,13 @@ int Crdt::compare(Symbol s1, Symbol s2){
         if(len1<len2){
             res=-1;
         }
-        else if(s1.getSiteId()<s2.getSiteId())          //da gestire
+        else if(s1.getSiteId()<s2.getSiteId())
             res=1;
         else if(s1.getSiteId()>s2.getSiteId())
             res = -1;
         else if(s1.getSiteId()==s2.getSiteId()){
             res = 0;
         }
-
-
     }
     return res;
 }
