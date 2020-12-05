@@ -20,7 +20,7 @@ bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
             return false;
         else {
             file.close();
-            qDebug() << file.fileName() << "saved";
+            qDebug() <<  file.fileName() << "saved";
             return true;
         }
     }

@@ -210,10 +210,8 @@ void TextEdit::setupEditActions()
 
 
     const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(rsrcPath + "/editpaste.png"));
-//    actionPaste = menu->addAction(pasteIcon, tr("&Paste"), textEdit, &QTextEdit::paste);
     actionPaste = menu->addAction(pasteIcon,tr("&Paste"),this,&TextEdit::pasted);
     actionPaste->setPriority(QAction::LowPriority);
-//    actionPaste->setShortcut(QKeySequence::Paste);
     actionPaste->setShortcuts(QKeySequence::Paste);
     tb->addAction(actionPaste);
     if (const QMimeData *md = QApplication::clipboard()->mimeData()){
@@ -443,12 +441,10 @@ void TextEdit::receiveSymbol(Message *m)
             curs.insertText((QChar)'\n',qform);
         else{
             curs.insertText((QChar)tmp.getValue(),qform);
-            /***PROVA DA DEFINIRE **/
             curs.setPosition(position);
             textEdit->setTextCursor(curs);
             externAction=true;
             textEdit->setAlignment(insertalign(m->getSymbol().getAlign()));
-            /********************/
             if(oldposition > position){
                 oldposition++;
             }
@@ -470,7 +466,6 @@ void TextEdit::receiveSymbol(Message *m)
     oldcurs = textEdit->textCursor();
     oldcurs.setPosition(oldposition);
     textEdit->setTextCursor(oldcurs);
-//    textEdit->textCursor().setPosition(oldposition);
 
     //cursore
     updateCursors();
@@ -534,7 +529,6 @@ void TextEdit::updateUsersOnTe(QMap<QString,QColor> users)
     remoteLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
     remoteLabel->setStyleSheet("color:"+color.name()+";background-color:transparent;border: 3px solid transparent;border-left-color:"+color.name()+";");
     remoteLabel->setFont(font);
-//    User newUser = { userKey, remoteLabel, QTextCursor(textEdit->textCursor())};
     User newUser = { userKey, remoteLabel, QTextCursor(textEdit->document())};
     m_onlineUsers[userKey] = newUser;
     // 2. Draw the remote cursor at position 0
@@ -613,14 +607,7 @@ void TextEdit::filePrintPdf()
     QTextCursor curs=tmp.textCursor();
     QTextCursor cu=textEdit->textCursor();
     for(unsigned long i=0;i<crdt->getSymbols().size();i++){
-//    Symbol c= crdt->getSymbols()[i];
  QTextCharFormat qform;
-//    qform.setBackground(Qt::transparent);
-//    QChar u=c.getValue();
-//    if(u=='\0')
-//        curs.insertText("\n",qform);
-//    else
-//        curs.insertText(u,qform);
     qform.setBackground(Qt::transparent);
     qform.setFontFamily(crdt->getSymbols()[i].getFamily());
     qform.setFontItalic(crdt->getSymbols()[i].getItalic());
@@ -634,9 +621,6 @@ void TextEdit::filePrintPdf()
         tmp.setAlignment(insertalign(al));
         externAction=true;
     }
-//    if(s.getValue()=='\0')
-//        curs.insertText((QChar)'\n',qform);
-//    else
         curs.insertText(crdt->getSymbols()[i].getValue(),qform);
 }
     tmp.document()->print(&printer);
@@ -806,7 +790,6 @@ void TextEdit::modifyBackground()
         qform.setBackground(Qt::transparent);
         textEdit->textCursor().mergeCharFormat(qform);
         textEdit->setTextCursor(cursor);
-//        textEdit->textCursor().setPosition(pos);
         cursor.setPosition(pos);
         textEdit->setTextCursor(cursor);
         backgroundOp=false;
@@ -909,17 +892,14 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
                     if(charsAdded!= 0){
                         int pos=position;
                         QChar previousAlign='n';
-                        //                            int pos=cursor.selectionStart()-charsAdded;
                         for(int i=0;i<charsRemoved;i++){
                             Message mc;
                             if(charsAdded>0)
                                 mc = crdt->localErase(pos);
                             else
                                 mc = crdt->localErase(pos+1);
-                            //                                Symbol s=crdt->getSymbols().at(pos+i);
 
                             //eliminazione vecchio carattere
-                            //                                mc.setSymbol(s);
                             mc.setAction('D');
                             emit(sendMessage(&mc));
                         }
@@ -967,11 +947,7 @@ void TextEdit::cursorPositionChanged()
     QTextCursor cursor = textEdit->textCursor();
     QTextCharFormat form;
     form.setFontItalic(textEdit->currentCharFormat().fontItalic());
-//    localFamily=cursor.charFormat().fontFamily();
-    //form.setFontFamily(localFamily);
     form.setFontUnderline(textEdit->currentCharFormat().fontUnderline());
-    //localsize=cursor.charFormat().fontPointSize();
-//    form.setFontPointSize(localsize);
     form.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
     if(!cursor.hasSelection()){
         textEdit->setTextBackgroundColor(Qt::transparent);
@@ -1196,7 +1172,6 @@ TextEdit::~TextEdit(){
     delete this->tb;
     delete this->crdt;
     delete this->textEdit;
-//    delete this->symbols;
     delete this->shu;
     delete this->m_localCursor;
 }
