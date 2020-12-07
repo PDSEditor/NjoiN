@@ -874,6 +874,11 @@ void TextEdit::onTextChanged(int position, int charsRemoved, int charsAdded)
 
                 qDebug() << "position: " << position;
                 qDebug() << "charater: " << textEdit->document()->characterAt(position).unicode();
+                //prova molto critica
+                if(position==0 &&charsAdded>1){
+                    charsAdded--;
+                    charsRemoved--;
+                }
 
                 if(position == 0 && charsRemoved > (int)crdt->getSymbols().size()){
                     charsAdded--;
