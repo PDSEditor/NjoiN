@@ -171,9 +171,4 @@ QJsonDocument Symbol::toJson()
     }
     json_obj["position"] = positionj;
     return QJsonDocument(json_obj);
-
-
-
-
-
 }

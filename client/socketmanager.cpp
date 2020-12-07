@@ -80,7 +80,6 @@ void socketManager::binaryMessageToServer(Message *m)
             bytemex.append(tmp >> (p * 8));
         }
 
-//        tmpc=symbol.getValue().unicode();
         auto value = symbol.getValue().unicode();
         for(int p=0;p<2;p++){
             bytemex.append(value >> (p * 8));
@@ -216,8 +215,6 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
     QByteArray c;
     int tmp, d,sender;
     QChar action,align;
-    QChar tmpc;
-    //Symbol *symbol = new Symbol();
     Symbol symbol;
     QVector<QString> params;
 
@@ -291,8 +288,3 @@ void socketManager::onBinaryMessageReceived(QByteArray bytemex)
     }
 
 }
-
-
-
-
-

@@ -7,7 +7,6 @@ DocumentManager::DocumentManager(QObject *parent) : QObject(parent)
 
 bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
 {
-    //todo: da testare
     for(auto it : openDocuments){
         QFile file(documentId + ".bin");
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
@@ -24,8 +23,6 @@ bool DocumentManager::saveToServer(QString documentId, QList<Symbol> &symbols)
             qDebug() <<  file.fileName() << "saved";
             return true;
         }
-            //da sistemare le parentesi poi dovrebbe andare
-//        }
     }
     return false;
 }

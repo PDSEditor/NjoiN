@@ -162,15 +162,6 @@ void Server::processMessage(Message &mesIn) {
 
     switch (first){
     case 'I':
-//        mes.setParams(prova);
-//        dbMan->insertDocument(sharedDocument); //attenzione se già presente eccezionare
-//        dbMan->insertSymbol(mes);
-//        dbMan->deleteSymbol(mes);
-//        sharedDocument = dbMan->getDocument(QString::fromStdString("documento1_0"));
-//        document = dbMan->retrieveSymbolsOfDocument(sharedDocument.getUri()); //di test
-//        for(auto i : document){
-//            qDebug() << i.getValue();
-//        }
     {
         username = this->acMan->getOnlineAccounts()[mesIn.getSender()]->getUsername();
         documentId = this->acMan->getUsernameDocumentMap()[username];
@@ -248,12 +239,6 @@ void Server::processMessage(Message &mesIn) {
 
     case 'C' :
     {
-
-//        if(mesIn.getParams().size()!=2) {
-//            qDebug()<< "Numero parametri errato nella creazione del file.";
-//            break;
-//        }
-
         nomeFile = mesIn.getParams()[0];
         //controllo db se esiste un file con lo stesso nome
 
@@ -317,7 +302,6 @@ void Server::processMessage(Message &mesIn) {
         // nella pagina di scelta
 
         uri = mesIn.getParams()[0];
-       // documentId = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
         documentId=uri;
 
 
@@ -380,7 +364,6 @@ void Server::processMessage(Message &mesIn) {
             if( acc.getSiteId()< 0) {               // non esiste un account con questo username
                 mesOut.setError(false);
 
-    //            acc = Account(username, mesIn.getSender());
                 acc = Account(username, mesIn.getSender(), img);
 
                 this->dbMan->registerAccount(acc, mesIn.getParams()[1]);
@@ -566,9 +549,6 @@ void Server::updateUsersOnDocument(Message mes)
 
     auto siteIdUser = this->socketMan->getSiteIdUser();
 
-//    if(!onlineUsers.contains(siteIdUser[mes.getSender()]))
-//        onlineUsers.append(siteIdUser[mes.getSender()]);
-
     for(auto user: onlineUsers){
 
         for (auto it = siteIdUser.begin(); it !=siteIdUser.end(); it++) {
@@ -597,7 +577,6 @@ void Server::updateUsersOnDocument(Message mes)
 
         mes.setParams(onlineUsers_siteId);
 
-        //socketMan->messageToUser(mes, mes.getSender());
         this->dispatchMessage(mes);
 
     }catch(std::exception& e){

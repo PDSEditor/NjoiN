@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QBuffer>
 #include <QFile>
+#include <QDebug>
 #include "sharedDocument.h"
 #include "qdebug.h"
 

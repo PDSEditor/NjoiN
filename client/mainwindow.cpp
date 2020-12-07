@@ -18,8 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->label->setStyleSheet("background-image: url(:/images/Icons/logo-icon.png);background-repeat:none;background-position:center; text-align:top; color:yellow;");
     setWindowTitle("N Joi' N");
 
-    //connect(ui->listWidget, &QListWidget::itemClicked, this, &MainWindow::open_file_on_server);
-
      model.setHorizontalHeaderItem( 0, new QStandardItem( "Documento" ) );
      model.setHorizontalHeaderItem( 1, new QStandardItem( "Creatore" ) );
      ui->treeView->setModel( &model );
@@ -35,7 +33,6 @@ MainWindow::~MainWindow()
 }
 void MainWindow::newFile(){
 
-//    it= new InsertTitle(documents);
     QList<QString> documentList;
     for(auto i = 0; i<this->model.rowCount(); i++) {
         auto index = this->model.index(i, 0);
@@ -93,8 +90,6 @@ void MainWindow::sendNewPwd(QString &oldPsw, QString &newPwd){
 
 void MainWindow::test(const QModelIndex &index)
 {
-//    qDebug() << index.data().toString();
-//    qDebug() << index.column();
    if(index.column()== 0) {
 
        QString creator = this->model.item(index.row(), 1)->text();
@@ -320,11 +315,8 @@ void MainWindow::receivedInfoAccount(Message& m){
     QList<QString> tmp;
     long size = m.getParams().size();
 
-    //SimpleCrypt crypto(Q_UINT64_C(0x0c2ad4a4acb9f023));
-
     for(int i=3; i<size; i++){
         documents.append(m.getParams().at(i));
-        //QString encrypted = crypto.encryptToString(m.getParams().at(i));
         addElementforUser(m.getParams().at(i));
     }
 }
@@ -336,7 +328,6 @@ void MainWindow::on_pushButton_clicked()
 }
 
 void MainWindow::addElementforUser(QString string){   
-    //ui->listWidget->addItem(string);
 
     auto strings = string.split('_');
     QString creator;
@@ -463,9 +454,7 @@ void MainWindow::receiveTitle(QString title)
     if(!flag)
         addElementforUser(openURI);
 
-//    addElementforUser(title+"_"+username);
     te->fileNew();
-//    connect(te,&TextEdit::closeDocument,this,&MainWindow::documentClosed);
     connect(te,&TextEdit::openMW,this,&MainWindow::openMw);
 //cursore
    connect(this, &MainWindow::updateUsersOnTe, te, &TextEdit::updateUsersOnTe);

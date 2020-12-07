@@ -38,9 +38,6 @@ void Account::setImage(QPixmap Pix)
 }
 
 QByteArray Account::getImage() const {
-//    QPixmap p;
-//    p.loadFromData(QByteArray::fromBase64(image), "PNG");
-//    return p;
     return this->image;
 }
 

@@ -14,10 +14,6 @@ SocketManager::SocketManager(QObject *parent) : QObject(parent),
             //    qDebug() << "Echoserver listening on port" << port;
             connect(qWebSocketServer, &QWebSocketServer::newConnection,
                     this, &SocketManager::onNewConnection);
-
-            //connect(m_pWebSocketServer, &QWebSocketServer::closed, this, &EchoServer::closed);
-
-
         }
 }
 
@@ -27,21 +23,18 @@ void SocketManager::sendError(std::string)
 }
 
 void SocketManager::messageToUser( Message &m, int siteId) {
-
-   //TODO: invia il singolo messaggio ai vari client
-
     auto it = this->clients.find(siteId);
     if (it != clients.end()) {
         if(m.getAction()=='S') {
             qDebug()<<"Invio site id al client n "<< siteId;
         }
         if(m.getAction() == 'L') {                          //Se sono nel caso del login, devo prendere il siteId a cui viene associato il socket
-                                                            // che è temporaneo e associarlo al vero siteId che ho nel server, in questo modo
-                                                            // da ora in poi userò solo il vero siteId
+            // che è temporaneo e associarlo al vero siteId che ho nel server, in questo modo
+            // da ora in poi userò solo il vero siteId
 
-           auto const elem = std::move(it.value());
-           this->clients.erase(it);
-           this->clients.insert(m.getSender(), std::move(elem));
+            auto const elem = std::move(it.value());
+            this->clients.erase(it);
+            this->clients.insert(m.getSender(), std::move(elem));
         }
         QWebSocket *user = it.value();
         if(m.getAction()=='I' || m.getAction()=='D') {
@@ -90,11 +83,6 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
             bytemex.append(tmp >> (p * 8));
         }
 
-        /*for(int p=0;p<2;p++){
-            bytemex.append(tmp >> (p*8));
-        }*/
-
-
         auto value = symbol.getValue().unicode();
 
         for(int p=0;p<2;p++){
@@ -114,54 +102,7 @@ void SocketManager::binaryMessageToUser(Message &m, int siteId)
         }
         bytemex.append(symbol.getAlign());
         bytemex.append(symbol.getFamily());
-
     }
-//    else if(action==('C')||action==('R')){
-//        if(action==('C')){
-//            bytemex.append('C');
-//        }
-//        else{
-//            bytemex.append('R');
-//        }
-//        tmp=siteId;
-//        for(int p=0;p<4;p++){
-//            bytemex.append(tmp >> (p * 8));
-//        }
-//        bytemex.append(params.at(0));
-
-//    }
-//    else if(action=='L'){
-//        bytemex.append('L');
-//        tmp=siteId;
-//        for(int p=0;p<4;p++){
-//            bytemex.append(tmp >> (p * 8));
-//        }
-//        tmp=params.at(0).length();
-//        for(int p=0;p<4;p++){
-//            bytemex.append(tmp >> (p * 8));
-//        }
-//        bytemex.append(params.at(0));
-//        tmp=params.at(1).length();
-//        for(int p=0;p<4;p++){
-//            bytemex.append(tmp >> (p * 8));
-//        }
-//        bytemex.append(params.at(1));
-//    }
-//    else if (action == 'S') {
-//        bytemex.append('S');
-//        tmp=siteId;
-//        for(int p=0;p<4;p++){
-//            bytemex.append(tmp >> (p * 8));
-//        }
-//        tmp=params.at(0).length();
-//        for(int p=0;p<4;p++){
-//            bytemex.append(tmp >> (p * 8));
-//        }
-//        bytemex.append(params.at(0));
-//    }
-
-    //qDebug()<<'lunghezza array di byte'<<bytemex.size();
-    //webSocket.sendBinaryMessage( bytemex);
     auto it = this->clients.find(siteId);
     if (it != clients.end()) {
         QWebSocket *user = it.value();
@@ -177,10 +118,6 @@ void SocketManager::fileToUser(std::vector<Symbol> &file, int user)
 
 void SocketManager::processTextMessage(QString message)
 {
-
-    //QWebSocket *client = qobject_cast<QWebSocket *>(sender());    probabilmente non serve, il sender è già identificato tramite SiteId
-    //qDebug()<<message;
-
     //deserialize JSON
 //    Message m = Message::fromJson(QJsonDocument::fromJson(message.toUtf8()));
     auto document = QJsonDocument::fromJson(message.toUtf8());
@@ -313,11 +250,6 @@ void SocketManager::processBinaryMessage(const QByteArray &bytemex)
     m.setSymbol(symbol);
     m.setSender(sender);
     /** necessario settare i decorators? **/
-
-
-//    m.debugPrint();
-    //
-//    this->binaryMessageToUser(m,0);
 
     emit newMessage(m);
 
